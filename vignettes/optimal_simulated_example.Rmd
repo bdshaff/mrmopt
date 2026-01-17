@@ -75,12 +75,13 @@ for(i in seq_along(channels)) {
     x = "x",
     y = "y",
     type = form_sim[i],
-    prior = c(
-      prior(normal(-3, 10), nlpar = "b", lb = -10, ub = 0),
-      prior(normal(0, 10), nlpar = "c"),
-      prior(normal(1, 10), nlpar = "d"),
-      prior(normal(0.6, 10), nlpar = "e")
-    ),
+    auto = TRUE,
+    # prior = c(
+    #   prior(normal(-3, 10), nlpar = "b", lb = -10, ub = 0),
+    #   prior(normal(0, 10), nlpar = "c"),
+    #   prior(normal(1, 10), nlpar = "d"),
+    #   prior(normal(0.6, 10), nlpar = "e")
+    # ),
     chains = 2,
     iter = 2000, 
     warmup = 1000,
@@ -92,7 +93,7 @@ for(i in seq_along(channels)) {
 ```
 
 ```{r,  message=FALSE, warning=FALSE}
-response_funs = map(response_models, ~get_response_function(.x))
+response_funs = map(response_models, ~mrm_response_function(.x))
 
 x_sim = seq(-0.2, 2.2, length.out = 100)
 map_dfr(response_funs, ~tibble(x = x_sim, y = .x(x_sim)), .id = "channel") %>%

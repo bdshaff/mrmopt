@@ -4,7 +4,7 @@
 \alias{mrm_plot_return}
 \title{Plot Marginal and Absolute Rates of Return for Multiple Resource Models}
 \usage{
-mrm_plot_return(mrm, xrange = NULL, ncol = 2)
+mrm_plot_return(mrm, xrange = c(0, 2), ncol = 2, location = "center")
 }
 \arguments{
 \item{mrm}{A list of fitted model objects (e.g., brmsfit objects).}
@@ -12,6 +12,8 @@ mrm_plot_return(mrm, xrange = NULL, ncol = 2)
 \item{xrange}{A numeric vector of length 2 specifying the range of x values to consider. If NULL, the range is determined from the data.}
 
 \item{ncol}{An integer specifying the number of columns in the facet wrap. Default is 2.}
+
+\item{location}{A character string specifying which location to use for MR and AR calculations. Options are "center", "lower", or "upper". Default is "center".}
 }
 \value{
 A ggplot object visualizing the MR and AR for each model.

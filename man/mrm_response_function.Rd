@@ -4,11 +4,18 @@
 \alias{mrm_response_function}
 \title{Get the response function from a fitted model}
 \usage{
-mrm_response_function(mrm, location = "center")
+mrm_response_function(mrm, location = "center", scaled = TRUE)
+}
+\arguments{
+\item{mrm}{A fitted model object returned by `fit_response()`.}
+
+\item{location}{A string specifying which location's parameters to use. Must be one of "lower", "center", or "upper". Default is "center".}
+
+\item{scaled}{A logical indicating whether the model was fitted on scaled data. Default is TRUE.}
+}
+\value{
+A function that takes a numeric vector of x values and returns the corresponding y values based on the specified response model and parameters.
 }
 \description{
 This function extracts the response function from a fitted model object. It allows you to specify which location's parameters to use (lower, center, or upper).
-#' @param model A fitted model object returned by `fit_response()`.
-#' @param location A string specifying which location's parameters to use. Must be one of "lower", "center", or "upper". Default is "center".
-#' @return A function that takes a numeric vector of x values and returns the corresponding y values based on the specified response model and parameters.
 }

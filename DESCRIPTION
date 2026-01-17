@@ -7,23 +7,27 @@ Description: Package for modeling media response using sigmoid models.
 License: `use_mit_license()`
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Imports:
     brms,
     ggplot2,
     purrr,
     nloptr,
     dplyr,
+    scales,
+    tibble,
+    stringr,
+    tidyselect,
     BH,
     RcppEigen
 Suggests:
-    dplyr,
     knitr,
     rmarkdown,
     testthat,
     quarto,
     tidyr, 
     plotly,
-    gt
-VignetteBuilder: knitr, dplyr, ggplot2, purrr, tidyr, plotly, gt
+    gt,
+    patchwork
+VignetteBuilder: knitr, dplyr, ggplot2, purrr, tidyr, plotly, gt, patchwork
 URL: https://bdshaff.github.io/mrc/

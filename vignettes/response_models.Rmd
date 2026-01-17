@@ -14,49 +14,15 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(mrc)
-```
-
 ```{r, message=FALSE, warning=FALSE}
+library(mrc)
 library(dplyr)
 library(ggplot2)
 library(purrr)
 library(tidyr)
+```
 
-x_values <- seq(0, 1, by = 0.01)
-
-b <- -8
-c <- 0
-d <- 10
-e <- 0.5
-
-response_models <- list(
-  logistic_curve = rm_Logistic,
-  gompertz_curve = rm_Gompertz,
-  reflected_gompertz = rm_GompertzRef,
-  weibull_curve = rm_Weibull,
-  log_logistic_curve = rm_LogLogistic,
-  reflected_weibull = rm_WeibullRef
-)
-
-response_curves <- bind_cols(
-  x = x_values,
-  map_dfc(response_models, ~ .x(x_values, b, c, d, e))
-)
-
-
-plotly::ggplotly(
-  response_curves |>
-    pivot_longer(-x, names_to = "model", values_to = "y") |>
-    ggplot(aes(x, y, color = model)) +
-    geom_line() +
-    labs(
-      title = paste0("
-      Response Curve Model Comparison
-      ", "b: ", b, ", c: ", c, ", d: ", d, ", e: ", e),
-    ) +
-    theme_minimal()
-)
+```{r, message=FALSE, warning=FALSE}
+response_models_comparison()
 ```
 

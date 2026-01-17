@@ -4,7 +4,7 @@
 \alias{fit_response}
 \title{Fit a response curve model using brms}
 \usage{
-fit_response(data, x = NULL, y = NULL, type = "gompertz", ...)
+fit_response(data, x = NULL, y = NULL, auto = TRUE, type = "gompertz", ...)
 }
 \arguments{
 \item{data}{A data frame containing the data to be fitted.}
@@ -12,6 +12,8 @@ fit_response(data, x = NULL, y = NULL, type = "gompertz", ...)
 \item{x}{The name of the independent variable (predictor).}
 
 \item{y}{The name of the dependent variable (response).}
+
+\item{auto}{Logical indicating whether to automatically scale the data and set priors. Default is TRUE.}
 
 \item{type}{The type of response curve model to fit. Options are "gompertz", "logistic", "weibull", or "exponential".}
 

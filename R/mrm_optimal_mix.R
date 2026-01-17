@@ -6,14 +6,19 @@
 #' @param lb An optional numeric vector representing the lower bounds for each channel. If NULL, default values will be used.
 #' @param ub An optional numeric vector representing the upper bounds for each channel. If NULL, default values will be used.
 #' @param ineq_constr An optional function representing additional inequality constraints. If NULL, default constraints will be used.
+#' @param xtol_rel A numeric value representing the relative tolerance for the optimization algorithm. Default is 1.0e-10.
+#' @param maxeval An integer value representing the maximum number of evaluations for the optimization algorithm. Default is 1000.
+#' @param location A character string indicating the location for the response functions. Default is "center".
+#' @param prices An optional numeric vector representing the prices for each channel. If NULL, equal prices will be assumed.
 #' @return A list containing the optimization results, including the optimal channel mix and the maximum response value.
 #' @import nloptr
 #' @export
 
-mrm_optimal_mix = function(mrm, total, x0 = NULL, lb = NULL, ub = NULL, ineq_constr = NULL){
+mrm_optimal_mix = function(mrm, total, x0 = NULL, lb = NULL, ub = NULL, ineq_constr = NULL, xtol_rel = 1.0e-10, maxeval = 1000, location = "center", prices = NULL){
 
-  response_funs = map(mrm, ~get_response_function(.x))
-  object_func = set_objective_function(response_funs)
+  response_funs = map(mrm, ~mrm_response_function(.x, location = location))
+
+  object_func = set_objective_function(response_funs, prices = prices)
   C = length(response_funs)
 
   init_constraints = set_dafault_constraints(C, total)
@@ -73,8 +78,8 @@ mrm_optimal_mix = function(mrm, total, x0 = NULL, lb = NULL, ub = NULL, ineq_con
     ub = ub_,
     eval_g_ineq = ineq_constr_,
     opts = list("algorithm" = "NLOPT_LN_COBYLA",
-                "xtol_rel" = 1.0e-8,
-                "maxeval" = 1000)
+                "xtol_rel" = xtol_rel,
+                "maxeval" = maxeval)
   )
 
   return(res)

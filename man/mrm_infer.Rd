@@ -4,7 +4,7 @@
 \alias{mrm_infer}
 \title{Infer response from a fitted model}
 \usage{
-mrm_infer(mrm, xrange = NULL, length.out = 1000)
+mrm_infer(mrm, xrange = NULL, length.out = 1000, scaled = TRUE)
 }
 \arguments{
 \item{mrm}{A fitted model object.}
@@ -12,6 +12,8 @@ mrm_infer(mrm, xrange = NULL, length.out = 1000)
 \item{xrange}{A numeric vector of length 2 specifying the range of x values for prediction. Default is NULL, which uses the range of x in the data.}
 
 \item{length.out}{An integer specifying the number of points to predict. Default is 1000.}
+
+\item{scaled}{A logical indicating whether the model was fitted on scaled data. Default is TRUE.}
 }
 \value{
 A data frame containing the predicted response values and the model response.

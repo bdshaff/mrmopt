@@ -11,7 +11,11 @@ mrm_optimal_mix(
   x0 = NULL,
   lb = NULL,
   ub = NULL,
-  ineq_constr = NULL
+  ineq_constr = NULL,
+  xtol_rel = 1e-10,
+  maxeval = 1000,
+  location = "center",
+  prices = NULL
 )
 }
 \arguments{
@@ -26,6 +30,14 @@ mrm_optimal_mix(
 \item{ub}{An optional numeric vector representing the upper bounds for each channel. If NULL, default values will be used.}
 
 \item{ineq_constr}{An optional function representing additional inequality constraints. If NULL, default constraints will be used.}
+
+\item{xtol_rel}{A numeric value representing the relative tolerance for the optimization algorithm. Default is 1.0e-10.}
+
+\item{maxeval}{An integer value representing the maximum number of evaluations for the optimization algorithm. Default is 1000.}
+
+\item{location}{A character string indicating the location for the response functions. Default is "center".}
+
+\item{prices}{An optional numeric vector representing the prices for each channel. If NULL, equal prices will be assumed.}
 }
 \value{
 A list containing the optimization results, including the optimal channel mix and the maximum response value.

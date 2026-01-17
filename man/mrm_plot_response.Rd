@@ -4,7 +4,14 @@
 \alias{mrm_plot_response}
 \title{Plot the response of a fitted model}
 \usage{
-mrm_plot_response(mrm, xrange = NULL, length.out = 1000, points = TRUE)
+mrm_plot_response(
+  mrm,
+  xrange = NULL,
+  length.out = 1000,
+  points = TRUE,
+  scaled = TRUE,
+  markup = FALSE
+)
 }
 \arguments{
 \item{mrm}{A fitted model object. It can be a brmsfit object or a list of brmsfit objects.}
@@ -14,6 +21,10 @@ mrm_plot_response(mrm, xrange = NULL, length.out = 1000, points = TRUE)
 \item{length.out}{An integer specifying the number of points to generate for the x-axis. Default is 1000.}
 
 \item{points}{A logical value indicating whether to plot the data points. Default is TRUE.}
+
+\item{scaled}{A logical value indicating whether to plot the scaled response. Default is TRUE.}
+
+\item{markup}{A logical value indicating whether to add markup lines to the plot. Default is FALSE.}
 }
 \value{
 A ggplot object.

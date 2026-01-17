@@ -4,13 +4,21 @@
 #' The objective function computes the negative sum of the outputs from a list of response functions
 #' when evaluated at a given set of input parameters.
 #' @param response_funs A list of functions. Each function should take a single numeric input and return a numeric output.
+#' @param prices An optional numeric vector of prices corresponding to each response function. If provided,
 #' @return A function that takes a numeric vector as input and returns the negative sum of the outputs from the response functions.
 #' @importFrom purrr map2_dbl
 #' @export
 
-set_objective_function = function(response_funs){
-  objective_func = function(x) {
-    -sum(map2_dbl(response_funs, x, ~.x(.y)))
+set_objective_function = function(response_funs, prices = NULL) {
+
+  if(is.null(prices)) {
+    objective_func = function(x) {
+      -sum(map2_dbl(response_funs, x, ~.x(.y)))
+    }
+  } else {
+    objective_func = function(x) {
+      -sum(pmap_dbl(list(r = response_funs, p = prices, x = x), function(r,p,x)  r(p*x)))
+    }
   }
 
   return(objective_func)
