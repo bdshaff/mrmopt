@@ -52,12 +52,36 @@
   </div>
 </nav><div class="container template-home">
 <div class="row">
-  <main id="main" class="col-md-9"><div class="section level2">
-<h2 id="install-the-mrc-package">Install the mrc package<a class="anchor" aria-label="anchor" href="#install-the-mrc-package"></a>
+  <main id="main" class="col-md-9"><p>The goal of the <code>mrc</code> package is to provide tools for media response modeling in R. It includes functions for fitting Bayesian response models, response curve analysis, and media mix optimization.</p>
+<div class="section level1">
+<div class="page-header"><h1 id="mrc-media-response-modeling-in-r">mrc: Media Response Modeling in R<a class="anchor" aria-label="anchor" href="#mrc-media-response-modeling-in-r"></a>
+</h1></div>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p><code>install.packages("devtools")</code></p>
-<p><code>devtools::install_github("bdshaff/mrc")</code></p>
+<p>You can install the <code>mrc</code> package from GitHub using the <code>devtools</code> package. If you don’t have <code>devtools</code> installed, you can install it from CRAN:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span></code></pre></div>
+<p>Then, you can install the <code>mrc</code> package from GitHub:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"bdshaff/mrc"</span><span class="op">)</span></span></code></pre></div>
 </div>
+<div class="section level2">
+<h2 id="what-is-a-media-response-model">What is a Media Response Model?<a class="anchor" aria-label="anchor" href="#what-is-a-media-response-model"></a>
+</h2>
+<p>A media response model is a statistical model that quantifies the relationship between media units(impressions/clicks/GRPs) and/or spend and business outcomes, such as sales or conversions. These models help marketers understand the effectiveness of their media investments beyond observed levels. Response models are the key component required to optimize the media mix for better performance.</p>
+</div>
+<div class="section level2">
+<h2 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
+</h2>
+<ul>
+<li>Fit Bayesian media response models using <code>brms</code>.</li>
+<li>Analyze response curves to understand media effectiveness.</li>
+<li>Optimize media mix for improved performance.</li>
+</ul>
+</div>
+</div>
+
   </main><aside class="col-md-3"><div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
@@ -91,7 +115,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

@@ -9,11 +9,11 @@
 <url><loc>/index.html</loc></url>
 <url><loc>/reference/define_response_form.html</loc></url>
 <url><loc>/reference/fit_response.html</loc></url>
-<url><loc>/reference/get_response_function.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
-<url><loc>/reference/mrm_extract.html</loc></url>
 <url><loc>/reference/mrm_infer.html</loc></url>
 <url><loc>/reference/mrm_optimal_mix.html</loc></url>
+<url><loc>/reference/mrm_params.html</loc></url>
+<url><loc>/reference/mrm_params_table.html</loc></url>
 <url><loc>/reference/mrm_plot_response.html</loc></url>
 <url><loc>/reference/mrm_plot_return.html</loc></url>
 <url><loc>/reference/mrm_response_function.html</loc></url>
@@ -21,6 +21,7 @@
 <url><loc>/reference/plot_optimal_mix.html</loc></url>
 <url><loc>/reference/replace_variables_in_formula.html</loc></url>
 <url><loc>/reference/response.html</loc></url>
+<url><loc>/reference/response_models_comparison.html</loc></url>
 <url><loc>/reference/rm_Gompertz.html</loc></url>
 <url><loc>/reference/rm_GompertzRef.html</loc></url>
 <url><loc>/reference/rm_LogLogistic.html</loc></url>
