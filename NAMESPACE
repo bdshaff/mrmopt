@@ -2,6 +2,7 @@
 
 export(define_response_form)
 export(fit_response)
+export(mrm_generate_constraints)
 export(mrm_infer)
 export(mrm_optimal_mix)
 export(mrm_params)

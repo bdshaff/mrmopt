@@ -4,7 +4,24 @@
 \alias{fit_response}
 \title{Fit a response curve model using brms}
 \usage{
-fit_response(data, x = NULL, y = NULL, auto = TRUE, type = "gompertz", ...)
+fit_response(
+  data,
+  x = NULL,
+  y = NULL,
+  auto = TRUE,
+  type = "gompertz",
+  scale_data = TRUE,
+  prior = NULL,
+  chains = 4,
+  iter = 4000,
+  warmup = 1000,
+  control = list(adapt_delta = 0.95),
+  infer_xrange = NULL,
+  infer_length = 1000,
+  cost_per_unit = 1,
+  response_rate = 1,
+  ...
+)
 }
 \arguments{
 \item{data}{A data frame containing the data to be fitted.}
@@ -17,7 +34,17 @@ fit_response(data, x = NULL, y = NULL, auto = TRUE, type = "gompertz", ...)
 
 \item{type}{The type of response curve model to fit. Options are "gompertz", "logistic", "weibull", or "exponential".}
 
+\item{infer_xrange}{Optional range of x values for inference. If NULL, uses the range of x in the data.}
+
+\item{infer_length}{The number of points to generate for inference. Default is 1000.}
+
+\item{cost_per_unit}{The cost per unit of the independent variable. Default is 1.0.}
+
+\item{response_rate}{The response rate to be used in return calculations. Default is 1.0.}
+
 \item{...}{Additional arguments to be passed to the brms::brm function.}
+
+\item{infer_scaled}{Logical indicating whether to return scaled inference results. Default is TRUE.}
 }
 \value{
 A fitted model object.

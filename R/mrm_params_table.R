@@ -6,7 +6,9 @@
 #' @export
 
 mrm_params_table = function(mrm, scaled = TRUE) {
-  params = mrm_params(mrm, scaled = scaled)
+  cost_per_unit = mrm$cost_per_unit
+  response_rate = mrm$response_rate
+  params = mrm_params(mrm, scaled = scaled, cost_per_unit = cost_per_unit, response_rate = response_rate)
   params_df = as.data.frame(do.call(cbind, params))
   params_df %>%
     tibble::rownames_to_column(var = "Parameter") %>%

@@ -1,9 +1,9 @@
-Package: mrc
-Title: mrc
+Package: mrmopt
+Title: mrmopt
 Version: 0.1.0
 Authors@R: 
     person("Ben Denis", "Shaffer", , "my.blogdown@gmail.com", role = c("aut", "cre"))
-Description: Package for modeling media response using sigmoid models.
+Description: Package for media response modeling and optimization.
 License: `use_mit_license()`
 Encoding: UTF-8
 LazyData: true
@@ -30,4 +30,4 @@ Suggests:
     gt,
     patchwork
 VignetteBuilder: knitr, dplyr, ggplot2, purrr, tidyr, plotly, gt, patchwork
-URL: https://bdshaff.github.io/mrc/
+URL: https://bdshaff.github.io/mrmopt/

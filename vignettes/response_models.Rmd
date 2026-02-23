@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r, message=FALSE, warning=FALSE}
-library(mrc)
+library(mrmopt)
 library(dplyr)
 library(ggplot2)
 library(purrr)

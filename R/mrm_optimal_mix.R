@@ -27,30 +27,13 @@ mrm_optimal_mix = function(mrm, total, x0 = NULL, lb = NULL, ub = NULL, ineq_con
   lb_ = init_constraints$lb
   ub_ = init_constraints$ub
 
-  #print default initial values and bounds
-  cat("\n")
-  cat("Number of channels: ", C)
-  cat("\n")
-  cat(paste0("Default x0: ", paste(round(x0_, 3), collapse = ", ")))
-  cat("\n")
-  cat(paste0("Default lb: ", paste(round(lb_, 3), collapse = ", ")))
-  cat("\n")
-  cat(paste0("Default ub: ", paste(round(ub_, 3), collapse = ", ")))
-  cat("\n")
-
-  #print default constraint
-  cat("Default total constraint: sum(x) - total = 0")
-  cat("\n")
-  cat(paste0("Total value: ", total))
-  cat("\n")
-
   ineq_constr_ = init_constraints$total_constr_func
 
   if(!is.null(x0)){
     if(length(x0) != C){
       stop(paste0("x0 must be of length ", C))
     }
-    x0 = x0
+    x0_ = x0
   }
 
   if(!is.null(lb)){
@@ -70,6 +53,23 @@ mrm_optimal_mix = function(mrm, total, x0 = NULL, lb = NULL, ub = NULL, ineq_con
   if(!is.null(ineq_constr)){
     ineq_constr_ = ineq_constr
   }
+
+  #print default initial values and bounds
+  cat("\n")
+  cat("Number of channels: ", C)
+  cat("\n")
+  cat(paste0("Default x0: ", paste(round(x0_, 3), collapse = ", ")))
+  cat("\n")
+  cat(paste0("Default lb: ", paste(round(lb_, 3), collapse = ", ")))
+  cat("\n")
+  cat(paste0("Default ub: ", paste(round(ub_, 3), collapse = ", ")))
+  cat("\n")
+
+  #print default constraint
+  cat("Default total constraint: sum(x) - total = 0")
+  cat("\n")
+  cat(paste0("Total value: ", total))
+  cat("\n")
 
   res = nloptr(
     x0 = x0_,

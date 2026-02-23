@@ -11,14 +11,24 @@
 #' @details The function plots the response of a fitted model object. It uses ggplot2 to create the plot and includes a title and subtitle with information about the model.
 #' @export
 
-mrm_plot_response = function(mrm, xrange = NULL, length.out = 1000, points = TRUE, scaled = TRUE, markup = FALSE){
+mrm_plot_response = function(mrm, xrange = NULL, length.out = 1000, scaled = TRUE, points = TRUE, markup = FALSE){
 
   #check that mrm is a brmsfit object
   if(!is.brmsfit(mrm)){
     stop("mrm must be a fitted model object created by mrm_fit()")
   }
 
-  response_df = mrm_infer(mrm, xrange = xrange, length.out = length.out, scaled = scaled)
+  cost_per_unit = mrm$cost_per_unit
+  response_rate = mrm$response_rate
+
+  if(!is.null(xrange) | length.out != 1000 | scaled != TRUE | cost_per_unit != 1.0 | response_rate != 1.0){
+    response_df = mrm_infer(mrm, xrange = xrange, length.out = length.out, scaled = scaled, cost_per_unit = cost_per_unit, response_rate = response_rate)
+    x_range_df = mrm_returns_ranges(mrm, xrange = xrange, length.out = length.out, scaled = scaled, cost_per_unit = cost_per_unit, response_rate = response_rate)
+  } else {
+    response_df = mrm$response_df
+    x_range_df = mrm$returnes_ranges
+  }
+
   rc_data = mrm$data
   rc_type = mrm$rc_type
   y = mrm$formula$resp
@@ -26,7 +36,7 @@ mrm_plot_response = function(mrm, xrange = NULL, length.out = 1000, points = TRU
 
   r_names = colnames(response_df)
 
-  params = mrm_params(mrm, scaled = scaled)$center
+  params = mrm_params(mrm, scaled = scaled, cost_per_unit, response_rate)$center
 
   ptitle = paste0(rc_type, " response model:")
   psubtitle = paste0(paste0(names(params),"=", round(unlist(params),2), collapse = ", "))
@@ -50,8 +60,8 @@ mrm_plot_response = function(mrm, xrange = NULL, length.out = 1000, points = TRU
       y_min = mrm$min_max_values$y_min
       y_max = mrm$min_max_values$y_max
 
-      rc_data[[x]] = rc_data[[x]] * (x_max - x_min) + x_min
-      rc_data[[y]] = rc_data[[y]] * (y_max - y_min) + y_min
+      rc_data[[x]] = cost_per_unit * (rc_data[[x]] * (x_max - x_min) + x_min)
+      rc_data[[y]] = response_rate * (rc_data[[y]] * (y_max - y_min) + y_min)
     }
 
     p = p + ggplot2::geom_point(data = rc_data, aes(!!sym(x), !!sym(y)), color = "red", alpha = 0.5)
@@ -61,6 +71,7 @@ mrm_plot_response = function(mrm, xrange = NULL, length.out = 1000, points = TRU
 
     params_ = unlist(params)
     x_ = mean(response_df[[1]], na.rm = TRUE) * 0.1
+    x_ranges = mrm$returnes_ranges
 
     p = p +
       geom_hline(yintercept = params_["c"], linetype = "dashed", color = "darkgreen") +
@@ -73,6 +84,11 @@ mrm_plot_response = function(mrm, xrange = NULL, length.out = 1000, points = TRU
       ),
       color = "purple", size = 1, arrow = arrow(length = unit(0.1, "inches")),
       data = t(data.frame(params_))
+      ) +
+      geom_rect(
+        data = x_ranges,
+        ggplot2::aes(xmin = !!sym(paste0(x,"_min")), xmax = !!sym(paste0(x,"_max")), ymin = -Inf, ymax = Inf),
+        fill = "green", alpha = 0.2, inherit.aes = FALSE
       )
 
 

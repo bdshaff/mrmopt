@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(mrc)
+library(mrmopt)
 library(brms)
 library(purrr)
 library(gt)
@@ -134,5 +134,5 @@ head(response) |>
 ```
 
 ```{r, message=FALSE, warning=FALSE}
-mrm_plot_return(list(response_fit))
+mrm_plot_return(response_fit)
 ```

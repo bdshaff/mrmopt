@@ -4,12 +4,14 @@
 #'
 #' @param rc_fit A fitted model object.
 #' @param scaled A logical indicating whether the model was fitted on scaled data. Default is TRUE.
+#' @param cost_per_unit The cost per unit of the independent variable. Default is 1.0.
+#' @param response_rate The response rate to be used in return calculations. Default is 1.0.
 #' @return A list containing the center, lower, and upper bounds of the parameters.
 #' @details The function extracts the parameters from the fitted model object and returns them in a list.
 #'
 #' @export
 
-mrm_params <- function(rc_fit, scaled = TRUE) {
+mrm_params <- function(rc_fit, scaled = TRUE, cost_per_unit = 1.0, response_rate = 1.0) {
 
   # Extract posterior summaries for parameters b, c, d, e
   posterior_summary <- summary(rc_fit)$fixed
@@ -51,6 +53,22 @@ mrm_params <- function(rc_fit, scaled = TRUE) {
     lower["e"] = lower["e"] * (x_max - x_min) + x_min
     upper["e"] = upper["e"] * (x_max - x_min) + x_min
   }
+
+  center["c"] = center["c"] * response_rate
+  lower["c"] = lower["c"] * response_rate
+  upper["c"] = upper["c"] * response_rate
+
+  center["d"] = center["d"] * response_rate
+  lower["d"] = lower["d"] * response_rate
+  upper["d"] = upper["d"] * response_rate
+
+  center["e"] = center["e"] * cost_per_unit
+  lower["e"] = lower["e"] * cost_per_unit
+  upper["e"] = upper["e"] * cost_per_unit
+
+  center["b"] = center["b"] / cost_per_unit
+  lower["b"] = lower["b"] / cost_per_unit
+  upper["b"] = upper["b"] / cost_per_unit
 
   # Create a list to hold the parameters
   params_list <- list(

@@ -8,8 +8,8 @@ mrm_plot_response(
   mrm,
   xrange = NULL,
   length.out = 1000,
-  points = TRUE,
   scaled = TRUE,
+  points = TRUE,
   markup = FALSE
 )
 }
@@ -20,9 +20,9 @@ mrm_plot_response(
 
 \item{length.out}{An integer specifying the number of points to generate for the x-axis. Default is 1000.}
 
-\item{points}{A logical value indicating whether to plot the data points. Default is TRUE.}
-
 \item{scaled}{A logical value indicating whether to plot the scaled response. Default is TRUE.}
+
+\item{points}{A logical value indicating whether to plot the data points. Default is TRUE.}
 
 \item{markup}{A logical value indicating whether to add markup lines to the plot. Default is FALSE.}
 }

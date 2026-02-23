@@ -13,8 +13,11 @@ mrm_response_function = function(mrm, location = "center", scaled = TRUE){
     stop("location must be one of 'left', 'center', or 'right'")
   }
 
+  cost_per_unit = mrm$cost_per_unit
+  response_rate = mrm$response_rate
+
   f = rm_dispatch(mrm$rc_type)
-  p = mrm_params(mrm, scaled = scaled)[[location]]
+  p = mrm_params(mrm, scaled = scaled, cost_per_unit, response_rate)[[location]]
   func = function(x) {
     f(x, b = p$b, c = p$c, d = p$d, e = p$e)
   }

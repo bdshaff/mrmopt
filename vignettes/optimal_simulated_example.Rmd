@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(mrc)
+library(mrmopt)
 library(brms)
 library(purrr)
 library(dplyr)
