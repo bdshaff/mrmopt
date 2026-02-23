@@ -8,7 +8,14 @@ models (MRMs).
 ## Usage
 
 ``` r
-mrm_returns_ranges(mrm, xrange = NULL)
+mrm_returns_ranges(
+  mrm,
+  xrange = NULL,
+  length.out = 1000,
+  scaled = TRUE,
+  cost_per_unit = 1,
+  response_rate = 1
+)
 ```
 
 ## Arguments
@@ -21,6 +28,16 @@ mrm_returns_ranges(mrm, xrange = NULL)
 
   A numeric vector of length 2 specifying the range of x values to
   consider. If NULL, the range is determined from the data.
+
+- length.out:
+
+  An integer specifying the number of points to generate for the x-axis.
+  Default is 1000.
+
+- scaled:
+
+  A logical value indicating whether to use scaled values for the
+  calculations. Default is TRUE.
 
 ## Value
 

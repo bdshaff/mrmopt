@@ -6,6 +6,12 @@
   response form for a nonlinear model
 - [`fit_response()`](fit_response.md) : Fit a response curve model using
   brms
+- [`mrm_generate_constraints()`](mrm_generate_constraints.md) : Generate
+  constraints for optimization based on MRM return rates or total spend
+  This function generates constraints for optimization based on the
+  return rates from the MRM models or a total spend constraint. The
+  constraints include lower bounds, upper bounds, and initial values for
+  each channel.
 - [`mrm_infer()`](mrm_infer.md) : Infer response from a fitted model
 - [`mrm_optimal_mix()`](mrm_optimal_mix.md) : Optimal Mix Function This
   function computes the optimal mix of channels to maximize the total

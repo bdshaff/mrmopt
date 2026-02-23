@@ -1,7 +1,7 @@
 # Response Models
 
 ``` r
-library(mrc)
+library(mrmopt)
 library(dplyr)
 library(ggplot2)
 library(purrr)

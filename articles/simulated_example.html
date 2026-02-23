@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Fitting a Response Model: A Simulated Example • mrc</title>
+<title>Fitting a Response Model: A Simulated Example • mrmopt</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -18,7 +18,7 @@
 
     <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
 
-    <a class="navbar-brand me-2" href="../index.html">mrc</a>
+    <a class="navbar-brand me-2" href="../index.html">mrmopt</a>
 
     <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
@@ -66,7 +66,7 @@
     
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bdshaff.github.io/mrc/" class="external-link">mrc</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bdshaff.github.io/mrmopt/" class="external-link">mrmopt</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/paul-buerkner/brms" class="external-link">brms</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loading required package: Rcpp</span></span>
 <span><span class="co">#&gt; Loading 'brms' package (version 2.23.0). Useful instructions</span></span>
@@ -146,8 +146,8 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).</span></span>
 <span><span class="co">#&gt; Chain 1: </span></span>
-<span><span class="co">#&gt; Chain 1: Gradient evaluation took 0.000119 seconds</span></span>
-<span><span class="co">#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 1.19 seconds.</span></span>
+<span><span class="co">#&gt; Chain 1: Gradient evaluation took 9.2e-05 seconds</span></span>
+<span><span class="co">#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.92 seconds.</span></span>
 <span><span class="co">#&gt; Chain 1: Adjust your expectations accordingly!</span></span>
 <span><span class="co">#&gt; Chain 1: </span></span>
 <span><span class="co">#&gt; Chain 1: </span></span>
@@ -164,15 +164,15 @@
 <span><span class="co">#&gt; Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)</span></span>
 <span><span class="co">#&gt; Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)</span></span>
 <span><span class="co">#&gt; Chain 1: </span></span>
-<span><span class="co">#&gt; Chain 1:  Elapsed Time: 1.204 seconds (Warm-up)</span></span>
-<span><span class="co">#&gt; Chain 1:                1.052 seconds (Sampling)</span></span>
-<span><span class="co">#&gt; Chain 1:                2.256 seconds (Total)</span></span>
+<span><span class="co">#&gt; Chain 1:  Elapsed Time: 0.88 seconds (Warm-up)</span></span>
+<span><span class="co">#&gt; Chain 1:                0.689 seconds (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 1:                1.569 seconds (Total)</span></span>
 <span><span class="co">#&gt; Chain 1: </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).</span></span>
 <span><span class="co">#&gt; Chain 2: </span></span>
-<span><span class="co">#&gt; Chain 2: Gradient evaluation took 4.9e-05 seconds</span></span>
-<span><span class="co">#&gt; Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.49 seconds.</span></span>
+<span><span class="co">#&gt; Chain 2: Gradient evaluation took 5e-05 seconds</span></span>
+<span><span class="co">#&gt; Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.5 seconds.</span></span>
 <span><span class="co">#&gt; Chain 2: Adjust your expectations accordingly!</span></span>
 <span><span class="co">#&gt; Chain 2: </span></span>
 <span><span class="co">#&gt; Chain 2: </span></span>
@@ -189,10 +189,60 @@
 <span><span class="co">#&gt; Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)</span></span>
 <span><span class="co">#&gt; Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)</span></span>
 <span><span class="co">#&gt; Chain 2: </span></span>
-<span><span class="co">#&gt; Chain 2:  Elapsed Time: 1.003 seconds (Warm-up)</span></span>
-<span><span class="co">#&gt; Chain 2:                0.962 seconds (Sampling)</span></span>
-<span><span class="co">#&gt; Chain 2:                1.965 seconds (Total)</span></span>
-<span><span class="co">#&gt; Chain 2:</span></span></code></pre></div>
+<span><span class="co">#&gt; Chain 2:  Elapsed Time: 1.218 seconds (Warm-up)</span></span>
+<span><span class="co">#&gt; Chain 2:                1.297 seconds (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 2:                2.515 seconds (Total)</span></span>
+<span><span class="co">#&gt; Chain 2: </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).</span></span>
+<span><span class="co">#&gt; Chain 3: </span></span>
+<span><span class="co">#&gt; Chain 3: Gradient evaluation took 5e-05 seconds</span></span>
+<span><span class="co">#&gt; Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.5 seconds.</span></span>
+<span><span class="co">#&gt; Chain 3: Adjust your expectations accordingly!</span></span>
+<span><span class="co">#&gt; Chain 3: </span></span>
+<span><span class="co">#&gt; Chain 3: </span></span>
+<span><span class="co">#&gt; Chain 3: Iteration:    1 / 2000 [  0%]  (Warmup)</span></span>
+<span><span class="co">#&gt; Chain 3: Iteration:  200 / 2000 [ 10%]  (Warmup)</span></span>
+<span><span class="co">#&gt; Chain 3: Iteration:  400 / 2000 [ 20%]  (Warmup)</span></span>
+<span><span class="co">#&gt; Chain 3: Iteration:  600 / 2000 [ 30%]  (Warmup)</span></span>
+<span><span class="co">#&gt; Chain 3: Iteration:  800 / 2000 [ 40%]  (Warmup)</span></span>
+<span><span class="co">#&gt; Chain 3: Iteration: 1000 / 2000 [ 50%]  (Warmup)</span></span>
+<span><span class="co">#&gt; Chain 3: Iteration: 1001 / 2000 [ 50%]  (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 3: Iteration: 1200 / 2000 [ 60%]  (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 3: Iteration: 1400 / 2000 [ 70%]  (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 3: </span></span>
+<span><span class="co">#&gt; Chain 3:  Elapsed Time: 0.949 seconds (Warm-up)</span></span>
+<span><span class="co">#&gt; Chain 3:                0.964 seconds (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 3:                1.913 seconds (Total)</span></span>
+<span><span class="co">#&gt; Chain 3: </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).</span></span>
+<span><span class="co">#&gt; Chain 4: </span></span>
+<span><span class="co">#&gt; Chain 4: Gradient evaluation took 4.9e-05 seconds</span></span>
+<span><span class="co">#&gt; Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.49 seconds.</span></span>
+<span><span class="co">#&gt; Chain 4: Adjust your expectations accordingly!</span></span>
+<span><span class="co">#&gt; Chain 4: </span></span>
+<span><span class="co">#&gt; Chain 4: </span></span>
+<span><span class="co">#&gt; Chain 4: Iteration:    1 / 2000 [  0%]  (Warmup)</span></span>
+<span><span class="co">#&gt; Chain 4: Iteration:  200 / 2000 [ 10%]  (Warmup)</span></span>
+<span><span class="co">#&gt; Chain 4: Iteration:  400 / 2000 [ 20%]  (Warmup)</span></span>
+<span><span class="co">#&gt; Chain 4: Iteration:  600 / 2000 [ 30%]  (Warmup)</span></span>
+<span><span class="co">#&gt; Chain 4: Iteration:  800 / 2000 [ 40%]  (Warmup)</span></span>
+<span><span class="co">#&gt; Chain 4: Iteration: 1000 / 2000 [ 50%]  (Warmup)</span></span>
+<span><span class="co">#&gt; Chain 4: Iteration: 1001 / 2000 [ 50%]  (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 4: Iteration: 1200 / 2000 [ 60%]  (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 4: Iteration: 1400 / 2000 [ 70%]  (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 4: </span></span>
+<span><span class="co">#&gt; Chain 4:  Elapsed Time: 0.867 seconds (Warm-up)</span></span>
+<span><span class="co">#&gt; Chain 4:                0.701 seconds (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 4:                1.568 seconds (Total)</span></span>
+<span><span class="co">#&gt; Chain 4:</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">response_fit</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  Family: gaussian </span></span>
@@ -203,19 +253,19 @@
 <span><span class="co">#&gt;          d ~ 1</span></span>
 <span><span class="co">#&gt;          e ~ 1</span></span>
 <span><span class="co">#&gt;    Data: data (Number of observations: 101) </span></span>
-<span><span class="co">#&gt;   Draws: 2 chains, each with iter = 2000; warmup = 1000; thin = 1;</span></span>
-<span><span class="co">#&gt;          total post-warmup draws = 2000</span></span>
+<span><span class="co">#&gt;   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;</span></span>
+<span><span class="co">#&gt;          total post-warmup draws = 4000</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Regression Coefficients:</span></span>
 <span><span class="co">#&gt;             Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; b_Intercept    -4.73      0.31    -5.32    -4.12 1.00      730      915</span></span>
-<span><span class="co">#&gt; c_Intercept     0.09      0.01     0.07     0.11 1.00      851      574</span></span>
-<span><span class="co">#&gt; d_Intercept     1.06      0.03     1.01     1.12 1.00      648      694</span></span>
-<span><span class="co">#&gt; e_Intercept     0.50      0.01     0.48     0.52 1.00      738      779</span></span>
+<span><span class="co">#&gt; b_Intercept    -4.72      0.32    -5.34    -4.09 1.00     1011      764</span></span>
+<span><span class="co">#&gt; c_Intercept     0.09      0.01     0.07     0.11 1.00     1700     1742</span></span>
+<span><span class="co">#&gt; d_Intercept     1.06      0.03     1.01     1.13 1.00      939      821</span></span>
+<span><span class="co">#&gt; e_Intercept     0.50      0.01     0.48     0.52 1.00     1155     1163</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Further Distributional Parameters:</span></span>
 <span><span class="co">#&gt;       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; sigma     0.04      0.00     0.04     0.05 1.00     1353     1040</span></span>
+<span><span class="co">#&gt; sigma     0.04      0.00     0.04     0.05 1.00     2119     1930</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS</span></span>
 <span><span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span></span>
@@ -244,23 +294,23 @@
 <span>    title <span class="op">=</span> <span class="st">"Parameter Estimates vs Actual Values"</span>,</span>
 <span>    subtitle <span class="op">=</span> <span class="st">"Using the Gompertz Response Model"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<div id="fonsnotyax" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#fonsnotyax table {
+<div id="acmftunjfs" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#acmftunjfs table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#fonsnotyax thead, #fonsnotyax tbody, #fonsnotyax tfoot, #fonsnotyax tr, #fonsnotyax td, #fonsnotyax th {
+#acmftunjfs thead, #acmftunjfs tbody, #acmftunjfs tfoot, #acmftunjfs tr, #acmftunjfs td, #acmftunjfs th {
   border-style: none;
 }
 
-#fonsnotyax p {
+#acmftunjfs p {
   margin: 0;
   padding: 0;
 }
 
-#fonsnotyax .gt_table {
+#acmftunjfs .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -286,12 +336,12 @@
   border-left-color: #D3D3D3;
 }
 
-#fonsnotyax .gt_caption {
+#acmftunjfs .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#fonsnotyax .gt_title {
+#acmftunjfs .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -303,7 +353,7 @@
   border-bottom-width: 0;
 }
 
-#fonsnotyax .gt_subtitle {
+#acmftunjfs .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -315,7 +365,7 @@
   border-top-width: 0;
 }
 
-#fonsnotyax .gt_heading {
+#acmftunjfs .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -327,13 +377,13 @@
   border-right-color: #D3D3D3;
 }
 
-#fonsnotyax .gt_bottom_border {
+#acmftunjfs .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#fonsnotyax .gt_col_headings {
+#acmftunjfs .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -348,7 +398,7 @@
   border-right-color: #D3D3D3;
 }
 
-#fonsnotyax .gt_col_heading {
+#acmftunjfs .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -368,7 +418,7 @@
   overflow-x: hidden;
 }
 
-#fonsnotyax .gt_column_spanner_outer {
+#acmftunjfs .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -380,15 +430,15 @@
   padding-right: 4px;
 }
 
-#fonsnotyax .gt_column_spanner_outer:first-child {
+#acmftunjfs .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#fonsnotyax .gt_column_spanner_outer:last-child {
+#acmftunjfs .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#fonsnotyax .gt_column_spanner {
+#acmftunjfs .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -400,11 +450,11 @@
   width: 100%;
 }
 
-#fonsnotyax .gt_spanner_row {
+#acmftunjfs .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#fonsnotyax .gt_group_heading {
+#acmftunjfs .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -430,7 +480,7 @@
   text-align: left;
 }
 
-#fonsnotyax .gt_empty_group_heading {
+#acmftunjfs .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -445,15 +495,15 @@
   vertical-align: middle;
 }
 
-#fonsnotyax .gt_from_md > :first-child {
+#acmftunjfs .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#fonsnotyax .gt_from_md > :last-child {
+#acmftunjfs .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#fonsnotyax .gt_row {
+#acmftunjfs .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -472,7 +522,7 @@
   overflow-x: hidden;
 }
 
-#fonsnotyax .gt_stub {
+#acmftunjfs .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -485,7 +535,7 @@
   padding-right: 5px;
 }
 
-#fonsnotyax .gt_stub_row_group {
+#acmftunjfs .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -499,15 +549,15 @@
   vertical-align: top;
 }
 
-#fonsnotyax .gt_row_group_first td {
+#acmftunjfs .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#fonsnotyax .gt_row_group_first th {
+#acmftunjfs .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#fonsnotyax .gt_summary_row {
+#acmftunjfs .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -517,16 +567,16 @@
   padding-right: 5px;
 }
 
-#fonsnotyax .gt_first_summary_row {
+#acmftunjfs .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#fonsnotyax .gt_first_summary_row.thick {
+#acmftunjfs .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#fonsnotyax .gt_last_summary_row {
+#acmftunjfs .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -536,7 +586,7 @@
   border-bottom-color: #D3D3D3;
 }
 
-#fonsnotyax .gt_grand_summary_row {
+#acmftunjfs .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -546,7 +596,7 @@
   padding-right: 5px;
 }
 
-#fonsnotyax .gt_first_grand_summary_row {
+#acmftunjfs .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -556,7 +606,7 @@
   border-top-color: #D3D3D3;
 }
 
-#fonsnotyax .gt_last_grand_summary_row_top {
+#acmftunjfs .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -566,11 +616,11 @@
   border-bottom-color: #D3D3D3;
 }
 
-#fonsnotyax .gt_striped {
+#acmftunjfs .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#fonsnotyax .gt_table_body {
+#acmftunjfs .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -579,7 +629,7 @@
   border-bottom-color: #D3D3D3;
 }
 
-#fonsnotyax .gt_footnotes {
+#acmftunjfs .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -593,7 +643,7 @@
   border-right-color: #D3D3D3;
 }
 
-#fonsnotyax .gt_footnote {
+#acmftunjfs .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -602,7 +652,7 @@
   padding-right: 5px;
 }
 
-#fonsnotyax .gt_sourcenotes {
+#acmftunjfs .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -616,7 +666,7 @@
   border-right-color: #D3D3D3;
 }
 
-#fonsnotyax .gt_sourcenote {
+#acmftunjfs .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -624,72 +674,72 @@
   padding-right: 5px;
 }
 
-#fonsnotyax .gt_left {
+#acmftunjfs .gt_left {
   text-align: left;
 }
 
-#fonsnotyax .gt_center {
+#acmftunjfs .gt_center {
   text-align: center;
 }
 
-#fonsnotyax .gt_right {
+#acmftunjfs .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#fonsnotyax .gt_font_normal {
+#acmftunjfs .gt_font_normal {
   font-weight: normal;
 }
 
-#fonsnotyax .gt_font_bold {
+#acmftunjfs .gt_font_bold {
   font-weight: bold;
 }
 
-#fonsnotyax .gt_font_italic {
+#acmftunjfs .gt_font_italic {
   font-style: italic;
 }
 
-#fonsnotyax .gt_super {
+#acmftunjfs .gt_super {
   font-size: 65%;
 }
 
-#fonsnotyax .gt_footnote_marks {
+#acmftunjfs .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#fonsnotyax .gt_asterisk {
+#acmftunjfs .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#fonsnotyax .gt_indent_1 {
+#acmftunjfs .gt_indent_1 {
   text-indent: 5px;
 }
 
-#fonsnotyax .gt_indent_2 {
+#acmftunjfs .gt_indent_2 {
   text-indent: 10px;
 }
 
-#fonsnotyax .gt_indent_3 {
+#acmftunjfs .gt_indent_3 {
   text-indent: 15px;
 }
 
-#fonsnotyax .gt_indent_4 {
+#acmftunjfs .gt_indent_4 {
   text-indent: 20px;
 }
 
-#fonsnotyax .gt_indent_5 {
+#acmftunjfs .gt_indent_5 {
   text-indent: 25px;
 }
 
-#fonsnotyax .katex-display {
+#acmftunjfs .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#fonsnotyax div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#acmftunjfs div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -711,21 +761,21 @@
 <tbody class="gt_table_body">
 <tr>
 <td headers="actual" class="gt_row gt_right">-5.0</td>
-<td headers="center" class="gt_row gt_right">-4.73</td>
-<td headers="lower" class="gt_row gt_right">-5.32</td>
-<td headers="upper" class="gt_row gt_right">-4.12</td>
+<td headers="center" class="gt_row gt_right">-4.72</td>
+<td headers="lower" class="gt_row gt_right">-5.34</td>
+<td headers="upper" class="gt_row gt_right">-4.09</td>
 </tr>
 <tr>
 <td headers="actual" class="gt_row gt_right">1.0</td>
 <td headers="center" class="gt_row gt_right">0.88</td>
-<td headers="lower" class="gt_row gt_right">0.68</td>
+<td headers="lower" class="gt_row gt_right">0.69</td>
 <td headers="upper" class="gt_row gt_right">1.07</td>
 </tr>
 <tr>
 <td headers="actual" class="gt_row gt_right">10.0</td>
-<td headers="center" class="gt_row gt_right">10.36</td>
-<td headers="lower" class="gt_row gt_right">9.90</td>
-<td headers="upper" class="gt_row gt_right">10.94</td>
+<td headers="center" class="gt_row gt_right">10.37</td>
+<td headers="lower" class="gt_row gt_right">9.88</td>
+<td headers="upper" class="gt_row gt_right">11.02</td>
 </tr>
 <tr>
 <td headers="actual" class="gt_row gt_right">0.5</td>
@@ -742,23 +792,23 @@
 <span>    title <span class="op">=</span> <span class="st">"Parameter Estimates Table"</span>,</span>
 <span>    subtitle <span class="op">=</span> <span class="st">"Using the Gompertz Response Model"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<div id="vbppfsovef" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#vbppfsovef table {
+<div id="fusvrgjizs" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#fusvrgjizs table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#vbppfsovef thead, #vbppfsovef tbody, #vbppfsovef tfoot, #vbppfsovef tr, #vbppfsovef td, #vbppfsovef th {
+#fusvrgjizs thead, #fusvrgjizs tbody, #fusvrgjizs tfoot, #fusvrgjizs tr, #fusvrgjizs td, #fusvrgjizs th {
   border-style: none;
 }
 
-#vbppfsovef p {
+#fusvrgjizs p {
   margin: 0;
   padding: 0;
 }
 
-#vbppfsovef .gt_table {
+#fusvrgjizs .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -784,12 +834,12 @@
   border-left-color: #D3D3D3;
 }
 
-#vbppfsovef .gt_caption {
+#fusvrgjizs .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#vbppfsovef .gt_title {
+#fusvrgjizs .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -801,7 +851,7 @@
   border-bottom-width: 0;
 }
 
-#vbppfsovef .gt_subtitle {
+#fusvrgjizs .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -813,7 +863,7 @@
   border-top-width: 0;
 }
 
-#vbppfsovef .gt_heading {
+#fusvrgjizs .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -825,13 +875,13 @@
   border-right-color: #D3D3D3;
 }
 
-#vbppfsovef .gt_bottom_border {
+#fusvrgjizs .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#vbppfsovef .gt_col_headings {
+#fusvrgjizs .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -846,7 +896,7 @@
   border-right-color: #D3D3D3;
 }
 
-#vbppfsovef .gt_col_heading {
+#fusvrgjizs .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -866,7 +916,7 @@
   overflow-x: hidden;
 }
 
-#vbppfsovef .gt_column_spanner_outer {
+#fusvrgjizs .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -878,15 +928,15 @@
   padding-right: 4px;
 }
 
-#vbppfsovef .gt_column_spanner_outer:first-child {
+#fusvrgjizs .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#vbppfsovef .gt_column_spanner_outer:last-child {
+#fusvrgjizs .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#vbppfsovef .gt_column_spanner {
+#fusvrgjizs .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -898,11 +948,11 @@
   width: 100%;
 }
 
-#vbppfsovef .gt_spanner_row {
+#fusvrgjizs .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#vbppfsovef .gt_group_heading {
+#fusvrgjizs .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -928,7 +978,7 @@
   text-align: left;
 }
 
-#vbppfsovef .gt_empty_group_heading {
+#fusvrgjizs .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -943,15 +993,15 @@
   vertical-align: middle;
 }
 
-#vbppfsovef .gt_from_md > :first-child {
+#fusvrgjizs .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#vbppfsovef .gt_from_md > :last-child {
+#fusvrgjizs .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#vbppfsovef .gt_row {
+#fusvrgjizs .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -970,7 +1020,7 @@
   overflow-x: hidden;
 }
 
-#vbppfsovef .gt_stub {
+#fusvrgjizs .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -983,7 +1033,7 @@
   padding-right: 5px;
 }
 
-#vbppfsovef .gt_stub_row_group {
+#fusvrgjizs .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -997,15 +1047,15 @@
   vertical-align: top;
 }
 
-#vbppfsovef .gt_row_group_first td {
+#fusvrgjizs .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#vbppfsovef .gt_row_group_first th {
+#fusvrgjizs .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#vbppfsovef .gt_summary_row {
+#fusvrgjizs .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1015,16 +1065,16 @@
   padding-right: 5px;
 }
 
-#vbppfsovef .gt_first_summary_row {
+#fusvrgjizs .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#vbppfsovef .gt_first_summary_row.thick {
+#fusvrgjizs .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#vbppfsovef .gt_last_summary_row {
+#fusvrgjizs .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1034,7 +1084,7 @@
   border-bottom-color: #D3D3D3;
 }
 
-#vbppfsovef .gt_grand_summary_row {
+#fusvrgjizs .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1044,7 +1094,7 @@
   padding-right: 5px;
 }
 
-#vbppfsovef .gt_first_grand_summary_row {
+#fusvrgjizs .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1054,7 +1104,7 @@
   border-top-color: #D3D3D3;
 }
 
-#vbppfsovef .gt_last_grand_summary_row_top {
+#fusvrgjizs .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1064,11 +1114,11 @@
   border-bottom-color: #D3D3D3;
 }
 
-#vbppfsovef .gt_striped {
+#fusvrgjizs .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#vbppfsovef .gt_table_body {
+#fusvrgjizs .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1077,7 +1127,7 @@
   border-bottom-color: #D3D3D3;
 }
 
-#vbppfsovef .gt_footnotes {
+#fusvrgjizs .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1091,7 +1141,7 @@
   border-right-color: #D3D3D3;
 }
 
-#vbppfsovef .gt_footnote {
+#fusvrgjizs .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1100,7 +1150,7 @@
   padding-right: 5px;
 }
 
-#vbppfsovef .gt_sourcenotes {
+#fusvrgjizs .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1114,7 +1164,7 @@
   border-right-color: #D3D3D3;
 }
 
-#vbppfsovef .gt_sourcenote {
+#fusvrgjizs .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1122,72 +1172,72 @@
   padding-right: 5px;
 }
 
-#vbppfsovef .gt_left {
+#fusvrgjizs .gt_left {
   text-align: left;
 }
 
-#vbppfsovef .gt_center {
+#fusvrgjizs .gt_center {
   text-align: center;
 }
 
-#vbppfsovef .gt_right {
+#fusvrgjizs .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#vbppfsovef .gt_font_normal {
+#fusvrgjizs .gt_font_normal {
   font-weight: normal;
 }
 
-#vbppfsovef .gt_font_bold {
+#fusvrgjizs .gt_font_bold {
   font-weight: bold;
 }
 
-#vbppfsovef .gt_font_italic {
+#fusvrgjizs .gt_font_italic {
   font-style: italic;
 }
 
-#vbppfsovef .gt_super {
+#fusvrgjizs .gt_super {
   font-size: 65%;
 }
 
-#vbppfsovef .gt_footnote_marks {
+#fusvrgjizs .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#vbppfsovef .gt_asterisk {
+#fusvrgjizs .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#vbppfsovef .gt_indent_1 {
+#fusvrgjizs .gt_indent_1 {
   text-indent: 5px;
 }
 
-#vbppfsovef .gt_indent_2 {
+#fusvrgjizs .gt_indent_2 {
   text-indent: 10px;
 }
 
-#vbppfsovef .gt_indent_3 {
+#fusvrgjizs .gt_indent_3 {
   text-indent: 15px;
 }
 
-#vbppfsovef .gt_indent_4 {
+#fusvrgjizs .gt_indent_4 {
   text-indent: 20px;
 }
 
-#vbppfsovef .gt_indent_5 {
+#fusvrgjizs .gt_indent_5 {
   text-indent: 25px;
 }
 
-#vbppfsovef .katex-display {
+#fusvrgjizs .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#vbppfsovef div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#fusvrgjizs div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1209,27 +1259,27 @@
 <tbody class="gt_table_body">
 <tr>
 <td headers="Parameter" class="gt_row gt_left">b (growth rate)</td>
-<td headers="center" class="gt_row gt_center">-4.727774</td>
-<td headers="lower" class="gt_row gt_center">-5.323272</td>
-<td headers="upper" class="gt_row gt_center">-4.123223</td>
+<td headers="center" class="gt_row gt_center">-4.723582</td>
+<td headers="lower" class="gt_row gt_center">-5.343477</td>
+<td headers="upper" class="gt_row gt_center">-4.093218</td>
 </tr>
 <tr>
 <td headers="Parameter" class="gt_row gt_left">c (lower asymptote)</td>
-<td headers="center" class="gt_row gt_center">0.08786717</td>
-<td headers="lower" class="gt_row gt_center">0.06684783</td>
-<td headers="upper" class="gt_row gt_center">0.1074115</td>
+<td headers="center" class="gt_row gt_center">0.08788166</td>
+<td headers="lower" class="gt_row gt_center">0.06772411</td>
+<td headers="upper" class="gt_row gt_center">0.1075922</td>
 </tr>
 <tr>
 <td headers="Parameter" class="gt_row gt_left">d (upper asymptote)</td>
-<td headers="center" class="gt_row gt_center">1.06075</td>
-<td headers="lower" class="gt_row gt_center">1.013359</td>
-<td headers="upper" class="gt_row gt_center">1.120402</td>
+<td headers="center" class="gt_row gt_center">1.061462</td>
+<td headers="lower" class="gt_row gt_center">1.011703</td>
+<td headers="upper" class="gt_row gt_center">1.128255</td>
 </tr>
 <tr>
 <td headers="Parameter" class="gt_row gt_left">e (inflection point)</td>
-<td headers="center" class="gt_row gt_center">0.5014395</td>
-<td headers="lower" class="gt_row gt_center">0.4848363</td>
-<td headers="upper" class="gt_row gt_center">0.5204408</td>
+<td headers="center" class="gt_row gt_center">0.5017242</td>
+<td headers="lower" class="gt_row gt_center">0.4849971</td>
+<td headers="upper" class="gt_row gt_center">0.5203375</td>
 </tr>
 </tbody>
 </table>
@@ -1247,23 +1297,23 @@
 <span>    columns <span class="op">=</span> <span class="fu">tidyselect</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    decimals <span class="op">=</span> <span class="fl">2</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<div id="tdlphtxinf" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#tdlphtxinf table {
+<div id="bljogsrgwf" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#bljogsrgwf table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#tdlphtxinf thead, #tdlphtxinf tbody, #tdlphtxinf tfoot, #tdlphtxinf tr, #tdlphtxinf td, #tdlphtxinf th {
+#bljogsrgwf thead, #bljogsrgwf tbody, #bljogsrgwf tfoot, #bljogsrgwf tr, #bljogsrgwf td, #bljogsrgwf th {
   border-style: none;
 }
 
-#tdlphtxinf p {
+#bljogsrgwf p {
   margin: 0;
   padding: 0;
 }
 
-#tdlphtxinf .gt_table {
+#bljogsrgwf .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1289,12 +1339,12 @@
   border-left-color: #D3D3D3;
 }
 
-#tdlphtxinf .gt_caption {
+#bljogsrgwf .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#tdlphtxinf .gt_title {
+#bljogsrgwf .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1306,7 +1356,7 @@
   border-bottom-width: 0;
 }
 
-#tdlphtxinf .gt_subtitle {
+#bljogsrgwf .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1318,7 +1368,7 @@
   border-top-width: 0;
 }
 
-#tdlphtxinf .gt_heading {
+#bljogsrgwf .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1330,13 +1380,13 @@
   border-right-color: #D3D3D3;
 }
 
-#tdlphtxinf .gt_bottom_border {
+#bljogsrgwf .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#tdlphtxinf .gt_col_headings {
+#bljogsrgwf .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1351,7 +1401,7 @@
   border-right-color: #D3D3D3;
 }
 
-#tdlphtxinf .gt_col_heading {
+#bljogsrgwf .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1371,7 +1421,7 @@
   overflow-x: hidden;
 }
 
-#tdlphtxinf .gt_column_spanner_outer {
+#bljogsrgwf .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1383,15 +1433,15 @@
   padding-right: 4px;
 }
 
-#tdlphtxinf .gt_column_spanner_outer:first-child {
+#bljogsrgwf .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#tdlphtxinf .gt_column_spanner_outer:last-child {
+#bljogsrgwf .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#tdlphtxinf .gt_column_spanner {
+#bljogsrgwf .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1403,11 +1453,11 @@
   width: 100%;
 }
 
-#tdlphtxinf .gt_spanner_row {
+#bljogsrgwf .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#tdlphtxinf .gt_group_heading {
+#bljogsrgwf .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1433,7 +1483,7 @@
   text-align: left;
 }
 
-#tdlphtxinf .gt_empty_group_heading {
+#bljogsrgwf .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1448,15 +1498,15 @@
   vertical-align: middle;
 }
 
-#tdlphtxinf .gt_from_md > :first-child {
+#bljogsrgwf .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#tdlphtxinf .gt_from_md > :last-child {
+#bljogsrgwf .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#tdlphtxinf .gt_row {
+#bljogsrgwf .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1475,7 +1525,7 @@
   overflow-x: hidden;
 }
 
-#tdlphtxinf .gt_stub {
+#bljogsrgwf .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1488,7 +1538,7 @@
   padding-right: 5px;
 }
 
-#tdlphtxinf .gt_stub_row_group {
+#bljogsrgwf .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1502,15 +1552,15 @@
   vertical-align: top;
 }
 
-#tdlphtxinf .gt_row_group_first td {
+#bljogsrgwf .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#tdlphtxinf .gt_row_group_first th {
+#bljogsrgwf .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#tdlphtxinf .gt_summary_row {
+#bljogsrgwf .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1520,16 +1570,16 @@
   padding-right: 5px;
 }
 
-#tdlphtxinf .gt_first_summary_row {
+#bljogsrgwf .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#tdlphtxinf .gt_first_summary_row.thick {
+#bljogsrgwf .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#tdlphtxinf .gt_last_summary_row {
+#bljogsrgwf .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1539,7 +1589,7 @@
   border-bottom-color: #D3D3D3;
 }
 
-#tdlphtxinf .gt_grand_summary_row {
+#bljogsrgwf .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1549,7 +1599,7 @@
   padding-right: 5px;
 }
 
-#tdlphtxinf .gt_first_grand_summary_row {
+#bljogsrgwf .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1559,7 +1609,7 @@
   border-top-color: #D3D3D3;
 }
 
-#tdlphtxinf .gt_last_grand_summary_row_top {
+#bljogsrgwf .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1569,11 +1619,11 @@
   border-bottom-color: #D3D3D3;
 }
 
-#tdlphtxinf .gt_striped {
+#bljogsrgwf .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#tdlphtxinf .gt_table_body {
+#bljogsrgwf .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1582,7 +1632,7 @@
   border-bottom-color: #D3D3D3;
 }
 
-#tdlphtxinf .gt_footnotes {
+#bljogsrgwf .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1596,7 +1646,7 @@
   border-right-color: #D3D3D3;
 }
 
-#tdlphtxinf .gt_footnote {
+#bljogsrgwf .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1605,7 +1655,7 @@
   padding-right: 5px;
 }
 
-#tdlphtxinf .gt_sourcenotes {
+#bljogsrgwf .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1619,7 +1669,7 @@
   border-right-color: #D3D3D3;
 }
 
-#tdlphtxinf .gt_sourcenote {
+#bljogsrgwf .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1627,72 +1677,72 @@
   padding-right: 5px;
 }
 
-#tdlphtxinf .gt_left {
+#bljogsrgwf .gt_left {
   text-align: left;
 }
 
-#tdlphtxinf .gt_center {
+#bljogsrgwf .gt_center {
   text-align: center;
 }
 
-#tdlphtxinf .gt_right {
+#bljogsrgwf .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#tdlphtxinf .gt_font_normal {
+#bljogsrgwf .gt_font_normal {
   font-weight: normal;
 }
 
-#tdlphtxinf .gt_font_bold {
+#bljogsrgwf .gt_font_bold {
   font-weight: bold;
 }
 
-#tdlphtxinf .gt_font_italic {
+#bljogsrgwf .gt_font_italic {
   font-style: italic;
 }
 
-#tdlphtxinf .gt_super {
+#bljogsrgwf .gt_super {
   font-size: 65%;
 }
 
-#tdlphtxinf .gt_footnote_marks {
+#bljogsrgwf .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#tdlphtxinf .gt_asterisk {
+#bljogsrgwf .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#tdlphtxinf .gt_indent_1 {
+#bljogsrgwf .gt_indent_1 {
   text-indent: 5px;
 }
 
-#tdlphtxinf .gt_indent_2 {
+#bljogsrgwf .gt_indent_2 {
   text-indent: 10px;
 }
 
-#tdlphtxinf .gt_indent_3 {
+#bljogsrgwf .gt_indent_3 {
   text-indent: 15px;
 }
 
-#tdlphtxinf .gt_indent_4 {
+#bljogsrgwf .gt_indent_4 {
   text-indent: 20px;
 }
 
-#tdlphtxinf .gt_indent_5 {
+#bljogsrgwf .gt_indent_5 {
   text-indent: 25px;
 }
 
-#tdlphtxinf .katex-display {
+#bljogsrgwf .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#tdlphtxinf div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#bljogsrgwf div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1724,12 +1774,12 @@
 <tbody class="gt_table_body">
 <tr>
 <td headers="x" class="gt_row gt_right">0.00</td>
-<td headers="y_Estimate" class="gt_row gt_right">0.88</td>
+<td headers="y_Estimate" class="gt_row gt_right">0.87</td>
 <td headers="y_Est.Error" class="gt_row gt_right">0.43</td>
-<td headers="y_Q2.5" class="gt_row gt_right">0.05</td>
-<td headers="y_Q97.5" class="gt_row gt_right">1.75</td>
+<td headers="y_Q2.5" class="gt_row gt_right">0.02</td>
+<td headers="y_Q97.5" class="gt_row gt_right">1.71</td>
 <td headers="y_gompertz_center" class="gt_row gt_right">0.88</td>
-<td headers="y_gompertz_lower" class="gt_row gt_right">0.03</td>
+<td headers="y_gompertz_lower" class="gt_row gt_right">0.04</td>
 <td headers="y_gompertz_upper" class="gt_row gt_right">1.73</td>
 <td headers="ar" class="gt_row gt_right">NaN</td>
 <td headers="mr" class="gt_row gt_right">NA</td>
@@ -1740,89 +1790,89 @@
 </tr>
 <tr>
 <td headers="x" class="gt_row gt_right">0.02</td>
-<td headers="y_Estimate" class="gt_row gt_right">0.89</td>
+<td headers="y_Estimate" class="gt_row gt_right">0.88</td>
 <td headers="y_Est.Error" class="gt_row gt_right">0.43</td>
-<td headers="y_Q2.5" class="gt_row gt_right">0.04</td>
-<td headers="y_Q97.5" class="gt_row gt_right">1.73</td>
+<td headers="y_Q2.5" class="gt_row gt_right">0.06</td>
+<td headers="y_Q97.5" class="gt_row gt_right">1.71</td>
 <td headers="y_gompertz_center" class="gt_row gt_right">0.88</td>
-<td headers="y_gompertz_lower" class="gt_row gt_right">0.03</td>
+<td headers="y_gompertz_lower" class="gt_row gt_right">0.04</td>
 <td headers="y_gompertz_upper" class="gt_row gt_right">1.73</td>
 <td headers="ar" class="gt_row gt_right">0.02</td>
 <td headers="mr" class="gt_row gt_right">0.02</td>
-<td headers="ar_lower" class="gt_row gt_right">0.03</td>
-<td headers="mr_lower" class="gt_row gt_right">0.03</td>
-<td headers="ar_upper" class="gt_row gt_right">0.00</td>
-<td headers="mr_upper" class="gt_row gt_right">0.00</td>
+<td headers="ar_lower" class="gt_row gt_right">0.02</td>
+<td headers="mr_lower" class="gt_row gt_right">0.02</td>
+<td headers="ar_upper" class="gt_row gt_right">0.01</td>
+<td headers="mr_upper" class="gt_row gt_right">0.01</td>
 </tr>
 <tr>
 <td headers="x" class="gt_row gt_right">0.04</td>
 <td headers="y_Estimate" class="gt_row gt_right">0.88</td>
 <td headers="y_Est.Error" class="gt_row gt_right">0.43</td>
-<td headers="y_Q2.5" class="gt_row gt_right">0.05</td>
-<td headers="y_Q97.5" class="gt_row gt_right">1.76</td>
+<td headers="y_Q2.5" class="gt_row gt_right">0.04</td>
+<td headers="y_Q97.5" class="gt_row gt_right">1.72</td>
 <td headers="y_gompertz_center" class="gt_row gt_right">0.88</td>
-<td headers="y_gompertz_lower" class="gt_row gt_right">0.03</td>
+<td headers="y_gompertz_lower" class="gt_row gt_right">0.04</td>
 <td headers="y_gompertz_upper" class="gt_row gt_right">1.73</td>
 <td headers="ar" class="gt_row gt_right">0.03</td>
 <td headers="mr" class="gt_row gt_right">0.04</td>
-<td headers="ar_lower" class="gt_row gt_right">0.05</td>
-<td headers="mr_lower" class="gt_row gt_right">0.06</td>
-<td headers="ar_upper" class="gt_row gt_right">0.01</td>
-<td headers="mr_upper" class="gt_row gt_right">0.02</td>
+<td headers="ar_lower" class="gt_row gt_right">0.03</td>
+<td headers="mr_lower" class="gt_row gt_right">0.04</td>
+<td headers="ar_upper" class="gt_row gt_right">0.03</td>
+<td headers="mr_upper" class="gt_row gt_right">0.04</td>
 </tr>
 <tr>
 <td headers="x" class="gt_row gt_right">0.06</td>
-<td headers="y_Estimate" class="gt_row gt_right">0.90</td>
+<td headers="y_Estimate" class="gt_row gt_right">0.88</td>
 <td headers="y_Est.Error" class="gt_row gt_right">0.43</td>
 <td headers="y_Q2.5" class="gt_row gt_right">0.04</td>
-<td headers="y_Q97.5" class="gt_row gt_right">1.76</td>
+<td headers="y_Q97.5" class="gt_row gt_right">1.74</td>
 <td headers="y_gompertz_center" class="gt_row gt_right">0.88</td>
-<td headers="y_gompertz_lower" class="gt_row gt_right">0.03</td>
+<td headers="y_gompertz_lower" class="gt_row gt_right">0.04</td>
 <td headers="y_gompertz_upper" class="gt_row gt_right">1.73</td>
 <td headers="ar" class="gt_row gt_right">0.05</td>
 <td headers="mr" class="gt_row gt_right">0.08</td>
-<td headers="ar_lower" class="gt_row gt_right">0.06</td>
-<td headers="mr_lower" class="gt_row gt_right">0.10</td>
-<td headers="ar_upper" class="gt_row gt_right">0.03</td>
-<td headers="mr_upper" class="gt_row gt_right">0.07</td>
+<td headers="ar_lower" class="gt_row gt_right">0.05</td>
+<td headers="mr_lower" class="gt_row gt_right">0.09</td>
+<td headers="ar_upper" class="gt_row gt_right">0.04</td>
+<td headers="mr_upper" class="gt_row gt_right">0.08</td>
 </tr>
 <tr>
 <td headers="x" class="gt_row gt_right">0.08</td>
-<td headers="y_Estimate" class="gt_row gt_right">0.90</td>
+<td headers="y_Estimate" class="gt_row gt_right">0.89</td>
 <td headers="y_Est.Error" class="gt_row gt_right">0.43</td>
-<td headers="y_Q2.5" class="gt_row gt_right">0.02</td>
-<td headers="y_Q97.5" class="gt_row gt_right">1.75</td>
+<td headers="y_Q2.5" class="gt_row gt_right">0.07</td>
+<td headers="y_Q97.5" class="gt_row gt_right">1.74</td>
 <td headers="y_gompertz_center" class="gt_row gt_right">0.89</td>
 <td headers="y_gompertz_lower" class="gt_row gt_right">0.04</td>
-<td headers="y_gompertz_upper" class="gt_row gt_right">1.74</td>
+<td headers="y_gompertz_upper" class="gt_row gt_right">1.73</td>
 <td headers="ar" class="gt_row gt_right">0.08</td>
 <td headers="mr" class="gt_row gt_right">0.16</td>
-<td headers="ar_lower" class="gt_row gt_right">0.09</td>
-<td headers="mr_lower" class="gt_row gt_right">0.18</td>
-<td headers="ar_upper" class="gt_row gt_right">0.06</td>
-<td headers="mr_upper" class="gt_row gt_right">0.14</td>
+<td headers="ar_lower" class="gt_row gt_right">0.08</td>
+<td headers="mr_lower" class="gt_row gt_right">0.17</td>
+<td headers="ar_upper" class="gt_row gt_right">0.07</td>
+<td headers="mr_upper" class="gt_row gt_right">0.16</td>
 </tr>
 <tr>
 <td headers="x" class="gt_row gt_right">0.10</td>
 <td headers="y_Estimate" class="gt_row gt_right">0.90</td>
 <td headers="y_Est.Error" class="gt_row gt_right">0.43</td>
-<td headers="y_Q2.5" class="gt_row gt_right">0.05</td>
+<td headers="y_Q2.5" class="gt_row gt_right">0.07</td>
 <td headers="y_Q97.5" class="gt_row gt_right">1.76</td>
 <td headers="y_gompertz_center" class="gt_row gt_right">0.89</td>
-<td headers="y_gompertz_lower" class="gt_row gt_right">0.04</td>
+<td headers="y_gompertz_lower" class="gt_row gt_right">0.05</td>
 <td headers="y_gompertz_upper" class="gt_row gt_right">1.74</td>
 <td headers="ar" class="gt_row gt_right">0.12</td>
 <td headers="mr" class="gt_row gt_right">0.30</td>
-<td headers="ar_lower" class="gt_row gt_right">0.14</td>
-<td headers="mr_lower" class="gt_row gt_right">0.32</td>
-<td headers="ar_upper" class="gt_row gt_right">0.10</td>
-<td headers="mr_upper" class="gt_row gt_right">0.28</td>
+<td headers="ar_lower" class="gt_row gt_right">0.12</td>
+<td headers="mr_lower" class="gt_row gt_right">0.30</td>
+<td headers="ar_upper" class="gt_row gt_right">0.12</td>
+<td headers="mr_upper" class="gt_row gt_right">0.30</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/mrm_plot_return.html">mrm_plot_return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">response_fit</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mrm_plot_return.html">mrm_plot_return</a></span><span class="op">(</span><span class="va">response_fit</span><span class="op">)</span></span></code></pre></div>
 <p><img src="simulated_example_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="700"></p>
   </main>
 </div>

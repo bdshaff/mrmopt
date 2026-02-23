@@ -1,12 +1,12 @@
-# mrc: Media Response Modeling in R
+# mrmopt: Media Response Modeling in R
 
-The goal of the `mrc` package is to provide tools for media response
+The goal of the `mrmopt` package is to provide tools for media response
 modeling in R. It includes functions for fitting Bayesian response
 models, response curve analysis, and media mix optimization.
 
 ## Installation
 
-You can install the `mrc` package from GitHub using the `devtools`
+You can install the `mrmopt` package from GitHub using the `devtools`
 package. If you don’t have `devtools` installed, you can install it from
 CRAN:
 
@@ -14,10 +14,10 @@ CRAN:
 install.packages("devtools")
 ```
 
-Then, you can install the `mrc` package from GitHub:
+Then, you can install the `mrmopt` package from GitHub:
 
 ``` r
-devtools::install_github("bdshaff/mrc")
+devtools::install_github("bdshaff/mrmopt")
 ```
 
 ## What is a Media Response Model?
