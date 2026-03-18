@@ -17,13 +17,8 @@
 #'   \item weibull: \eqn{y = c + (d - c) * exp(-exp(b * (log(x) - log(e))))}
 #'   \item reflected_weibull: \eqn{y = c + (d - c) * (1 - exp(-exp(b * (-log(x) + log(e))))}
 #'   }
-#' The parameters b, c, d, and e are the model parameters to be estimated.
-#' @examples
-#' logistic_form <- define_response_form("logistic", "x", "y")
-#'
-#' @export
 
-define_response_form <- function(type, x = NULL, y = NULL){
+hlpr_define_response_form <- function(type, x = NULL, y = NULL){
 
   if (is.null(x) || is.null(y)) {
     stop("Both 'x' and 'y' must be provided and cannot be NULL.")
@@ -43,7 +38,7 @@ define_response_form <- function(type, x = NULL, y = NULL){
   }
 
   resp_form = resp_forms[[type]]
-  resp_form = replace_variables_in_formula(resp_form, old_vars = c("x","y"), new_vars = c(x, y))
+  resp_form = hlpr_replace_variables_in_formula(resp_form, old_vars = c("x","y"), new_vars = c(x, y))
   resp_form = brms::bf( resp_form , b + c + d + e ~ 1, nl = TRUE )
 
   return(resp_form)

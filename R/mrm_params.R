@@ -28,12 +28,12 @@ mrm_params <- function(rc_fit, scaled = TRUE, cost_per_unit = 1.0, response_rate
   names(upper) = c("b","c","d","e")
 
   # Rescale parameters if the model was fitted on scaled data
-  if(!is.null(rc_fit$min_max_values) & scaled){
+  if(scaled & rc_fit$scale_method == "min_max"){
     #rescale the parameters back to the original scale
-    x_min = rc_fit$min_max_values$x_min
-    x_max = rc_fit$min_max_values$x_max
-    y_min = rc_fit$min_max_values$y_min
-    y_max = rc_fit$min_max_values$y_max
+    x_min = rc_fit$scale_values$x_min
+    x_max = rc_fit$scale_values$x_max
+    y_min = rc_fit$scale_values$y_min
+    y_max = rc_fit$scale_values$y_max
 
     #rescale c and d
     center["c"] = center["c"] * (y_max - y_min) + y_min
@@ -52,6 +52,30 @@ mrm_params <- function(rc_fit, scaled = TRUE, cost_per_unit = 1.0, response_rate
     center["e"] = center["e"] * (x_max - x_min) + x_min
     lower["e"] = lower["e"] * (x_max - x_min) + x_min
     upper["e"] = upper["e"] * (x_max - x_min) + x_min
+  }else if(scaled & rc_fit$scale_method == "std"){
+    #rescale the parameters back to the original scale
+    x_mean = rc_fit$scale_values$x_mean
+    x_sd = rc_fit$scale_values$x_sd
+    y_mean = rc_fit$scale_values$y_mean
+    y_sd = rc_fit$scale_values$y_sd
+
+    #rescale c and d
+    center["c"] = center["c"] * y_sd + y_mean
+    lower["c"] = lower["c"] * y_sd + y_mean
+    upper["c"] = upper["c"] * y_sd + y_mean
+
+    center["d"] = center["d"] * y_sd + y_mean
+    lower["d"] = lower["d"] * y_sd + y_mean
+    upper["d"] = upper["d"] * y_sd + y_mean
+
+    #rescale b and e
+    center["b"] = center["b"] / x_sd
+    lower["b"] = lower["b"] / x_sd
+    upper["b"] = upper["b"] / x_sd
+
+    center["e"] = center["e"] * x_sd + x_mean
+    lower["e"] = lower["e"] * x_sd + x_mean
+    upper["e"] = upper["e"] * x_sd + x_mean
   }
 
   center["c"] = center["c"] * response_rate

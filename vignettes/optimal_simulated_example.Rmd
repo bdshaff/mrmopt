@@ -76,12 +76,6 @@ for(i in seq_along(channels)) {
     y = "y",
     type = form_sim[i],
     auto = TRUE,
-    # prior = c(
-    #   prior(normal(-3, 10), nlpar = "b", lb = -10, ub = 0),
-    #   prior(normal(0, 10), nlpar = "c"),
-    #   prior(normal(1, 10), nlpar = "d"),
-    #   prior(normal(0.6, 10), nlpar = "e")
-    # ),
     chains = 2,
     iter = 2000, 
     warmup = 1000,
@@ -108,21 +102,15 @@ map_dfr(response_funs, ~tibble(x = x_sim, y = .x(x_sim)), .id = "channel") %>%
 ```
 
 ```{r,  message=FALSE, warning=FALSE}
-res = mrm_optimal_mix(response_models, total = 4)
-
-res$solution
-
-sum(res$solution)
-
-res$objective
-sum(map2_dbl(response_funs, res$solution, ~.x(.y)))
+res = opt_mix(response_models, total = 4)
+sum(map2_dbl(response_funs, res$res$solution, ~.x(.y)))
 sum(map2_dbl(response_funs, rep(0.5, C), ~.x(.y)))
 
-map2_dbl(response_funs, res$solution, ~.x(.y))
+map2_dbl(response_funs, res$res$solution, ~.x(.y))
 ```
 
 
 ```{r,  message=FALSE, warning=FALSE}
-p = plot_optimal_mix(response_funs, res)
+p = plot_optimal_mix(res)
 plotly::ggplotly(p)
 ```

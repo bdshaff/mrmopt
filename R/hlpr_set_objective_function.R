@@ -7,19 +7,10 @@
 #' @param prices An optional numeric vector of prices corresponding to each response function. If provided,
 #' @return A function that takes a numeric vector as input and returns the negative sum of the outputs from the response functions.
 #' @importFrom purrr map2_dbl
-#' @export
 
-set_objective_function = function(response_funs, prices = NULL) {
+hlpr_set_objective_function = function(response_funs) {
 
-  if(is.null(prices)) {
-    objective_func = function(x) {
-      -sum(map2_dbl(response_funs, x, ~.x(.y)))
-    }
-  } else {
-    objective_func = function(x) {
-      -sum(pmap_dbl(list(r = response_funs, p = prices, x = x), function(r,p,x)  r(p*x)))
-    }
-  }
+  objective_func = function(x) { -sum(map2_dbl(response_funs, x, ~.x(.y))) }
 
   return(objective_func)
 }

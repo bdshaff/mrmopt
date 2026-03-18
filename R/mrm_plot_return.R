@@ -12,7 +12,7 @@
 #' @export
 
 
-mrm_plot_return = function(mrm, location = "center", xrange = NULL, length.out = 1000, scaled = TRUE) {
+mrm_plot_return = function(mrm, location = "center", xrange = NULL, length.out = 1000, scaled = TRUE, markup = FALSE){
 
   if(!is.brmsfit(mrm)){
     stop("mrm must be a fitted model object created by fit_response()")
@@ -72,31 +72,35 @@ mrm_plot_return = function(mrm, location = "center", xrange = NULL, length.out =
     ggplot2::ggplot(aes(x = !!sym(x), y = value, color = type)) +
     ggplot2::geom_line() +
     ggplot2::theme_minimal() +
-    #theme(legend.position = "none") +
-    ggplot2::geom_point(data = maxar_df, aes(x = !!sym(x), y = ar), color = "blue", size = 2) +
-    ggplot2::geom_vline(data = maxar_df, aes(xintercept = !!sym(x)), color = "blue", linetype = "dashed") +
-    ggplot2::geom_point(data = maxmr_df, aes(x = !!sym(x), y = mr), color = "red", size = 2) +
-    ggplot2::geom_vline(data = maxmr_df, aes(xintercept = !!sym(x)), color = "red", linetype = "dashed") +
+    ggplot2::theme(legend.position = "none") +
     #ensure separate annotations for each facet
-    ggplot2::geom_rect(
-      data = x_range_df,
-      ggplot2::aes(xmin = !!sym(paste0(x,"_min")), xmax = !!sym(paste0(x,"_max")), ymin = -Inf, ymax = Inf),
-      fill = "green", alpha = 0.2, inherit.aes = FALSE
-    ) +
-    #add x and y labels to the point
-    ggplot2::geom_text(
-      data = maxar_df,
-      ggplot2::aes(x = !!sym(x), y = ar, label = paste0("(", round(!!sym(x), 2), ", ", round(ar, 2), ")")),
-      vjust = -1, color = "blue", size = 3
-    ) +
-    ggplot2::geom_text(
-      data = maxmr_df,
-      ggplot2::aes(x = !!sym(x), y = mr, label = paste0("(", round(!!sym(x), 2), ", ", round(mr, 2), ")")),
-      vjust = 2, color = "red", size = 3
-    ) +
     ggplot2::labs(x = x, y = "Rate", title = "Absolute and Marginal Rates of Return") +
-    ggplot2::scale_x_continuous(labels = scales::comma) +
+    ggplot2::scale_x_continuous(labels = scales::dollar_format()) +
     ggplot2::scale_y_continuous(labels = scales::comma)
+
+  if(markup){
+    p = p +
+      ggplot2::geom_point(data = maxar_df, aes(x = !!sym(x), y = ar), color = "blue", size = 2) +
+      ggplot2::geom_vline(data = maxar_df, aes(xintercept = !!sym(x)), color = "blue", linetype = "dashed") +
+      ggplot2::geom_point(data = maxmr_df, aes(x = !!sym(x), y = mr), color = "red", size = 2) +
+      ggplot2::geom_vline(data = maxmr_df, aes(xintercept = !!sym(x)), color = "red", linetype = "dashed") +
+      ggplot2::geom_rect(
+        data = x_range_df,
+        ggplot2::aes(xmin = !!sym(paste0(x,"_min")), xmax = !!sym(paste0(x,"_max")), ymin = -Inf, ymax = Inf),
+        fill = "green", alpha = 0.2, inherit.aes = FALSE
+      ) +
+      #add x and y labels to the point
+      ggplot2::geom_text(
+        data = maxar_df,
+        ggplot2::aes(x = !!sym(x), y = ar, label = paste0("(", round(!!sym(x), 2), ", ", round(ar, 2), ")")),
+        vjust = -1, color = "blue", size = 3
+      ) +
+      ggplot2::geom_text(
+        data = maxmr_df,
+        ggplot2::aes(x = !!sym(x), y = mr, label = paste0("(", round(!!sym(x), 2), ", ", round(mr, 2), ")")),
+        vjust = 2, color = "red", size = 3
+      )
+  }
 
   return(p)
 }

@@ -10,7 +10,7 @@
 #' @details The function uses regular expressions to match the variable names in the formula.
 
 
-replace_variables_in_formula <- function(formula, old_vars, new_vars) {
+hlpr_replace_variables_in_formula <- function(formula, old_vars, new_vars) {
   if (length(old_vars) != length(new_vars)) {
     stop("The lengths of old_vars and new_vars must be the same.")
   }

@@ -10,7 +10,10 @@
 #' @export
 
 
-plot_optimal_mix = function(response_funs, res){
+plot_optimal_mix = function(optimal_mix){
+
+  response_funs = optimal_mix$response_funs
+  res = optimal_mix$res
 
   x_r = seq(0, ceiling(max(res$solution) * 1.5), length.out = 100)
   resp_curves = map_dfr(response_funs, ~tibble(x = x_r, y = .x(x_r)), .id = "channel")

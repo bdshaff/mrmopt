@@ -47,21 +47,34 @@ mrm_plot_response = function(mrm, xrange = NULL, length.out = 1000, scaled = TRU
     ggplot2::geom_ribbon(data = response_df, aes(x = !!sym(r_names[1]), ymin = !!sym(r_names[7]), ymax = !!sym(r_names[8])), alpha = 0.5, fill = "lightblue") +
     ggplot2::labs(title = ptitle, subtitle = psubtitle, y = y) +
     ggplot2::theme(legend.position = "top") +
-    ggplot2::scale_x_continuous(labels = scales::comma) +
+    ggplot2::scale_x_continuous(labels = scales::dollar_format()) +
     ggplot2::scale_y_continuous(labels = scales::comma) +
     ggplot2::theme_minimal()
 
 
   if(points == TRUE){
 
-    if(!is.null(mrm$min_max_values) & scaled == TRUE){
-      x_min = mrm$min_max_values$x_min
-      x_max = mrm$min_max_values$x_max
-      y_min = mrm$min_max_values$y_min
-      y_max = mrm$min_max_values$y_max
+    #re-scale rc_data if necessary before adding point to the plot
+    if(scaled & !is.null(mrm$scale_values)){
+      if(mrm$scale_method == "min_max"){
+        x_min = mrm$scale_values$x_min
+        x_max = mrm$scale_values$x_max
+        y_min = mrm$scale_values$y_min
+        y_max = mrm$scale_values$y_max
 
-      rc_data[[x]] = cost_per_unit * (rc_data[[x]] * (x_max - x_min) + x_min)
-      rc_data[[y]] = response_rate * (rc_data[[y]] * (y_max - y_min) + y_min)
+        rc_data[[x]] = cost_per_unit * (rc_data[[x]] * (x_max - x_min) + x_min)
+        rc_data[[y]] = response_rate * (rc_data[[y]] * (y_max - y_min) + y_min)
+      }else if(mrm$scale_method == "std"){
+        x_mean = mrm$scale_values$x_mean
+        x_sd = mrm$scale_values$x_sd
+        y_mean = mrm$scale_values$y_mean
+        y_sd = mrm$scale_values$y_sd
+
+        rc_data[[x]] = cost_per_unit * (rc_data[[x]] * x_sd + x_mean)
+        rc_data[[y]] = response_rate * (rc_data[[y]] * y_sd + y_mean)
+      }else{
+        stop(paste0("Scaling method ", mrm$scale_method, " not supported for plotting."))
+      }
     }
 
     p = p + ggplot2::geom_point(data = rc_data, aes(!!sym(x), !!sym(y)), color = "red", alpha = 0.5)

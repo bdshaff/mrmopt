@@ -4,7 +4,7 @@
 \alias{plot_optimal_mix}
 \title{Plot Optimal Mix}
 \usage{
-plot_optimal_mix(response_funs, res)
+plot_optimal_mix(optimal_mix)
 }
 \arguments{
 \item{response_funs}{A named list of response functions.}
