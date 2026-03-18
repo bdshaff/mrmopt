@@ -13,7 +13,8 @@ mrm_plot_return(
   location = "center",
   xrange = NULL,
   length.out = 1000,
-  scaled = TRUE
+  scaled = TRUE,
+  markup = FALSE
 )
 ```
 

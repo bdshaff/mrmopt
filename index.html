@@ -52,10 +52,15 @@
   </div>
 </nav><div class="container template-home">
 <div class="row">
-  <main id="main" class="col-md-9"><p>The goal of the <code>mrmopt</code> package is to provide tools for media response modeling in R. It includes functions for fitting Bayesian response models, response curve analysis, and media mix optimization.</p>
-<div class="section level1">
-<div class="page-header"><h1 id="mrmopt-media-response-modeling-in-r">mrmopt: Media Response Modeling in R<a class="anchor" aria-label="anchor" href="#mrmopt-media-response-modeling-in-r"></a>
+  <main id="main" class="col-md-9"><div class="section level1">
+<div class="page-header"><h1 id="media-response-modeling">Media Response Modeling<a class="anchor" aria-label="anchor" href="#media-response-modeling"></a>
 </h1></div>
+<p>Media Response Modeling (MRM) is part of a broader set of techniques and models under the Media Mix Modeling (MMM) umbrella. MRM focuses on modeling, quantifying, and analyzing the non-linear saturation (diminishing returns) relationship between media spend and/or (impressions/clicks/GRPs) and business outcomes, such as sales or conversions. These relationships are modeled as non-linear response curves that capture the diminishing returns of media investments. Establishing response curves for a mix of media is critical for optimizing the media mix for better performance, as it allows marketers to understand the effectiveness of their media investments beyond observed levels.</p>
+</div>
+<div class="section level1">
+<h1 id="mrmopt-media-response-modeling-in-r">mrmopt: Media Response Modeling in R<a class="anchor" aria-label="anchor" href="#mrmopt-media-response-modeling-in-r"></a>
+</h1>
+<p><code>mrmopt</code> is an R package designed to facilitate media response modeling using Bayesian methods. It provides tools for fitting media response models, analyzing response curves, and optimizing media mix for improved performance. The goal of the <code>mrmopt</code> package is to make it easier for marketers and analysts to apply media response modeling techniques to their data, enabling them to make informed decisions about their media investments. The focus of the package is to comprehensively model the uncertainly around the response curves and build optimizations from a broader set of scenarios, rather than just optimizing for a single point estimate of the response curve. Bayesian estimation powered by <code>brms</code> package enables simultaneously a robust and flexible framework for modeling media response while remaining within the bounds of a set the non-linear response models commonly used (Logistic, Weibull, Gompertz, etc.). While flexible, the package is designed to be user-friendly and accessible to marketers and analysts who may not have extensive experience with Bayesian modeling, providing smart automations, defaults, and tools to guide customization.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -67,11 +72,6 @@
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"bdshaff/mrmopt"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="what-is-a-media-response-model">What is a Media Response Model?<a class="anchor" aria-label="anchor" href="#what-is-a-media-response-model"></a>
-</h2>
-<p>A media response model is a statistical model that quantifies the relationship between media units(impressions/clicks/GRPs) and/or spend and business outcomes, such as sales or conversions. These models help marketers understand the effectiveness of their media investments beyond observed levels. Response models are the key component required to optimize the media mix for better performance.</p>
-</div>
-<div class="section level2">
 <h2 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
 </h2>
 <ul>
@@ -79,6 +79,11 @@
 <li>Analyze response curves to understand media effectiveness.</li>
 <li>Optimize media mix for improved performance.</li>
 </ul>
+</div>
+<div class="section level2">
+<h2 id="documentation-and-tutorials">Documentation and Tutorials<a class="anchor" aria-label="anchor" href="#documentation-and-tutorials"></a>
+</h2>
+<p>Visit the companion website for detailed documentation, tutorials, and examples on how to use the <code>mrmopt</code> package for media response modeling: <a href="https://bdshaff.github.io/mrmopt/" class="external-link">https://bdshaff.github.io/mrmopt/</a></p>
 </div>
 </div>
 

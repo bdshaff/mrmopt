@@ -6,7 +6,7 @@ determined by the optimization results.
 ## Usage
 
 ``` r
-plot_optimal_mix(response_funs, res)
+plot_optimal_mix(optimal_mix)
 ```
 
 ## Arguments

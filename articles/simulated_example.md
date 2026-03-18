@@ -86,8 +86,8 @@ response_fit =
 #> 
 #> SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
 #> Chain 1: 
-#> Chain 1: Gradient evaluation took 9.2e-05 seconds
-#> Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.92 seconds.
+#> Chain 1: Gradient evaluation took 8.3e-05 seconds
+#> Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.83 seconds.
 #> Chain 1: Adjust your expectations accordingly!
 #> Chain 1: 
 #> Chain 1: 
@@ -104,15 +104,15 @@ response_fit =
 #> Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #> Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 #> Chain 1: 
-#> Chain 1:  Elapsed Time: 0.88 seconds (Warm-up)
-#> Chain 1:                0.689 seconds (Sampling)
-#> Chain 1:                1.569 seconds (Total)
+#> Chain 1:  Elapsed Time: 0.655 seconds (Warm-up)
+#> Chain 1:                0.665 seconds (Sampling)
+#> Chain 1:                1.32 seconds (Total)
 #> Chain 1: 
 #> 
 #> SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
 #> Chain 2: 
-#> Chain 2: Gradient evaluation took 5e-05 seconds
-#> Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.5 seconds.
+#> Chain 2: Gradient evaluation took 4.5e-05 seconds
+#> Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.45 seconds.
 #> Chain 2: Adjust your expectations accordingly!
 #> Chain 2: 
 #> Chain 2: 
@@ -129,60 +129,10 @@ response_fit =
 #> Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #> Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 #> Chain 2: 
-#> Chain 2:  Elapsed Time: 1.218 seconds (Warm-up)
-#> Chain 2:                1.297 seconds (Sampling)
-#> Chain 2:                2.515 seconds (Total)
-#> Chain 2: 
-#> 
-#> SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
-#> Chain 3: 
-#> Chain 3: Gradient evaluation took 5e-05 seconds
-#> Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.5 seconds.
-#> Chain 3: Adjust your expectations accordingly!
-#> Chain 3: 
-#> Chain 3: 
-#> Chain 3: Iteration:    1 / 2000 [  0%]  (Warmup)
-#> Chain 3: Iteration:  200 / 2000 [ 10%]  (Warmup)
-#> Chain 3: Iteration:  400 / 2000 [ 20%]  (Warmup)
-#> Chain 3: Iteration:  600 / 2000 [ 30%]  (Warmup)
-#> Chain 3: Iteration:  800 / 2000 [ 40%]  (Warmup)
-#> Chain 3: Iteration: 1000 / 2000 [ 50%]  (Warmup)
-#> Chain 3: Iteration: 1001 / 2000 [ 50%]  (Sampling)
-#> Chain 3: Iteration: 1200 / 2000 [ 60%]  (Sampling)
-#> Chain 3: Iteration: 1400 / 2000 [ 70%]  (Sampling)
-#> Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
-#> Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
-#> Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
-#> Chain 3: 
-#> Chain 3:  Elapsed Time: 0.949 seconds (Warm-up)
-#> Chain 3:                0.964 seconds (Sampling)
-#> Chain 3:                1.913 seconds (Total)
-#> Chain 3: 
-#> 
-#> SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).
-#> Chain 4: 
-#> Chain 4: Gradient evaluation took 4.9e-05 seconds
-#> Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.49 seconds.
-#> Chain 4: Adjust your expectations accordingly!
-#> Chain 4: 
-#> Chain 4: 
-#> Chain 4: Iteration:    1 / 2000 [  0%]  (Warmup)
-#> Chain 4: Iteration:  200 / 2000 [ 10%]  (Warmup)
-#> Chain 4: Iteration:  400 / 2000 [ 20%]  (Warmup)
-#> Chain 4: Iteration:  600 / 2000 [ 30%]  (Warmup)
-#> Chain 4: Iteration:  800 / 2000 [ 40%]  (Warmup)
-#> Chain 4: Iteration: 1000 / 2000 [ 50%]  (Warmup)
-#> Chain 4: Iteration: 1001 / 2000 [ 50%]  (Sampling)
-#> Chain 4: Iteration: 1200 / 2000 [ 60%]  (Sampling)
-#> Chain 4: Iteration: 1400 / 2000 [ 70%]  (Sampling)
-#> Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
-#> Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
-#> Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
-#> Chain 4: 
-#> Chain 4:  Elapsed Time: 0.867 seconds (Warm-up)
-#> Chain 4:                0.701 seconds (Sampling)
-#> Chain 4:                1.568 seconds (Total)
-#> Chain 4:
+#> Chain 2:  Elapsed Time: 0.809 seconds (Warm-up)
+#> Chain 2:                0.644 seconds (Sampling)
+#> Chain 2:                1.453 seconds (Total)
+#> Chain 2:
 ```
 
 ``` r
@@ -195,19 +145,19 @@ summary(response_fit)
 #>          d ~ 1
 #>          e ~ 1
 #>    Data: data (Number of observations: 101) 
-#>   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
-#>          total post-warmup draws = 4000
+#>   Draws: 2 chains, each with iter = 2000; warmup = 1000; thin = 1;
+#>          total post-warmup draws = 2000
 #> 
 #> Regression Coefficients:
 #>             Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> b_Intercept    -4.72      0.32    -5.34    -4.09 1.00     1011      764
-#> c_Intercept     0.09      0.01     0.07     0.11 1.00     1700     1742
-#> d_Intercept     1.06      0.03     1.01     1.13 1.00      939      821
-#> e_Intercept     0.50      0.01     0.48     0.52 1.00     1155     1163
+#> b_Intercept    -4.74      0.33    -5.40    -4.12 1.01      576      794
+#> c_Intercept     0.09      0.01     0.07     0.11 1.01      950     1090
+#> d_Intercept     1.06      0.03     1.01     1.12 1.01      542      435
+#> e_Intercept     0.50      0.01     0.48     0.52 1.00      924      943
 #> 
 #> Further Distributional Parameters:
 #>       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> sigma     0.04      0.00     0.04     0.05 1.00     2119     1930
+#> sigma     0.04      0.00     0.04     0.05 1.00      894      842
 #> 
 #> Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 #> and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -253,9 +203,9 @@ bind_cols(
 |--------------------------------------|--------|-------|-------|
 | Using the Gompertz Response Model    |        |       |       |
 | actual                               | center | lower | upper |
-| -5.0                                 | -4.72  | -5.34 | -4.09 |
-| 1.0                                  | 0.88   | 0.69  | 1.07  |
-| 10.0                                 | 10.37  | 9.88  | 11.02 |
+| -5.0                                 | -4.74  | -5.40 | -4.12 |
+| 1.0                                  | 0.88   | 0.68  | 1.06  |
+| 10.0                                 | 10.35  | 9.85  | 10.95 |
 | 0.5                                  | 0.50   | 0.48  | 0.52  |
 
 ``` r
@@ -270,10 +220,10 @@ mrm_params_table(response_fit, scaled = FALSE) |>
 |-----------------------------------|------------|------------|-----------|
 | Using the Gompertz Response Model |            |            |           |
 | Parameter                         | center     | lower      | upper     |
-| b (growth rate)                   | -4.723582  | -5.343477  | -4.093218 |
-| c (lower asymptote)               | 0.08788166 | 0.06772411 | 0.1075922 |
-| d (upper asymptote)               | 1.061462   | 1.011703   | 1.128255  |
-| e (inflection point)              | 0.5017242  | 0.4849971  | 0.5203375 |
+| b (growth rate)                   | -4.741645  | -5.398366  | -4.123516 |
+| c (lower asymptote)               | 0.08800686 | 0.06760201 | 0.1062646 |
+| d (upper asymptote)               | 1.059448   | 1.008309   | 1.120964  |
+| e (inflection point)              | 0.5012417  | 0.4843928  | 0.5204534 |
 
 ``` r
 response = mrm_infer(response_fit, length.out = 100)
@@ -290,16 +240,16 @@ head(response) |>
   )
 ```
 
-| Inferred Response Data            |            |             |        |         |                   |                  |                  |      |      |          |          |          |          |
-|-----------------------------------|------------|-------------|--------|---------|-------------------|------------------|------------------|------|------|----------|----------|----------|----------|
-| Using the Gompertz Response Model |            |             |        |         |                   |                  |                  |      |      |          |          |          |          |
-| x                                 | y_Estimate | y_Est.Error | y_Q2.5 | y_Q97.5 | y_gompertz_center | y_gompertz_lower | y_gompertz_upper | ar   | mr   | ar_lower | mr_lower | ar_upper | mr_upper |
-| 0.00                              | 0.87       | 0.43        | 0.02   | 1.71    | 0.88              | 0.04             | 1.73             | NaN  | NA   | NaN      | NA       | NaN      | NA       |
-| 0.02                              | 0.88       | 0.43        | 0.06   | 1.71    | 0.88              | 0.04             | 1.73             | 0.02 | 0.02 | 0.02     | 0.02     | 0.01     | 0.01     |
-| 0.04                              | 0.88       | 0.43        | 0.04   | 1.72    | 0.88              | 0.04             | 1.73             | 0.03 | 0.04 | 0.03     | 0.04     | 0.03     | 0.04     |
-| 0.06                              | 0.88       | 0.43        | 0.04   | 1.74    | 0.88              | 0.04             | 1.73             | 0.05 | 0.08 | 0.05     | 0.09     | 0.04     | 0.08     |
-| 0.08                              | 0.89       | 0.43        | 0.07   | 1.74    | 0.89              | 0.04             | 1.73             | 0.08 | 0.16 | 0.08     | 0.17     | 0.07     | 0.16     |
-| 0.10                              | 0.90       | 0.43        | 0.07   | 1.76    | 0.89              | 0.05             | 1.74             | 0.12 | 0.30 | 0.12     | 0.30     | 0.12     | 0.30     |
+| Inferred Response Data            |          |           |      |       |        |       |       |          |          |           |      |      |       |          |          |          |          |          |          |
+|-----------------------------------|----------|-----------|------|-------|--------|-------|-------|----------|----------|-----------|------|------|-------|----------|----------|----------|----------|----------|----------|
+| Using the Gompertz Response Model |          |           |      |       |        |       |       |          |          |           |      |      |       |          |          |          |          |          |          |
+| x                                 | Estimate | Est.Error | Q2.5 | Q97.5 | center | lower | upper | type     | resp_var | input_var | ar   | mr   | cp    | cp_lower | ar_lower | mr_lower | ar_upper | mr_upper | cp_upper |
+| 0.00                              | 0.89     | 0.43      | 0.07 | 1.73  | 0.88   | 0.03  | 1.74  | gompertz | y        | x         | NaN  | NA   | NaN   | NaN      | NaN      | NA       | NaN      | NA       | NaN      |
+| 0.02                              | 0.89     | 0.43      | 0.00 | 1.77  | 0.88   | 0.03  | 1.74  | gompertz | y        | x         | 0.02 | 0.02 | 53.35 | 60.60    | 0.03     | 0.03     | 0.00     | 0.00     | 3,718.16 |
+| 0.04                              | 0.88     | 0.43      | 0.04 | 1.74  | 0.88   | 0.03  | 1.74  | gompertz | y        | x         | 0.03 | 0.04 | 32.26 | 36.65    | 0.04     | 0.06     | 0.01     | 0.02     | 76.30    |
+| 0.06                              | 0.90     | 0.43      | 0.01 | 1.74  | 0.89   | 0.03  | 1.74  | gompertz | y        | x         | 0.05 | 0.08 | 19.52 | 22.17    | 0.06     | 0.10     | 0.03     | 0.06     | 28.98    |
+| 0.08                              | 0.90     | 0.43      | 0.01 | 1.74  | 0.89   | 0.04  | 1.74  | gompertz | y        | x         | 0.07 | 0.16 | 11.99 | 13.62    | 0.09     | 0.18     | 0.05     | 0.14     | 14.49    |
+| 0.10                              | 0.90     | 0.43      | 0.03 | 1.79  | 0.89   | 0.04  | 1.74  | gompertz | y        | x         | 0.12 | 0.29 | 7.54  | 8.56     | 0.14     | 0.31     | 0.10     | 0.27     | 8.17     |
 
 ``` r
 mrm_plot_return(response_fit)

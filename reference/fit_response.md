@@ -12,6 +12,7 @@ fit_response(
   auto = TRUE,
   type = "gompertz",
   scale_data = TRUE,
+  scale_method = "min_max",
   prior = NULL,
   chains = 4,
   iter = 4000,
