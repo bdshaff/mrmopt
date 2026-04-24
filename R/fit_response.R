@@ -97,7 +97,6 @@ fit_response = function(data, x = NULL, y = NULL,
       control = control,
       ...
       )
-    #fit$min_max_values = scale_values
     fit$scale_values = scale_values
     fit$scale_method = scale_method
   } else{
@@ -110,9 +109,13 @@ fit_response = function(data, x = NULL, y = NULL,
       control = control,
       ...
       )
-    fit$min_max_values = NULL
-    fit$scale_values = NULL
-    fit$scale_method = NULL
+    if(scale_data){
+      fit$scale_values = scale_values
+      fit$scale_method = scale_method
+    }else{
+      fit$scale_values = NULL
+      fit$scale_method = NULL
+    }
   }
 
   fit$rc_type = type
