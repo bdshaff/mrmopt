@@ -1,8 +1,7 @@
 #' Plot Optimal Mix
 #'
 #' This function plots the response curves along with the optimal points determined by the optimization results.
-#' @param response_funs A named list of response functions.
-#' @param res The result object from the optimization containing the optimal solution.
+#' @param optimal_mix The result object returned by \code{opt_mix()}, containing response functions and the optimal solution.
 #' @return A ggplot object showing the response curves and optimal points.
 #' @import ggplot2
 #' @import dplyr

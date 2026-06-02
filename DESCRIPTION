@@ -4,30 +4,31 @@ Version: 0.1.0
 Authors@R: 
     person("Ben Denis", "Shaffer", , "my.blogdown@gmail.com", role = c("aut", "cre"))
 Description: Package for media response modeling and optimization.
-License: `use_mit_license()`
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.3
 Imports:
     brms,
+    bayesplot,
     ggplot2,
     purrr,
     nloptr,
     dplyr,
     scales,
     tibble,
-    stringr,
-    tidyselect,
-    BH,
-    RcppEigen
+    tidyr,
+    posterior,
+    rlang
 Suggests:
     knitr,
     rmarkdown,
     testthat,
-    quarto,
-    tidyr, 
+    future.apply,
     plotly,
     gt,
     patchwork
-VignetteBuilder: knitr, dplyr, ggplot2, purrr, tidyr, plotly, gt, patchwork
+VignetteBuilder: knitr
 URL: https://bdshaff.github.io/mrmopt/
+Depends: 
+    R (>= 4.1.0)

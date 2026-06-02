@@ -7,9 +7,7 @@
 plot_optimal_mix(optimal_mix)
 }
 \arguments{
-\item{response_funs}{A named list of response functions.}
-
-\item{res}{The result object from the optimization containing the optimal solution.}
+\item{optimal_mix}{The result object returned by \code{opt_mix()}, containing response functions and the optimal solution.}
 }
 \value{
 A ggplot object showing the response curves and optimal points.

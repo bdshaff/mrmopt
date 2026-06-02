@@ -29,11 +29,15 @@ The reflected Gompertz function is defined as:
 \deqn{y = c + (d - c) * (1 - exp(-exp( b * (-x + e))))}
 }
 \examples{
+\dontrun{
 x_values <- seq(0, 10, by = 0.1)
 b <- -0.5
 c <- 0
 d <- 1
 e <- 5
 result <- rm_GompertzRef(x_values, b, c, d, e)
-plot(x_values, result, type = "l", main = "Reflected Gompertz Response Model", xlab = "x", ylab = "y")
+plot(x_values, result, type = "l",
+     main = "Reflected Gompertz Response Model", xlab = "x", ylab = "y")
 }
+}
+\keyword{internal}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/mrm_plot_return.R
 \name{mrm_plot_return}
 \alias{mrm_plot_return}
-\title{Plot Marginal and Absolute Rates of Return for Multiple Resource Models}
+\title{Plot Absolute and Marginal Rates of Return}
 \usage{
 mrm_plot_return(
   mrm,
@@ -10,26 +10,30 @@ mrm_plot_return(
   xrange = NULL,
   length.out = 1000,
   scaled = TRUE,
-  markup = FALSE
+  markup = TRUE,
+  x_var = c("spend", "units")
 )
 }
 \arguments{
-\item{mrm}{A list of fitted model objects (e.g., brmsfit objects).}
+\item{mrm}{A fitted model object returned by \code{\link{fit_response}}.}
 
-\item{location}{A character string specifying which location to use for MR and AR calculations. Options are "center", "lower", or "upper". Default is "center".}
+\item{location}{Which parameter estimate to use: \code{"center"} (default),
+\code{"lower"}, or \code{"upper"}.}
 
-\item{xrange}{A numeric vector of length 2 specifying the range of x values to consider. If NULL, the range is determined from the data.}
+\item{xrange}{Numeric vector of length 2 for the x range. NULL uses defaults.}
 
-\item{length.out}{An integer specifying the number of points to generate for the x-axis. Default is NULL.}
+\item{length.out}{Number of points. Default is 1000.}
 
-\item{scaled}{A logical value indicating whether to use scaled values for the calculations. Default is TRUE.}
+\item{scaled}{Logical; plot on original scale? Default is TRUE.}
+
+\item{markup}{Logical; add range annotations and current-point markers?
+Default is TRUE.}
+
+\item{x_var}{Character; \code{"spend"} (default) or \code{"units"}.}
 }
 \value{
-A ggplot object visualizing the MR and AR for each model.
+A ggplot object.
 }
 \description{
-This function generates a plot comparing the Marginal Rate of Return (MR) and Absolute Rate of Return (AR) for multiple resource models. It highlights key points such as the maximum MR and the intersection point where MR equals AR.
-}
-\details{
-The function computes the MR and AR for each model in the list and creates a faceted plot. It highlights the maximum MR point in red and the intersection point where MR equals AR in blue. A shaded green area indicates the range between these two points.
+Plot Absolute and Marginal Rates of Return
 }

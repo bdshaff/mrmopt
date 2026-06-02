@@ -4,18 +4,18 @@
 #'
 #' @param rc_fit A fitted model object.
 #' @param scaled A logical indicating whether the model was fitted on scaled data. Default is TRUE.
-#' @param cost_per_unit The cost per unit of the independent variable. Default is 1.0.
-#' @param response_rate The response rate to be used in return calculations. Default is 1.0.
 #' @return A list containing the center, lower, and upper bounds of the parameters.
-#' @details The function extracts the parameters from the fitted model object and returns them in a list.
+#' @details The function extracts the parameters from the fitted model object
+#'   and returns them in a list. When \code{scaled = TRUE}, parameters are
+#'   unscaled back to original data units (spend for b/e, KPI for c/d).
 #'
 #' @export
 
-mrm_params <- function(rc_fit, scaled = TRUE, cost_per_unit = 1.0, response_rate = 1.0) {
+mrm_params <- function(rc_fit, scaled = TRUE) {
 
   # Extract posterior summaries for parameters b, c, d, e
   posterior_summary <- summary(rc_fit)$fixed
-  params <- posterior_summary[grepl("b|c|d|e", rownames(posterior_summary)), ]
+  params <- posterior_summary[grepl("b|c|d|e", rownames(posterior_summary)), , drop = FALSE]
   params <- as.data.frame(params)
 
   center = params$Estimate
@@ -28,71 +28,60 @@ mrm_params <- function(rc_fit, scaled = TRUE, cost_per_unit = 1.0, response_rate
   names(upper) = c("b","c","d","e")
 
   # Rescale parameters if the model was fitted on scaled data
-  if(scaled & rc_fit$scale_method == "min_max"){
-    #rescale the parameters back to the original scale
-    x_min = rc_fit$scale_values$x_min
-    x_max = rc_fit$scale_values$x_max
-    y_min = rc_fit$scale_values$y_min
-    y_max = rc_fit$scale_values$y_max
+  if (scaled && !is.null(rc_fit$scale_values)) {
+    sv <- rc_fit$scale_values
+    x_offset <- if (!is.null(sv$x_offset)) sv$x_offset else 0
+    log_forms <- c("log_logistic", "weibull", "reflected_weibull")
+    is_log_form <- !is.null(rc_fit$rc_type) && rc_fit$rc_type %in% log_forms
 
-    #rescale c and d
-    center["c"] = center["c"] * (y_max - y_min) + y_min
-    lower["c"] = lower["c"] * (y_max - y_min) + y_min
-    upper["c"] = upper["c"] * (y_max - y_min) + y_min
+    # --- Unscale x-related params (b, e) ---
+    if (is_log_form) {
+      x_max <- sv$x_max
+      for (est in c("center", "lower", "upper")) {
+        env <- environment()
+        v <- get(est, envir = env)
+        v["e"] <- v["e"] * x_max - x_offset
+        assign(est, v, envir = env)
+      }
+    } else if (!is.null(sv$x_min) && !is.null(sv$x_max)) {
+      x_range <- sv$x_max - sv$x_min
+      for (est in c("center", "lower", "upper")) {
+        env <- environment()
+        v <- get(est, envir = env)
+        v["b"] <- v["b"] / x_range
+        v["e"] <- v["e"] * x_range + sv$x_min - x_offset
+        assign(est, v, envir = env)
+      }
+    } else if (!is.null(sv$x_mean) && !is.null(sv$x_sd)) {
+      for (est in c("center", "lower", "upper")) {
+        env <- environment()
+        v <- get(est, envir = env)
+        v["b"] <- v["b"] / sv$x_sd
+        v["e"] <- v["e"] * sv$x_sd + sv$x_mean - x_offset
+        assign(est, v, envir = env)
+      }
+    }
 
-    center["d"] = center["d"] * (y_max - y_min) + y_min
-    lower["d"] = lower["d"] * (y_max - y_min) + y_min
-    upper["d"] = upper["d"] * (y_max - y_min) + y_min
-
-    #rescale b and e
-    center["b"] = center["b"] / (x_max - x_min)
-    lower["b"] = lower["b"] / (x_max - x_min)
-    upper["b"] = upper["b"] / (x_max - x_min)
-
-    center["e"] = center["e"] * (x_max - x_min) + x_min
-    lower["e"] = lower["e"] * (x_max - x_min) + x_min
-    upper["e"] = upper["e"] * (x_max - x_min) + x_min
-  }else if(scaled & rc_fit$scale_method == "std"){
-    #rescale the parameters back to the original scale
-    x_mean = rc_fit$scale_values$x_mean
-    x_sd = rc_fit$scale_values$x_sd
-    y_mean = rc_fit$scale_values$y_mean
-    y_sd = rc_fit$scale_values$y_sd
-
-    #rescale c and d
-    center["c"] = center["c"] * y_sd + y_mean
-    lower["c"] = lower["c"] * y_sd + y_mean
-    upper["c"] = upper["c"] * y_sd + y_mean
-
-    center["d"] = center["d"] * y_sd + y_mean
-    lower["d"] = lower["d"] * y_sd + y_mean
-    upper["d"] = upper["d"] * y_sd + y_mean
-
-    #rescale b and e
-    center["b"] = center["b"] / x_sd
-    lower["b"] = lower["b"] / x_sd
-    upper["b"] = upper["b"] / x_sd
-
-    center["e"] = center["e"] * x_sd + x_mean
-    lower["e"] = lower["e"] * x_sd + x_mean
-    upper["e"] = upper["e"] * x_sd + x_mean
+    # --- Unscale y-related params (c, d) ---
+    if (!is.null(sv$y_min) && !is.null(sv$y_max)) {
+      y_range <- sv$y_max - sv$y_min
+      for (est in c("center", "lower", "upper")) {
+        env <- environment()
+        v <- get(est, envir = env)
+        v["c"] <- v["c"] * y_range + sv$y_min
+        v["d"] <- v["d"] * y_range + sv$y_min
+        assign(est, v, envir = env)
+      }
+    } else if (!is.null(sv$y_mean) && !is.null(sv$y_sd)) {
+      for (est in c("center", "lower", "upper")) {
+        env <- environment()
+        v <- get(est, envir = env)
+        v["c"] <- v["c"] * sv$y_sd + sv$y_mean
+        v["d"] <- v["d"] * sv$y_sd + sv$y_mean
+        assign(est, v, envir = env)
+      }
+    }
   }
-
-  center["c"] = center["c"] * response_rate
-  lower["c"] = lower["c"] * response_rate
-  upper["c"] = upper["c"] * response_rate
-
-  center["d"] = center["d"] * response_rate
-  lower["d"] = lower["d"] * response_rate
-  upper["d"] = upper["d"] * response_rate
-
-  center["e"] = center["e"] * cost_per_unit
-  lower["e"] = lower["e"] * cost_per_unit
-  upper["e"] = upper["e"] * cost_per_unit
-
-  center["b"] = center["b"] / cost_per_unit
-  lower["b"] = lower["b"] / cost_per_unit
-  upper["b"] = upper["b"] / cost_per_unit
 
   # Create a list to hold the parameters
   params_list <- list(

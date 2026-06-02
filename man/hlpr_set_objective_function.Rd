@@ -8,8 +8,6 @@ hlpr_set_objective_function(response_funs)
 }
 \arguments{
 \item{response_funs}{A list of functions. Each function should take a single numeric input and return a numeric output.}
-
-\item{prices}{An optional numeric vector of prices corresponding to each response function. If provided,}
 }
 \value{
 A function that takes a numeric vector as input and returns the negative sum of the outputs from the response functions.

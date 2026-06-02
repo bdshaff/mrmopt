@@ -4,7 +4,7 @@
 #' @param mrm A fitted model object returned by `fit_response()`.
 #' @param location A string specifying which location's parameters to use. Must be one of "lower", "center", or "upper". Default is "center".
 #' @param scaled A logical indicating whether the model was fitted on scaled data. Default is TRUE.
-#' @return A function that takes a numeric vector of x values and returns the corresponding y values based on the specified response model and parameters.
+#' @return A function that takes a numeric vector of spend values and returns the corresponding KPI values based on the specified response model and parameters.
 #'
 #' @export
 mrm_response_function = function(mrm, location = "center", scaled = TRUE){
@@ -13,11 +13,8 @@ mrm_response_function = function(mrm, location = "center", scaled = TRUE){
     stop("location must be one of 'left', 'center', or 'right'")
   }
 
-  cost_per_unit = mrm$cost_per_unit
-  response_rate = mrm$response_rate
-
   f = rm_dispatch(mrm$rc_type)
-  p = mrm_params(mrm, scaled = scaled, cost_per_unit, response_rate)[[location]]
+  p = mrm_params(mrm, scaled = scaled)[[location]]
   func = function(x) {
     f(x, b = p$b, c = p$c, d = p$d, e = p$e)
   }

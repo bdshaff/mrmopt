@@ -1,37 +1,51 @@
 #' Helper function to set default priors for scaled data
 #'
-#' This function sets default priors for the parameters of the four-parameter logistic model when the data has been scaled. The priors are based on the expected range of the parameters after scaling.
-#' @param scale_method The method used for scaling the data. Currently, only "min_max" is supported.
-#' @return A list of priors for the parameters of the four-parameter logistic model.
+#' @description
+#' `r lifecycle::badge("deprecated")`
+#'
+#' This function is deprecated in favor of [mrm_prior()] and the internal
+#' [hlpr_resolve_prior()]. It is retained for backward compatibility and
+#' now delegates to the new prior resolution system.
+#'
+#' @param scaled_data The scaled data frame.
+#' @param x Name of the x column.
+#' @param y Name of the y column.
+#' @param scale_method The method used for scaling the data.
+#' @param type The response form type. Default is \code{"gompertz"}.
+#' @param scale_values List of scaling parameters. Required for the new
+#'   prior system. If NULL, a minimal set is constructed from the data,
+#'   which may not be fully accurate.
+#' @return A list of priors for the four-parameter model.
 #' @importFrom brms prior
+#' @keywords internal
 
+hlpr_default_prior_for_scaled_data <- function(scaled_data, x, y, scale_method,
+                                                type = "gompertz",
+                                                scale_values = NULL) {
 
-hlpr_default_prior_for_scaled_data <- function(scaled_data, x, y, scale_method) {
+  # If no scale_values provided, construct approximate values from scaled data
+  # This preserves backward compatibility but may be less accurate
 
-  if(scale_method == "min_max"){
-    prior = c(
-      brms::prior(normal(-4, 10), nlpar = "b", lb = -10, ub = 0.00),
-      brms::prior(normal(0, 10), nlpar = "c", lb = -0.25, ub = 0.25),
-      brms::prior(normal(1, 10), nlpar = "d", lb = 1.00, ub = 10.0),
-      brms::prior(normal(0.50, 10), nlpar = "e", lb = 0.10, ub = 0.90)
-    )
-  }else if(scale_method == "std"){
-
-    val_min_x <- min(scaled_data[[x]], na.rm = TRUE)
-    val_max_x <- max(scaled_data[[x]], na.rm = TRUE)
-    val_min_y <- min(scaled_data[[y]], na.rm = TRUE)
-    val_max_y <- max(scaled_data[[y]], na.rm = TRUE)
-
-    prior <- c(
-      brms::prior(normal(-4, 10), nlpar = "b", lb = -10, ub = 0.00),
-      brms::prior_string(paste0("normal(", val_min_x, ", 10)"), nlpar = "c", lb = val_min_y * 2.0, ub = val_min_y * 0.5),
-      brms::prior_string(paste0("normal(", val_max_y, ", 10)"), nlpar = "d", lb = val_max_y, ub = 10.0),
-      brms::prior_string("normal(0, 10)", nlpar = "e", lb = val_min_x * 0.9, ub = val_max_x * 0.9)
-    )
-  }else{
-    stop("Scaling method not supported for setting default priors. Please provide a valid scaling method or specify priors manually.")
+  if (is.null(scale_values)) {
+    if (scale_method == "min_max") {
+      scale_values <- list(
+        x_min = 0, x_max = 1,
+        y_min = 0, y_max = 1
+      )
+    } else if (scale_method == "std") {
+      scale_values <- list(
+        x_mean = 0, x_sd = 1,
+        y_mean = 0, y_sd = 1
+      )
+    }
   }
 
-  return(prior)
-
+  hlpr_resolve_prior(
+    mrm_prior = mrm_prior(),
+    scaled_data = scaled_data,
+    x = x, y = y,
+    scale_method = scale_method,
+    scale_values = scale_values,
+    type = type
+  )
 }

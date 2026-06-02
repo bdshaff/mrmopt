@@ -4,14 +4,28 @@
 \alias{hlpr_scale_data}
 \title{Helper function to scale the data for model prep}
 \usage{
-hlpr_scale_data(data, x, y, scale_method)
+hlpr_scale_data(data, x, y, scale_method, type = "gompertz")
 }
 \arguments{
 \item{data}{The input data frame containing the x and y variables to be scaled.}
+
+\item{x}{Name of the x column.}
+
+\item{y}{Name of the y column.}
+
+\item{scale_method}{Either \code{"min_max"} or \code{"std"}.}
+
+\item{type}{The response form type. Log-based forms (\code{"log_logistic"},
+\code{"weibull"}, \code{"reflected_weibull"}) trigger ratio x-scaling
+and a positive offset if zeros are present. Default is \code{"gompertz"}.}
 }
 \value{
-A list containing the scaled data, the inferred x-range, and the min-max values used for scaling.
+A list containing the scaled data, the inferred x-range, and the
+  scaling values used for rescaling.
 }
 \description{
-This function scales the data using min-max scaling and also calculates the inferred x-range for the model. It returns a list containing the scaled data, the inferred x-range, and the min-max values used for scaling.
+This function scales the data and calculates the inferred x-range for the
+model. For log-based response forms, x is ratio-scaled (divided by max)
+to preserve positivity, since log(x) requires x > 0. If the data contains
+zero x values, a small data-adaptive offset is added before scaling.
 }

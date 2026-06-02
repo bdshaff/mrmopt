@@ -16,7 +16,7 @@
 #' - "weibull"
 #' - "reflected_weibull"
 #'
-#' @export
+#' @keywords internal
 
 rm_dispatch = function(type){
 

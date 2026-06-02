@@ -1,66 +1,95 @@
-#' Plot the cost per KPI of a fitted model
+#' Plot cost per KPI of a fitted model
 #'
-#' This function plots the cost per KPI of a fitted model.
-#' @param mrm A fitted model object. It can be a brmsfit object or a list of brmsfit objects.
-#' @param xrange A vector of length 2 specifying the range of x values to plot. If NULL, the range of x values in the data is used.
-#' @param length.out An integer specifying the number of points to generate for the x-axis. Default is 1000.
-#' @param scaled A logical value indicating whether to plot the scaled response. Default is TRUE.
-#' @param cost_per_unit A numeric value specifying the cost per unit of the independent variable. Default is 1.0.
-#' @param response_rate A numeric value specifying the response rate to be used in return calculations. Default is 1.0.
-#' @param markup A logical value indicating whether to add markup lines to the plot. Default is FALSE.
+#' @param mrm A fitted model object returned by \code{\link{fit_response}}.
+#' @param xrange Numeric vector of length 2 for the x range. NULL uses defaults.
+#' @param length.out Number of points. Default is 1000.
+#' @param scaled Logical; plot on original scale? Default is TRUE.
+#' @param markup Logical; add range annotations and current-point marker?
+#'   Default is TRUE.
+#' @param x_var Character; \code{"spend"} (default) or \code{"units"}.
 #' @return A ggplot object.
-#'
-#' @details The function plots the cost per KPI of a fitted model object. It uses ggplot2 to create the plot and includes a title with information about the model. If markup is TRUE, it adds vertical lines and segments to indicate the optimal point and the range of returns.
 #' @export
 
-mrm_plot_costper = function(mrm, xrange = NULL, length.out = 1000, scaled = TRUE, cost_per_unit = 1.0, response_rate = 1.0, markup = FALSE){
+mrm_plot_costper <- function(mrm,
+                             xrange = NULL,
+                             length.out = 1000,
+                             scaled = TRUE,
+                             markup = TRUE,
+                             x_var = c("spend", "units")) {
 
-  if(!is.brmsfit(mrm)){
-    stop("mrm must be a fitted model object created by mrm_fit()")
+  if (!brms::is.brmsfit(mrm)) {
+    stop("mrm must be a fitted model object created by fit_response()", call. = FALSE)
   }
 
-  cost_per_unit = mrm$cost_per_unit
-  response_rate = mrm$response_rate
+  x_var <- match.arg(x_var)
+  pal <- mrm_palette()
 
-  if(!is.null(xrange) | length.out != 1000 | scaled != TRUE | cost_per_unit != 1.0 | response_rate != 1.0){
-    response_df = mrm_infer(mrm, xrange = xrange, length.out = length.out, scaled = scaled, cost_per_unit = cost_per_unit, response_rate = response_rate)
-    x_range_df = mrm_returns_ranges(mrm, xrange = xrange, length.out = length.out, scaled = scaled, cost_per_unit = cost_per_unit, response_rate = response_rate)
+  # --- Data ---
+  if (!is.null(xrange) || length.out != 1000 || !isTRUE(scaled)) {
+    response_df <- mrm_infer(mrm, xrange = xrange, length.out = length.out, scaled = scaled)
   } else {
-    response_df = mrm$response_df
-    x_range_df = mrm$returnes_ranges
+    response_df <- mrm$response_df
   }
 
-  x = names(response_df)[1]
-  y_cp = "cp"
-  y_cp_lower = "cp_lower"
-  y_cp_upper = "cp_upper"
+  x_col <- names(response_df)[1]
 
-  ptitle = paste0("Cost per KPI across ", x," levels for ", mrm$rc_type)
+  # --- Resolve x-axis ---
+  has_units <- !is.null(mrm$units_col) && !is.null(mrm$cost_per_unit)
+  if (x_var == "units") {
+    if (!has_units) stop("Units not available; fit the model with a `units` column.", call. = FALSE)
+    if (!"units" %in% names(response_df)) {
+      response_df$units <- response_df[[x_col]] / mrm$cost_per_unit
+    }
+    x_plot <- "units"
+    x_lab <- "Units"
+    x_scale <- ggplot2::scale_x_continuous(labels = scales::comma)
+  } else {
+    x_plot <- x_col
+    x_lab <- "Spend"
+    x_scale <- ggplot2::scale_x_continuous(labels = scales::dollar_format())
+  }
 
-  p =
-    ggplot2::ggplot(data = response_df[!is.infinite(response_df[[y_cp]]), ], aes(x = !!sym(x), y = !!sym(y_cp))) +
-    ggplot2::geom_line(color = "blue") +
-    ggplot2::geom_ribbon(data = response_df[!is.infinite(response_df[[y_cp]]), ], aes(x = !!sym(x), ymin = !!sym(y_cp_lower), ymax = !!sym(y_cp_upper)), alpha = 0.5, fill = "lightblue") +
-    ggplot2::labs(title = ptitle, x = x, y = "Cost Per KPI") +
+  # --- Title ---
+  channel <- hlpr_channel_name(mrm)
+  ptitle <- paste0(channel, " \u2014 Cost per KPI")
+
+  # --- Filter infinite values ---
+  plot_data <- response_df[is.finite(response_df$cp), ]
+
+  # --- Base plot with CI ribbon ---
+  p <- ggplot2::ggplot(plot_data, ggplot2::aes(x = !!ggplot2::sym(x_plot), y = .data$cp)) +
+    ggplot2::geom_ribbon(
+      ggplot2::aes(ymin = .data$cp_lower, ymax = .data$cp_upper),
+      fill = pal[["ci_band"]], alpha = 0.5,
+      data = plot_data[is.finite(plot_data$cp_lower) & is.finite(plot_data$cp_upper), ]
+    ) +
+    ggplot2::geom_line(color = pal[["cp"]], linewidth = 0.8) +
+    x_scale +
     ggplot2::scale_y_continuous(labels = scales::dollar_format(), limits = c(0, NA)) +
-    ggplot2::scale_x_continuous(labels = scales::dollar_format()) +
+    ggplot2::labs(title = ptitle, x = x_lab, y = "Cost per KPI") +
     ggplot2::theme_minimal()
 
-  if(markup == TRUE){
+  # --- Markup ---
+  if (markup) {
+    p <- p + hlpr_range_annotations(mrm, x_var = x_var)
 
-    params_ = unlist(mrm_params(mrm, scaled, cost_per_unit, response_rate)$center)
-    x_ = mean(response_df[[1]], na.rm = TRUE) * 0.1
-    x_ranges = mrm$returnes_ranges
-
-    p =
-      p + geom_vline(xintercept = params_["e"], linetype = "dashed", color = "purple") +
-      geom_rect(
-        data = x_ranges,
-        ggplot2::aes(xmin = !!sym(paste0(x,"_min")), xmax = !!sym(paste0(x,"_max")), ymin = -Inf, ymax = Inf),
-        fill = "green", alpha = 0.2, inherit.aes = FALSE
+    # Current point marker
+    s <- mrm$summary
+    if (!is.null(s)) {
+      if (x_var == "units" && has_units) {
+        x_cur <- s$weekly_spend / mrm$cost_per_unit
+      } else {
+        x_cur <- s$weekly_spend
+      }
+      cur_df <- data.frame(xc = x_cur, yc = s$cp_at_current)
+      p <- p + ggplot2::geom_point(
+        data = cur_df,
+        ggplot2::aes(x = .data$xc, y = .data$yc),
+        shape = 21, size = 3, fill = pal[["current"]], color = "white",
+        stroke = 0.8, inherit.aes = FALSE
       )
+    }
   }
 
-  return(p)
+  p
 }
-

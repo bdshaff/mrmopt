@@ -14,7 +14,7 @@ mrm_response_function(mrm, location = "center", scaled = TRUE)
 \item{scaled}{A logical indicating whether the model was fitted on scaled data. Default is TRUE.}
 }
 \value{
-A function that takes a numeric vector of x values and returns the corresponding y values based on the specified response model and parameters.
+A function that takes a numeric vector of spend values and returns the corresponding KPI values based on the specified response model and parameters.
 }
 \description{
 This function extracts the response function from a fitted model object. It allows you to specify which location's parameters to use (lower, center, or upper).

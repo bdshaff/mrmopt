@@ -1,0 +1,314 @@
+---
+title: "Media Mix Optimization"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Media Mix Optimization}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment  = "#>",
+  fig.width  = 7,
+  fig.height = 5,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+```{r libs}
+library(mrmopt)
+library(ggplot2)
+library(dplyr)
+```
+
+## Overview
+
+Once you have fitted response curves for each media channel, `opt_mix()`
+finds the budget allocation that maximises total KPI. It supports two
+optimization methods:
+  
+- **Point estimate** (`method = "point"`): uses the posterior median
+  parameters from each model. Fast — typically under one second.
+- **Posterior sampling** (`method = "posterior"`): optimises over many
+  posterior draws, producing a **distribution** of optimal allocations
+  that reflects Bayesian uncertainty. Takes a few seconds.
+
+This vignette walks through the full optimization workflow using the
+`mrmopt_data` example dataset.
+
+---
+
+## 1. Fitting the Models
+
+We start by fitting a response curve for each channel. In practice you
+would compare multiple curve types per channel and select the best fit
+(see the *Model Comparison & Diagnostics* vignette). Here we use
+Gompertz curves for simplicity.
+
+```{r fit-models, results = "hide"}
+data(mrmopt_data)
+
+channels <- c("Paid Search", "Paid Social", "Display",
+              "Online Video", "TV")
+
+models <- list()
+for (ch in channels) {
+  d <- mrmopt_data |> filter(channel == ch)
+  
+  # Use log_logistic for TV (log-scale channel), gompertz for the rest
+  curve_type <- if (ch == "TV") "log_logistic" else "gompertz"
+  
+  models[[ch]] <- fit_response(
+    data = d, spend = "spend", kpi = "conversions", date = "week",
+    type = curve_type
+  )
+}
+```
+
+The result is a named list of `mrmfit` objects — the required input for
+`opt_mix()`.
+
+---
+
+## 2. Point Estimate Optimization
+
+The simplest call uses the default budget (total current weekly spend
+across all channels) and point-estimate parameters:
+
+```{r opt-point}
+opt_point <- opt_mix(models, method = "point")
+```
+
+### Inspecting the Result
+
+`print()` gives a formatted summary:
+
+```{r print-point}
+print(opt_point)
+```
+
+`summary()` returns a tidy tibble comparing current vs. optimal
+allocation with absolute and percentage deltas:
+
+```{r summary-point}
+summary(opt_point) |>
+  select(channel, spend_delta_pct, kpi_delta_pct, cp_delta)
+```
+
+### Visualising the Allocation
+
+`plot()` supports several plot types. The default is `"allocation"`,
+which shows current vs. optimal spend as grouped bars:
+
+```{r plot-allocation, fig.cap = "Current vs. optimal spend allocation."}
+plot(opt_point, type = "allocation")
+```
+
+The `"comparison"` type produces a dumbbell chart showing the direction
+and magnitude of spend reallocation:
+
+```{r plot-comparison, fig.cap = "Spend reallocation from current to optimal."}
+plot(opt_point, type = "comparison")
+```
+
+---
+
+## 3. Response Curves and Returns
+
+To understand *why* the optimizer reallocates spend, overlay the current
+and optimal positions on each channel's response curve:
+
+```{r plot-curves, fig.cap = "Response curves with current (red) and optimal (blue) spend positions.", fig.height = 6}
+plot(opt_point, type = "curves")
+```
+
+The `"returns"` plot shows where the current and optimal points sit on
+each channel's average return (AR) and marginal return (MR) curves —
+this is where you can see the efficiency trade-offs driving the
+allocation:
+
+```{r plot-returns, fig.cap = "AR and MR curves at current and optimal spend.", fig.height = 6}
+plot(opt_point, type = "returns")
+```
+
+---
+
+## 4. Posterior Optimization
+
+Point estimates ignore parameter uncertainty. Posterior optimization
+runs the solver across multiple MCMC draws, producing a distribution of
+solutions:
+
+```{r opt-posterior}
+opt_post <- opt_mix(
+  models,
+  method  = "posterior",
+  n_draws = 200,
+  seed    = 5291
+)
+```
+
+```{r print-posterior}
+print(opt_post)
+```
+
+The `"posterior"` plot type shows the distribution of optimal spend per
+channel as violin plots:
+
+```{r plot-posterior, fig.cap = "Posterior distribution of optimal allocations across 200 draws."}
+plot(opt_post, type = "posterior")
+```
+
+The `"allocation"` plot adds 95% credible interval error bars when used
+with a posterior result:
+
+```{r plot-alloc-post, fig.cap = "Optimal allocation with 95% CIs from posterior optimization."}
+plot(opt_post, type = "allocation")
+```
+
+---
+
+## 5. Comparing Methods
+
+`compare()` produces a side-by-side diff of two optimization results:
+
+```{r compare}
+comp <- compare(opt_point, opt_post)
+comp |> select(channel, spend_point, spend_posterior, spend_diff_pct, kpi_diff_pct)
+```
+
+`plot()` on a compare result produces a dumbbell chart:
+
+```{r plot-compare, fig.cap = "Point vs. posterior optimal spend per channel."}
+plot(comp, type = "spend")
+```
+
+---
+
+## 6. Period Budgets
+
+Response curves model **weekly** spend-to-KPI relationships, but
+planning often involves period budgets (quarterly, annual). The
+`budget` and `n_weeks` arguments translate a total period budget into
+weekly optimization:
+
+```{r opt-annual}
+opt_annual <- opt_mix(
+  models,
+  method  = "point",
+  budget  = 10000000,
+  n_weeks = 52
+)
+print(opt_annual)
+```
+
+The solution reports both weekly and period-level totals. The
+underlying assumption is that the response curve is stationary across
+the period — if spend-response relationships vary seasonally, this is
+an approximation.
+
+---
+
+## 7. Constraints
+
+### Auto-Generated Constraints
+
+By default, `opt_mix()` derives bounds from each model's return rate
+range and a `bounds_multiplier` (default 3). This prevents the optimizer
+from extrapolating far beyond observed spend levels.
+
+### User-Supplied Constraints
+
+For more control, pass a data frame with per-channel bounds:
+
+```{r constraints-absolute}
+my_constraints <- tibble(
+  channel   = names(models),
+  min_spend = c(10000, 5000, 3000, 8000, 20000),
+  max_spend = c(80000, 50000, 30000, 60000, 150000)
+)
+
+opt_constrained <- opt_mix(
+  models,
+  method      = "point",
+  budget      = 250000,
+  constraints = my_constraints
+)
+print(opt_constrained)
+```
+
+### Share-Based Constraints
+
+You can also set constraints as a fraction of total budget. For example,
+ensuring TV gets at least 20% but no more than 40% of the budget:
+
+```{r constraints-share}
+share_constraints <- tibble(
+  channel   = names(models),
+  min_spend = rep(0, 5),
+  max_spend = rep(200000, 5),
+  min_share = c(NA, NA, NA, NA, 0.20),
+  max_share = c(NA, NA, NA, NA, 0.40)
+)
+
+opt_share <- opt_mix(
+  models,
+  method      = "point",
+  budget      = 250000,
+  constraints = share_constraints
+)
+print(opt_share)
+```
+
+When both absolute and share-based bounds are present, the **tighter
+constraint wins**.
+
+### Fixed Channels
+
+To lock a channel at a specific spend level (e.g., a contractual
+commitment), set `fixed = TRUE`:
+
+```{r constraints-fixed}
+fixed_constraints <- tibble(
+  channel   = names(models),
+  min_spend = c(0, 0, 0, 0, 50000),
+  max_spend = c(200000, 200000, 200000, 200000, 200000),
+  fixed     = c(FALSE, FALSE, FALSE, FALSE, TRUE)
+)
+
+opt_fixed <- opt_mix(
+  models,
+  method      = "point",
+  budget      = 250000,
+  constraints = fixed_constraints
+)
+```
+
+TV is locked at $50,000/week; the remaining $200,000 is optimized
+across the other four channels.
+
+```{r compare-constrained, fig.cap = "Unconstrained vs. fixed-TV optimization."}
+comp_fixed <- compare(opt_point, opt_fixed, labels = c("unconstrained", "fixed_TV"))
+plot(comp_fixed, type = "spend")
+```
+
+---
+
+## Summary
+
+| Function / Method | Purpose |
+|-------------------|---------|
+| `opt_mix(method = "point")` | Fast single-solution optimization |
+| `opt_mix(method = "posterior")` | Bayesian optimization with uncertainty |
+| `print()` | Formatted console summary |
+| `summary()` | Tidy comparison tibble with deltas |
+| `plot(type = "allocation")` | Grouped bar: current vs. optimal |
+| `plot(type = "comparison")` | Dumbbell: current → optimal |
+| `plot(type = "curves")` | Response curves with current + optimal points |
+| `plot(type = "returns")` | AR/MR curves at current + optimal |
+| `plot(type = "posterior")` | Violin of posterior allocations |
+| `compare()` | Side-by-side diff of two results |
+| `plot(compare_result)` | Dumbbell chart of two results |

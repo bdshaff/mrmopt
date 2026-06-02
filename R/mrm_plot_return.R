@@ -1,106 +1,121 @@
-#' Plot Marginal and Absolute Rates of Return for Multiple Resource Models
+#' Plot Absolute and Marginal Rates of Return
 #'
-#' This function generates a plot comparing the Marginal Rate of Return (MR) and Absolute Rate of Return (AR) for multiple resource models. It highlights key points such as the maximum MR and the intersection point where MR equals AR.
-#' @param mrm A list of fitted model objects (e.g., brmsfit objects).
-#' @param location A character string specifying which location to use for MR and AR calculations. Options are "center", "lower", or "upper". Default is "center".
-#' @param xrange A numeric vector of length 2 specifying the range of x values to consider. If NULL, the range is determined from the data.
-#' @param length.out An integer specifying the number of points to generate for the x-axis. Default is NULL.
-#' @param scaled A logical value indicating whether to use scaled values for the calculations. Default is TRUE.
-#' @return A ggplot object visualizing the MR and AR for each model.
-#' @details The function computes the MR and AR for each model in the list and creates a faceted plot. It highlights the maximum MR point in red and the intersection point where MR equals AR in blue. A shaded green area indicates the range between these two points.
-#'
+#' @param mrm A fitted model object returned by \code{\link{fit_response}}.
+#' @param location Which parameter estimate to use: \code{"center"} (default),
+#'   \code{"lower"}, or \code{"upper"}.
+#' @param xrange Numeric vector of length 2 for the x range. NULL uses defaults.
+#' @param length.out Number of points. Default is 1000.
+#' @param scaled Logical; plot on original scale? Default is TRUE.
+#' @param markup Logical; add range annotations and current-point markers?
+#'   Default is TRUE.
+#' @param x_var Character; \code{"spend"} (default) or \code{"units"}.
+#' @return A ggplot object.
 #' @export
 
+mrm_plot_return <- function(mrm,
+                            location = "center",
+                            xrange = NULL,
+                            length.out = 1000,
+                            scaled = TRUE,
+                            markup = TRUE,
+                            x_var = c("spend", "units")) {
 
-mrm_plot_return = function(mrm, location = "center", xrange = NULL, length.out = 1000, scaled = TRUE, markup = FALSE){
-
-  if(!is.brmsfit(mrm)){
-    stop("mrm must be a fitted model object created by fit_response()")
+  if (!brms::is.brmsfit(mrm)) {
+    stop("mrm must be a fitted model object created by fit_response()", call. = FALSE)
   }
 
-  cost_per_unit = mrm$cost_per_unit
-  response_rate = mrm$response_rate
+  x_var <- match.arg(x_var)
+  pal <- mrm_palette()
 
-  if(!is.null(xrange) | length.out != 1000 | scaled != TRUE){
-    response_df = mrm_infer(mrm, xrange = xrange, length.out = length.out, scaled = scaled, cost_per_unit = cost_per_unit, response_rate = response_rate)
-    x_range_df = mrm_returns_ranges(mrm, xrange = xrange, length.out = length.out, scaled = scaled, cost_per_unit = cost_per_unit, response_rate = response_rate)
+  # --- Data ---
+  if (!is.null(xrange) || length.out != 1000 || !isTRUE(scaled)) {
+    response_df <- mrm_infer(mrm, xrange = xrange, length.out = length.out, scaled = scaled)
   } else {
-    response_df = mrm$response_df
-    x_range_df = mrm$returnes_ranges
+    response_df <- mrm$response_df
   }
 
-  #response_df = mrm_infer(mrm, xrange = xrange)
-  x = names(response_df)[1]
-  response_df$channel = x
+  x_col <- names(response_df)[1]
 
-
-  if(location == "center"){
-    response_df$ar = response_df$ar
-    response_df$mr = response_df$mr
-  } else if(location == "lower"){
-    response_df$ar = response_df$ar_lower
-    response_df$mr = response_df$mr_lower
-  } else if(location == "upper"){
-    response_df$ar = response_df$ar_upper
-    response_df$mr = response_df$mr_upper
+  # --- Select location ---
+  if (location == "lower") {
+    response_df$ar_plot <- response_df$ar_lower
+    response_df$mr_plot <- response_df$mr_lower
+  } else if (location == "upper") {
+    response_df$ar_plot <- response_df$ar_upper
+    response_df$mr_plot <- response_df$mr_upper
   } else {
-    stop("location must be one of 'center', 'lower', or 'upper'")
+    response_df$ar_plot <- response_df$ar
+    response_df$mr_plot <- response_df$mr
   }
 
-  maxmr_df =
-    response_df |>
-    dplyr::group_by(channel) |>
-    dplyr::filter(mr == max(mr, na.rm = TRUE)) |>
-    select(channel, !!sym(x), mr)
+  # --- Resolve x-axis ---
+  has_units <- !is.null(mrm$units_col) && !is.null(mrm$cost_per_unit)
+  if (x_var == "units") {
+    if (!has_units) stop("Units not available; fit the model with a `units` column.", call. = FALSE)
+    if (!"units" %in% names(response_df)) {
+      response_df$units <- response_df[[x_col]] / mrm$cost_per_unit
+    }
+    x_plot <- "units"
+    x_lab <- "Units"
+    x_scale <- ggplot2::scale_x_continuous(labels = scales::comma)
+  } else {
+    x_plot <- x_col
+    x_lab <- "Spend"
+    x_scale <- ggplot2::scale_x_continuous(labels = scales::dollar_format())
+  }
 
-  maxar_df =
-    response_df |>
-    dplyr::group_by(channel) |>
-    dplyr::filter(ar == max(ar, na.rm = TRUE)) |>
-    select(channel, !!sym(x), ar)
+  # --- Title / subtitle ---
+  channel <- hlpr_channel_name(mrm)
+  ptitle <- paste0(channel, " \u2014 AR & MR")
 
-  x_range_df =
-    maxmr_df |>
-    select(channel, !!sym(x)) |>
-    left_join(
-      maxar_df |> select(channel, !!sym(x)), by = "channel", suffix = c("_min", "_max")
-    )
+  # --- Pivot to long for proper legend ---
+  plot_df <- data.frame(
+    x = rep(response_df[[x_plot]], 2),
+    value = c(response_df$ar_plot, response_df$mr_plot),
+    metric = rep(c("Absolute Return (AR)", "Marginal Return (MR)"),
+                 each = nrow(response_df))
+  )
 
-  p = response_df |>
-    dplyr::select(channel, !!sym(x), ar, mr) |>
-    tidyr::pivot_longer(cols = c(ar, mr), names_to = "type", values_to = "value") |>
-    ggplot2::ggplot(aes(x = !!sym(x), y = value, color = type)) +
-    ggplot2::geom_line() +
+  color_map <- c(
+    "Absolute Return (AR)" = pal[["ar"]],
+    "Marginal Return (MR)" = pal[["mr"]]
+  )
+
+  p <- ggplot2::ggplot(plot_df, ggplot2::aes(x = .data$x, y = .data$value, color = .data$metric)) +
+    ggplot2::geom_line(linewidth = 0.7, na.rm = TRUE) +
+    ggplot2::scale_color_manual(values = color_map, name = NULL) +
+    x_scale +
+    ggplot2::scale_y_continuous(labels = scales::comma) +
+    ggplot2::labs(title = ptitle, x = x_lab, y = "Rate") +
     ggplot2::theme_minimal() +
-    ggplot2::theme(legend.position = "none") +
-    #ensure separate annotations for each facet
-    ggplot2::labs(x = x, y = "Rate", title = "Absolute and Marginal Rates of Return") +
-    ggplot2::scale_x_continuous(labels = scales::dollar_format()) +
-    ggplot2::scale_y_continuous(labels = scales::comma)
+    ggplot2::theme(legend.position = "top")
 
-  if(markup){
-    p = p +
-      ggplot2::geom_point(data = maxar_df, aes(x = !!sym(x), y = ar), color = "blue", size = 2) +
-      ggplot2::geom_vline(data = maxar_df, aes(xintercept = !!sym(x)), color = "blue", linetype = "dashed") +
-      ggplot2::geom_point(data = maxmr_df, aes(x = !!sym(x), y = mr), color = "red", size = 2) +
-      ggplot2::geom_vline(data = maxmr_df, aes(xintercept = !!sym(x)), color = "red", linetype = "dashed") +
-      ggplot2::geom_rect(
-        data = x_range_df,
-        ggplot2::aes(xmin = !!sym(paste0(x,"_min")), xmax = !!sym(paste0(x,"_max")), ymin = -Inf, ymax = Inf),
-        fill = "green", alpha = 0.2, inherit.aes = FALSE
-      ) +
-      #add x and y labels to the point
-      ggplot2::geom_text(
-        data = maxar_df,
-        ggplot2::aes(x = !!sym(x), y = ar, label = paste0("(", round(!!sym(x), 2), ", ", round(ar, 2), ")")),
-        vjust = -1, color = "blue", size = 3
-      ) +
-      ggplot2::geom_text(
-        data = maxmr_df,
-        ggplot2::aes(x = !!sym(x), y = mr, label = paste0("(", round(!!sym(x), 2), ", ", round(mr, 2), ")")),
-        vjust = 2, color = "red", size = 3
+  # --- Markup ---
+  if (markup) {
+    p <- p + hlpr_range_annotations(mrm, x_var = x_var)
+
+    # Current point markers on both curves
+    s <- mrm$summary
+    if (!is.null(s)) {
+      if (x_var == "units" && has_units) {
+        x_cur <- s$weekly_spend / mrm$cost_per_unit
+      } else {
+        x_cur <- s$weekly_spend
+      }
+
+      cur_pts <- data.frame(
+        x = c(x_cur, x_cur),
+        value = c(s$ar_at_current, s$mr_at_current),
+        metric = c("Absolute Return (AR)", "Marginal Return (MR)")
       )
+
+      p <- p + ggplot2::geom_point(
+        data = cur_pts,
+        ggplot2::aes(x = .data$x, y = .data$value, color = .data$metric),
+        shape = 21, size = 3, fill = pal[["current"]], stroke = 0.8
+      )
+    }
   }
 
-  return(p)
+  p
 }

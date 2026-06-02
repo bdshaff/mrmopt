@@ -2,7 +2,7 @@
 % Please edit documentation in R/mrm_plot_response.R
 \name{mrm_plot_response}
 \alias{mrm_plot_response}
-\title{Plot the response of a fitted model}
+\title{Plot the response curve of a fitted model}
 \usage{
 mrm_plot_response(
   mrm,
@@ -10,28 +10,36 @@ mrm_plot_response(
   length.out = 1000,
   scaled = TRUE,
   points = TRUE,
-  markup = FALSE
+  markup = TRUE,
+  show_mr = FALSE,
+  x_var = c("spend", "units")
 )
 }
 \arguments{
-\item{mrm}{A fitted model object. It can be a brmsfit object or a list of brmsfit objects.}
+\item{mrm}{A fitted model object returned by \code{\link{fit_response}}.}
 
-\item{xrange}{A vector of length 2 specifying the range of x values to plot. If NULL, the range of x values in the data is used.}
+\item{xrange}{A vector of length 2 specifying the x range. If NULL, uses
+the default from inference.}
 
-\item{length.out}{An integer specifying the number of points to generate for the x-axis. Default is 1000.}
+\item{length.out}{Number of points to generate. Default is 1000.}
 
-\item{scaled}{A logical value indicating whether to plot the scaled response. Default is TRUE.}
+\item{scaled}{Logical; plot on the original (unscaled) data scale? Default
+is TRUE.}
 
-\item{points}{A logical value indicating whether to plot the data points. Default is TRUE.}
+\item{points}{Logical; overlay observed data points? Default is TRUE.}
 
-\item{markup}{A logical value indicating whether to add markup lines to the plot. Default is FALSE.}
+\item{markup}{Logical; add range annotations and current-point marker?
+Default is TRUE.}
+
+\item{show_mr}{Logical; overlay the marginal return curve on a secondary
+y-axis? Default is FALSE.}
+
+\item{x_var}{Character; \code{"spend"} (default) or \code{"units"} for the
+x-axis variable.}
 }
 \value{
 A ggplot object.
 }
 \description{
-This function plots the response of a fitted model.
-}
-\details{
-The function plots the response of a fitted model object. It uses ggplot2 to create the plot and includes a title and subtitle with information about the model.
+Plot the response curve of a fitted model
 }

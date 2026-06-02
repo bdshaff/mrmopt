@@ -12,14 +12,17 @@
 #' @details The reflected Weibull function is defined as:
 #' \deqn{y = c + (d - c) * (1 - exp(-exp( b * (-log(x) + log(e)))))}
 #' @examples
+#' \dontrun{
 #' x_values <- seq(0, 10, by = 0.1)
 #' b <- -5
 #' c <- 0
 #' d <- 1
 #' e <- 5
 #' result <- rm_WeibullRef(x_values, b, c, d, e)
-#' plot(x_values, result, type = "l", main = "Reflected Weibull Response Model", xlab = "x", ylab = "y")
-#' @export
+#' plot(x_values, result, type = "l",
+#'      main = "Reflected Weibull Response Model", xlab = "x", ylab = "y")
+#' }
+#' @keywords internal
 
 rm_WeibullRef = function(x, b, c, d, e){
 

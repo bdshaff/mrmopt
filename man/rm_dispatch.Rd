@@ -25,3 +25,4 @@ The available response models are:
 - "weibull"
 - "reflected_weibull"
 }
+\keyword{internal}

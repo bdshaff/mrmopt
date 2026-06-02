@@ -33,9 +33,10 @@ response_models_comparison <- function(x = seq(0, 1, by = 0.01), b = -8, c = 0, 
 
 
   plotly::ggplotly(
-    response_curves |>
-      tidyr::pivot_longer(-x, names_to = "model", values_to = "y") |>
-      ggplot2::ggplot(ggplot2::aes(x, y, color = model)) +
+    ggplot2::ggplot(
+      tidyr::pivot_longer(response_curves, -x, names_to = "model", values_to = "y"),
+      ggplot2::aes(x, y, color = model)
+    ) +
       ggplot2::geom_line() +
       ggplot2::labs(
         title = paste0("

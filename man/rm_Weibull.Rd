@@ -29,6 +29,7 @@ The Weibull function is defined as:
 \deqn{y = c + (d - c) * exp(-exp( b * (log(x) - log(e))))}
 }
 \examples{
+\dontrun{
 x_values <- seq(0, 10, by = 0.1)
 b <- -1
 c <- 0
@@ -37,3 +38,5 @@ e <- 5
 result <- rm_Weibull(x_values, b, c, d, e)
 plot(x_values, result, type = "l", main = "Weibull Response Model", xlab = "x", ylab = "y")
 }
+}
+\keyword{internal}

@@ -13,6 +13,7 @@
 #' @details The log-logistic function is defined as:
 #' \deqn{y = c + \frac{(d - c)}{1 + e^{-b(log(x) - log(e))}}}
 #' @examples
+#' \dontrun{
 #' x_values <- seq(0, 10, by = 0.1)
 #' b <- -2
 #' c <- 0
@@ -20,7 +21,8 @@
 #' e <- 5
 #' result <- rm_LogLogistic(x_values, b, c, d, e)
 #' plot(x_values, result, type = "l", main = "Log-logistic Response Model", xlab = "x", ylab = "y")
-#' @export
+#' }
+#' @keywords internal
 
 rm_LogLogistic = function(x, b, c, d, e){
 

@@ -18,19 +18,21 @@ opt_generate_constraints <- function(mrms_list, type = "return_rates", bounds_mu
     }
 
     constraints_df <-
-      map(mrms_list, ~ as.data.frame(.x$returnes_ranges), .id = "channel") %>%
-      map(~ set_names(.x, c("channel", "min", "mr", "max", "ar"))) %>%
-      bind_rows(.id = "channel") %>%
-      select(-mr, -ar) %>%
+      bind_rows(
+        map(mrms_list, ~ tibble::tibble(
+          min = .x$summary$range_min_spend,
+          max = .x$summary$range_max_spend
+        )),
+        .id = "channel"
+      ) %>%
       mutate(
         lb = min / bounds_multiplier,
         ub = max * bounds_multiplier,
         x0 = (min + max) / 2
       ) %>%
       select(-min, -max) %>%
-      mutate(weekly_spend =  map_dbl(mrms_list, ~hlpr_get_weekly_spend(.x))) %>%
+      mutate(weekly_spend = map_dbl(mrms_list, ~hlpr_get_weekly_spend(.x))) %>%
       mutate(total_x = sum(weekly_spend)) %>%
-      #esnure lb is greater than 0 and ub is greater than x0 and x0 is between lb and ub
       mutate(
         lb = pmax(lb, 0),
         ub = pmax(ub, x0),

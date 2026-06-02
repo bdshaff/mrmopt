@@ -1,4 +1,12 @@
-url: ~
+url: https://bdshaff.github.io/mrmopt/
 template:
   bootstrap: 5
+
+articles:
+  - title: "Getting Started"
+    contents:
+      - response_curve_theory
+      - fitting_and_analysis
+      - diagnostics_and_comparison
+      - optimization
 

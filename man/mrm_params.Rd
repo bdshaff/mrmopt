@@ -4,16 +4,12 @@
 \alias{mrm_params}
 \title{Extract parameters from a fitted model}
 \usage{
-mrm_params(rc_fit, scaled = TRUE, cost_per_unit = 1, response_rate = 1)
+mrm_params(rc_fit, scaled = TRUE)
 }
 \arguments{
 \item{rc_fit}{A fitted model object.}
 
 \item{scaled}{A logical indicating whether the model was fitted on scaled data. Default is TRUE.}
-
-\item{cost_per_unit}{The cost per unit of the independent variable. Default is 1.0.}
-
-\item{response_rate}{The response rate to be used in return calculations. Default is 1.0.}
 }
 \value{
 A list containing the center, lower, and upper bounds of the parameters.
@@ -22,5 +18,7 @@ A list containing the center, lower, and upper bounds of the parameters.
 This function extracts the parameters from a fitted model object.
 }
 \details{
-The function extracts the parameters from the fitted model object and returns them in a list.
+The function extracts the parameters from the fitted model object
+  and returns them in a list. When \code{scaled = TRUE}, parameters are
+  unscaled back to original data units (spend for b/e, KPI for c/d).
 }

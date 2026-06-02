@@ -8,3 +8,7 @@
 ^Meta$
 ^\.positai$
 ^\.claude$
+^AGENTS\.md$
+^data-raw$
+^\.RDataTmp$
+^LICENSE\.md$

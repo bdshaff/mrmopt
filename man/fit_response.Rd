@@ -6,12 +6,17 @@
 \usage{
 fit_response(
   data,
-  x = NULL,
-  y = NULL,
+  spend = NULL,
+  kpi = NULL,
+  date = NULL,
+  units = NULL,
   auto = TRUE,
   type = "gompertz",
   scale_data = TRUE,
   scale_method = "min_max",
+  midpoint_range = NULL,
+  ceiling_max = NULL,
+  floor_min = NULL,
   prior = NULL,
   chains = 4,
   iter = 4000,
@@ -19,33 +24,81 @@ fit_response(
   control = list(adapt_delta = 0.95),
   infer_xrange = NULL,
   infer_length = 1000,
-  cost_per_unit = 1,
-  response_rate = 1,
+  anchor_zero = TRUE,
+  refresh = 500,
   ...
 )
 }
 \arguments{
 \item{data}{A data frame containing the data to be fitted.}
 
-\item{x}{The name of the independent variable (predictor).}
+\item{spend}{The name of the spend (independent) variable. This is always
+the x-axis predictor.}
 
-\item{y}{The name of the dependent variable (response).}
+\item{kpi}{The name of the KPI (dependent/response) variable.}
 
-\item{auto}{Logical indicating whether to automatically scale the data and set priors. Default is TRUE.}
+\item{date}{The name of the date column in the data.}
 
-\item{type}{The type of response curve model to fit. Options are "gompertz", "logistic", "weibull", or "exponential".}
+\item{units}{Optional name of a units column (e.g., impressions, GRPs). When
+supplied, cost per unit (CPU) is computed as
+\code{sum(spend) / sum(units)} and a \code{units} column is added to the
+inference output from \code{\link{mrm_infer}}.}
 
-\item{infer_xrange}{Optional range of x values for inference. If NULL, uses the range of x in the data.}
+\item{auto}{Logical indicating whether to automatically scale the data and
+set priors. Default is TRUE.}
 
-\item{infer_length}{The number of points to generate for inference. Default is 1000.}
+\item{type}{The type of response curve model to fit. Options are "gompertz",
+"logistic", "log_logistic", "reflected_gompertz", "weibull", or
+"reflected_weibull".}
 
-\item{cost_per_unit}{The cost per unit of the independent variable. Default is 1.0.}
+\item{scale_data}{Logical indicating whether to scale the data before fitting.
+Default is TRUE.}
 
-\item{response_rate}{The response rate to be used in return calculations. Default is 1.0.}
+\item{scale_method}{The method used for scaling. Either "min_max" or "std".}
 
-\item{...}{Additional arguments to be passed to the brms::brm function.}
+\item{midpoint_range}{A two-element numeric vector specifying the midpoint
+bounds as fractions of the x-axis range (e.g., \code{c(0.1, 0.9)}).
+See \code{\link{mrm_prior}} for details.}
 
-\item{infer_scaled}{Logical indicating whether to return scaled inference results. Default is TRUE.}
+\item{ceiling_max}{A multiplier on the observed max of y for the ceiling
+upper bound (e.g., \code{3} means ceiling can be up to 3x observed max).
+See \code{\link{mrm_prior}} for details.}
+
+\item{floor_min}{A scalar lower bound for the floor in original data units.
+Default is 0. See \code{\link{mrm_prior}} for details.}
+
+\item{prior}{An optional \code{brmsprior} object for full manual control
+over priors. If provided, \code{midpoint_range}, \code{ceiling_max}, and
+\code{floor_min} are ignored. When \code{auto = FALSE} and
+\code{scale_data = FALSE}, this is required.}
+
+\item{chains}{Number of Markov chains. Default is 4.}
+
+\item{iter}{Total number of iterations per chain. Default is 4000.}
+
+\item{warmup}{Number of warmup iterations per chain. Default is 1000.}
+
+\item{control}{A list of control parameters for the sampler. Default is
+\code{list(adapt_delta = 0.95)}.}
+
+\item{infer_xrange}{Optional range of x values for inference. If NULL, uses
+the range of x in the data.}
+
+\item{infer_length}{The number of points to generate for inference.
+Default is 1000.}
+
+\item{anchor_zero}{Logical indicating whether to inject a synthetic (0, 0)
+data point to anchor the response curve at the origin. This encodes the
+domain assumption that zero spend produces zero response. Scale values are
+always computed from the real data only; the anchor is scaled using those
+values and appended afterward, so it does not contaminate the scaling.
+Automatically disabled for log-based forms. Default is TRUE.}
+
+\item{refresh}{How often Stan reports sampling progress (in iterations).
+Default is 500. Set to 0 for silent sampling.}
+
+\item{...}{Additional arguments to be passed to the \code{\link[brms]{brm}}
+function.}
 }
 \value{
 A fitted model object.
@@ -54,5 +107,17 @@ A fitted model object.
 This function fits a response curve model using the brms package.
 }
 \details{
-The function fits a response curve model using the specified type and returns the fitted model object.
+The function fits a response curve model using the specified type
+  and returns the fitted model object. Prior specification can be done in
+  three ways:
+  \enumerate{
+    \item \strong{Automatic} (\code{auto = TRUE}): Data is scaled and
+      default priors are set automatically. You can still customize via
+      \code{midpoint_range}, \code{ceiling_max}, and \code{floor_min}.
+    \item \strong{Simplified} (\code{auto = FALSE}): Use
+      \code{midpoint_range}, \code{ceiling_max}, and/or \code{floor_min}
+      to set intuitive, scale-invariant priors.
+    \item \strong{Manual}: Pass a raw \code{\link[brms]{prior}} object
+      for full control.
+  }
 }

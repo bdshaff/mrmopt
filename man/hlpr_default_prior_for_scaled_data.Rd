@@ -4,14 +4,38 @@
 \alias{hlpr_default_prior_for_scaled_data}
 \title{Helper function to set default priors for scaled data}
 \usage{
-hlpr_default_prior_for_scaled_data(scaled_data, x, y, scale_method)
+hlpr_default_prior_for_scaled_data(
+  scaled_data,
+  x,
+  y,
+  scale_method,
+  type = "gompertz",
+  scale_values = NULL
+)
 }
 \arguments{
-\item{scale_method}{The method used for scaling the data. Currently, only "min_max" is supported.}
+\item{scaled_data}{The scaled data frame.}
+
+\item{x}{Name of the x column.}
+
+\item{y}{Name of the y column.}
+
+\item{scale_method}{The method used for scaling the data.}
+
+\item{type}{The response form type. Default is \code{"gompertz"}.}
+
+\item{scale_values}{List of scaling parameters. Required for the new
+prior system. If NULL, a minimal set is constructed from the data,
+which may not be fully accurate.}
 }
 \value{
-A list of priors for the parameters of the four-parameter logistic model.
+A list of priors for the four-parameter model.
 }
 \description{
-This function sets default priors for the parameters of the four-parameter logistic model when the data has been scaled. The priors are based on the expected range of the parameters after scaling.
+`r lifecycle::badge("deprecated")`
+
+This function is deprecated in favor of [mrm_prior()] and the internal
+[hlpr_resolve_prior()]. It is retained for backward compatibility and
+now delegates to the new prior resolution system.
 }
+\keyword{internal}

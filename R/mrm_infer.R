@@ -5,13 +5,14 @@
 #' @param xrange A numeric vector of length 2 specifying the range of x values for prediction. Default is NULL, which uses the range of x in the data.
 #' @param length.out An integer specifying the number of points to predict. Default is 1000.
 #' @param scaled A logical indicating whether the model was fitted on scaled data. Default is TRUE.
-#' @param cost_per_unit A numeric value specifying the cost per unit of the independent variable. Default is 1.0.
-#' @param response_rate A numeric value specifying the response rate to be used in return calculations. Default is 1.0.
 #' @return A data frame containing the predicted response values and the model response.
-#' @details The function infers the response from the fitted model object and returns a data frame with the predicted response values and the model response.
+#' @details The function infers the response from the fitted model object and
+#'   returns a data frame with the predicted response values and the model
+#'   response. The x-axis is always in raw spend units. When units were supplied
+#'   at fit time, a \code{units} column is appended (derived as spend / cpu).
 #' @export
 
-mrm_infer <- function(mrm, xrange = NULL, length.out = 1000, scaled = TRUE, cost_per_unit = 1.0, response_rate = 1.0) {
+mrm_infer <- function(mrm, xrange = NULL, length.out = 1000, scaled = TRUE) {
   # Extract necessary components from the model
   rc_type <- mrm$rc_type
   rc_data <- mrm$data
@@ -20,7 +21,10 @@ mrm_infer <- function(mrm, xrange = NULL, length.out = 1000, scaled = TRUE, cost
   response_params <- mrm_params(mrm, scaled = scaled)
 
   if (is.null(xrange)) {
-    xrange <- c(0, 2 * max(rc_data[, x]))
+    x_min_obs <- min(rc_data[[x]], na.rm = TRUE)
+    # For log-based forms (weibull, log_logistic etc.) x must be > 0.
+    # Use the observed minimum rather than 0 to avoid log(0) = -Inf.
+    xrange <- c(x_min_obs, 2 * max(rc_data[[x]], na.rm = TRUE))
   }
 
   if (!is.numeric(xrange) || length(xrange) != 2 || xrange[1] >= xrange[2]) {
@@ -33,85 +37,88 @@ mrm_infer <- function(mrm, xrange = NULL, length.out = 1000, scaled = TRUE, cost
   colnames(new_df) <- x
 
   pred_df <- as.data.frame(predict(mrm, newdata = new_df))
-  pred_df$Est.Error <- smooth.spline(pred_df$Est.Error)$y
 
   # Re-scale back to original scale if necessary
-  if (scaled & !is.null(mrm$scale_method)) {
-    if (mrm$scale_method == "min_max") {
-      x_min <- mrm$scale_values$x_min
-      x_max <- mrm$scale_values$x_max
-      y_min <- mrm$scale_values$y_min
-      y_max <- mrm$scale_values$y_max
+  if (scaled & !is.null(mrm$scale_values)) {
+    sv <- mrm$scale_values
+    x_offset <- if (!is.null(sv$x_offset)) sv$x_offset else 0
 
-      xseq <- xseq * (x_max - x_min) + x_min
-      new_df[[x]] <- cost_per_unit * (new_df[[x]] * (x_max - x_min) + x_min)
-
-      for (col in colnames(pred_df)) {
-        if (grepl("Est.Error", col)) {
-          pred_df[[col]] <- response_rate * (pred_df[[col]] * (y_max - y_min))
-        } else {
-          pred_df[[col]] <- response_rate * (pred_df[[col]] * (y_max - y_min) + y_min)
-        }
-      }
-    }else if(mrm$scale_method == "std"){
-      x_mean <- mrm$scale_values$x_mean
-      x_sd <- mrm$scale_values$x_sd
-      y_mean <- mrm$scale_values$y_mean
-      y_sd <- mrm$scale_values$y_sd
-
-      xseq <- xseq * x_sd + x_mean
-      new_df[[x]] <- cost_per_unit * (new_df[[x]] * x_sd + x_mean)
-
-      for (col in colnames(pred_df)) {
-        if (grepl("Est.Error", col)) {
-          pred_df[[col]] <- response_rate * (pred_df[[col]] * y_sd)
-        } else {
-          pred_df[[col]] <- response_rate * (pred_df[[col]] * y_sd + y_mean)
-        }
-      }
-
-    } else {
-      stop(paste0("Scaling method ", mrm$scale_method, " not supported for inference."))
+    # --- Unscale x ---
+    if (!is.null(sv$x_min) && !is.null(sv$x_max)) {
+      x_range <- sv$x_max - sv$x_min
+      xseq <- xseq * x_range + sv$x_min - x_offset
+      new_df[[x]] <- new_df[[x]] * x_range + sv$x_min - x_offset
+    } else if (!is.null(sv$x_mean) && !is.null(sv$x_sd)) {
+      xseq <- xseq * sv$x_sd + sv$x_mean - x_offset
+      new_df[[x]] <- new_df[[x]] * sv$x_sd + sv$x_mean - x_offset
     }
+
+    # --- Unscale y (predictions) ---
+    if (!is.null(sv$y_min) && !is.null(sv$y_max)) {
+      y_range <- sv$y_max - sv$y_min
+      for (col in colnames(pred_df)) {
+        if (grepl("Est.Error", col)) {
+          pred_df[[col]] <- pred_df[[col]] * y_range
+        } else {
+          pred_df[[col]] <- pred_df[[col]] * y_range + sv$y_min
+        }
+      }
+    } else if (!is.null(sv$y_mean) && !is.null(sv$y_sd)) {
+      for (col in colnames(pred_df)) {
+        if (grepl("Est.Error", col)) {
+          pred_df[[col]] <- pred_df[[col]] * sv$y_sd
+        } else {
+          pred_df[[col]] <- pred_df[[col]] * sv$y_sd + sv$y_mean
+        }
+      }
+    }
+
   } else {
-    new_df[[x]] <- cost_per_unit * new_df[[x]]
-    pred_df <- pred_df * response_rate
+    # No scaling — data is in raw model space
   }
 
-  # Compute model response using the extracted parameters
-  model_response <- purrr::map_dfc(response_params, ~ response(xseq, .x, type = rc_type))
-  model_response$center <- model_response$center * response_rate
-  model_response$lower <- model_response$center - 1.96 * pred_df$Est.Error
-  model_response$upper <- model_response$center + 1.96 * pred_df$Est.Error
-  #model_response$lower <- if_else(model_response$lower < 0, 0, model_response$lower)
+  # Compute analytical center curve from posterior mean parameters
+  center_response <- response(xseq, response_params$center, type = rc_type)
+
+  # Construct smoothed credible bands from brms posterior predictive quantiles,
+  # clamped to >= 0 (response cannot be negative in this domain)
+  lower_smooth <- pmax(smooth.spline(pred_df$Q2.5)$y, 0)
+  upper_smooth <- smooth.spline(pred_df$Q97.5)$y
+
+  model_response <- data.frame(
+    center = center_response,
+    lower = lower_smooth,
+    upper = upper_smooth
+  )
 
   # Combine all results into a single data frame
-  # colnames(pred_df) = paste0(y,"_", colnames(pred_df))
-  # colnames(model_response) = paste0(y,"_",rc_type,"_", colnames(model_response))
   res_df <- cbind(new_df, pred_df, model_response)
   res_df$type <- rc_type
   res_df$resp_var <- y
   res_df$input_var <- x
 
   # Calculate additional metrics: absolute response (ar) and marginal response (mr)
-  # y = paste0(y,"_",rc_type,"_","center")
   y <- "center"
   res_df$ar <- (res_df[[y]] - min(res_df[[y]])) / res_df[[x]]
   res_df$mr <- c(NA, diff(res_df[[y]]) / diff(res_df[[x]]))
   res_df$cp <- (res_df[[x]] / (res_df[[y]] - min(res_df[[y]])) * (sum(res_df[[y]] - min(res_df[[y]])) / sum(res_df[[y]])))
   res_df$cp_lower <- (res_df[[x]] / (res_df[[y]] - min(res_df[[y]])))
 
-  # y = stringr::str_replace(y,"center","lower")
   y <- "lower"
   res_df$ar_lower <- (res_df[[y]] - min(res_df[[y]])) / res_df[[x]]
   res_df$mr_lower <- c(NA, diff(res_df[[y]]) / diff(res_df[[x]]))
 
-  # y = stringr::str_replace(y,"lower","upper")
   y <- "upper"
   res_df$ar_upper <- (res_df[[y]] - min(res_df[[y]])) / res_df[[x]]
   res_df$mr_upper <- c(NA, diff(res_df[[y]]) / diff(res_df[[x]]))
   res_df$cp_upper <- (res_df[[x]] / (res_df[[y]] - min(res_df[[y]])) * (sum(res_df[[y]] - min(res_df[[y]])) / sum(res_df[[y]])))
 
+  # Add units column when units were supplied at fit time
+  if (!is.null(mrm$units_col) && !is.null(mrm$cost_per_unit)) {
+    cpu <- mrm$cost_per_unit
+    x_col <- names(res_df)[1]
+    res_df$units <- res_df[[x_col]] / cpu
+  }
 
   return(res_df)
 }

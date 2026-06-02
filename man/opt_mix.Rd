@@ -2,49 +2,74 @@
 % Please edit documentation in R/opt_mix.R
 \name{opt_mix}
 \alias{opt_mix}
-\title{Optimal Mix Function
-This function computes the optimal mix of channels to maximize the total response given a set of response functions and constraints.}
+\title{Optimize media mix allocation across channels}
 \usage{
 opt_mix(
   mrms,
-  objective = "maximize_y",
-  constraints_type = "return_rates",
-  total_x = NULL,
-  x0 = NULL,
-  lb = NULL,
-  ub = NULL,
-  ineq_constr = NULL,
-  xtol_rel = 1e-10,
-  maxeval = 1000
+  method = c("point", "posterior"),
+  objective = "max_kpi",
+  budget = NULL,
+  n_weeks = 1,
+  constraints = NULL,
+  bounds_multiplier = 3,
+  n_draws = 200,
+  seed = NULL,
+  parallel = FALSE,
+  xtol_rel = 1e-08,
+  maxeval = 1000,
+  verbose = TRUE
 )
 }
 \arguments{
-\item{mrms}{A list of response functions, where each function takes a numeric vector as input and returns a numeric value.}
+\item{mrms}{A named list of `mrmfit` objects (one per channel).}
 
-\item{objective}{A character string indicating the objective of the optimization. Default is "maximize_y".}
+\item{method}{One of `"point"` (default) or `"posterior"`. Point uses
+posterior median parameters; posterior optimizes over multiple MCMC draws.}
 
-\item{constraints_type}{A character string indicating the type of constraints to apply. Default is "return_rates".}
+\item{objective}{One of `"max_kpi"` (default): maximize total KPI given a
+budget constraint.}
 
-\item{total_x}{A numeric value representing the total budget or constraint for the optimization.}
+\item{budget}{Total budget for the period. If `NULL` (default), inferred
+from total current weekly spend across channels.}
 
-\item{x0}{An optional numeric vector representing the initial guess for the optimization. If NULL, a default value will be used.}
+\item{n_weeks}{Number of weeks the budget covers. Used to convert a period
+budget to weekly optimization. Default `1` (budget is already weekly).
+Convenience values: use `52` for annual, `13` for quarterly, `4` for
+monthly.}
 
-\item{lb}{An optional numeric vector representing the lower bounds for each channel. If NULL, default values will be used.}
+\item{constraints}{A data frame with per-channel bounds. Must contain
+columns `channel`, `min_spend`, `max_spend`. If `NULL` (default),
+constraints are auto-generated from model return rate ranges.}
 
-\item{ub}{An optional numeric vector representing the upper bounds for each channel. If NULL, default values will be used.}
+\item{bounds_multiplier}{When `constraints` is `NULL`, multiplier applied
+to auto-detected spend ranges. Default `3`.}
 
-\item{ineq_constr}{An optional function representing additional inequality constraints. If NULL, default constraints will be used.}
+\item{n_draws}{Number of posterior draws to optimize over when
+`method = "posterior"`. Default `200`.}
 
-\item{xtol_rel}{A numeric value representing the relative tolerance for the optimization algorithm. Default is 1.0e-10.}
+\item{seed}{Random seed for draw sampling. Default `NULL`.}
 
-\item{maxeval}{An integer value representing the maximum number of evaluations for the optimization algorithm. Default is 1000.}
+\item{parallel}{Logical; use `future.apply` for parallel posterior
+optimization. Default `FALSE`. Requires a `future::plan()` to be set.}
 
-\item{location}{A character string indicating the location for the response functions. Default is "center".}
+\item{xtol_rel}{Relative tolerance for nloptr. Default `1e-8`.}
+
+\item{maxeval}{Maximum nloptr evaluations per solve. Default `1000`.}
+
+\item{verbose}{Print progress information. Default `TRUE`.}
 }
 \value{
-A list containing the optimization results, including the optimal channel mix and the maximum response value.
+For `method = "point"`: a list with components `solution` (tibble
+  of optimal weekly and period allocations), `constraints` (tibble),
+  `budget_info` (list), and `nloptr_result` (raw solver output).
+
+  For `method = "posterior"`: a list with components `solution_summary`
+  (tibble with median/CI for each channel), `draws_matrix` (matrix of all
+  solutions), `solution_draws` (tibble in long form), and `budget_info`.
 }
 \description{
-Optimal Mix Function
-This function computes the optimal mix of channels to maximize the total response given a set of response functions and constraints.
+Given a set of fitted response curve models, find the optimal spend
+allocation. Supports point-estimate optimization (fast, single solution)
+and posterior-sampling optimization (slower, returns a distribution of
+solutions reflecting Bayesian uncertainty).
 }
