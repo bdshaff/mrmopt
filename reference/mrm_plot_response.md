@@ -1,6 +1,6 @@
-# Plot the response of a fitted model
+# Plot the response curve of a fitted model
 
-This function plots the response of a fitted model.
+Plot the response curve of a fitted model
 
 ## Usage
 
@@ -11,7 +11,9 @@ mrm_plot_response(
   length.out = 1000,
   scaled = TRUE,
   points = TRUE,
-  markup = FALSE
+  markup = TRUE,
+  show_mr = FALSE,
+  x_var = c("spend", "units")
 )
 ```
 
@@ -19,40 +21,40 @@ mrm_plot_response(
 
 - mrm:
 
-  A fitted model object. It can be a brmsfit object or a list of brmsfit
-  objects.
+  A fitted model object returned by
+  [`fit_response`](https://bdshaff.github.io/mrmopt/reference/fit_response.md).
 
 - xrange:
 
-  A vector of length 2 specifying the range of x values to plot. If
-  NULL, the range of x values in the data is used.
+  A vector of length 2 specifying the x range. If NULL, uses the default
+  from inference.
 
 - length.out:
 
-  An integer specifying the number of points to generate for the x-axis.
-  Default is 1000.
+  Number of points to generate. Default is 1000.
 
 - scaled:
 
-  A logical value indicating whether to plot the scaled response.
-  Default is TRUE.
+  Logical; plot on the original (unscaled) data scale? Default is TRUE.
 
 - points:
 
-  A logical value indicating whether to plot the data points. Default is
-  TRUE.
+  Logical; overlay observed data points? Default is TRUE.
 
 - markup:
 
-  A logical value indicating whether to add markup lines to the plot.
+  Logical; add range annotations and current-point marker? Default is
+  TRUE.
+
+- show_mr:
+
+  Logical; overlay the marginal return curve on a secondary y-axis?
   Default is FALSE.
+
+- x_var:
+
+  Character; `"spend"` (default) or `"units"` for the x-axis variable.
 
 ## Value
 
 A ggplot object.
-
-## Details
-
-The function plots the response of a fitted model object. It uses
-ggplot2 to create the plot and includes a title and subtitle with
-information about the model.

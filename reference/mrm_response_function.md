@@ -28,6 +28,6 @@ mrm_response_function(mrm, location = "center", scaled = TRUE)
 
 ## Value
 
-A function that takes a numeric vector of x values and returns the
-corresponding y values based on the specified response model and
+A function that takes a numeric vector of spend values and returns the
+corresponding KPI values based on the specified response model and
 parameters.

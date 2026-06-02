@@ -1,7 +1,12 @@
 # Articles
 
-### All vignettes
+### Getting Started
 
-- [Mix Optimization: A Simulated Example](optimal_simulated_example.md):
-- [Response Models](response_models.md):
-- [Fitting a Response Model: A Simulated Example](simulated_example.md):
+- [Response Curve Theory and Data
+  Requirements](https://bdshaff.github.io/mrmopt/articles/response_curve_theory.md):
+- [Fitting and Analyzing Response Curve
+  Models](https://bdshaff.github.io/mrmopt/articles/fitting_and_analysis.md):
+- [Model Diagnostics and Curve
+  Comparison](https://bdshaff.github.io/mrmopt/articles/diagnostics_and_comparison.md):
+- [Media Mix
+  Optimization](https://bdshaff.github.io/mrmopt/articles/optimization.md):

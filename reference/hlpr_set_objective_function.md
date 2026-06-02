@@ -18,11 +18,6 @@ hlpr_set_objective_function(response_funs)
   A list of functions. Each function should take a single numeric input
   and return a numeric output.
 
-- prices:
-
-  An optional numeric vector of prices corresponding to each response
-  function. If provided,
-
 ## Value
 
 A function that takes a numeric vector as input and returns the negative

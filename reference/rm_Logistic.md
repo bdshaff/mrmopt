@@ -45,6 +45,7 @@ e^{-b(x - e)}}\$\$
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 x_values <- seq(0, 10, by = 0.1)
 b <- -2
 c <- 0
@@ -52,4 +53,5 @@ d <- 1
 e <- 5
 result <- rm_Logistic(x_values, b, c, d, e)
 plot(x_values, result, type = "l", main = "Logistic Response Model", xlab = "x", ylab = "y")
+} # }
 ```

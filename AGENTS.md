@@ -1,0 +1,336 @@
+# mrmopt Package — Project Memory
+
+## Overview
+
+**mrmopt** (Media Response Modeling and Optimization) is an R package by
+Ben Denis Shaffer for Bayesian nonlinear media response modeling. It
+fits saturation/diminishing-returns curves to media spend vs. KPI data
+using `brms` (Stan backend), quantifies uncertainty via posterior
+distributions, and supports media mix optimization via `nloptr`.
+
+- **Version**: 0.1.0
+- **License**: MIT
+- **Docs**: <https://bdshaff.github.io/mrmopt/>
+
+------------------------------------------------------------------------
+
+## Package Structure
+
+    mrmopt/
+    ├── R/                    # 42+ source files
+    ├── tests/testthat/       # 25 test files (testthat, 403+ tests)
+    ├── vignettes/            # 3 tutorials
+    ├── man/                  # Roxygen-generated docs
+    ├── docs/                 # pkgdown site
+    ├── DESCRIPTION
+    └── NAMESPACE
+
+------------------------------------------------------------------------
+
+## Naming Conventions
+
+| Prefix   | Meaning                                   |
+|----------|-------------------------------------------|
+| `mrm_*`  | User-facing analysis/plotting functions   |
+| `fit_*`  | Model fitting entry points                |
+| `opt_*`  | Optimization functions                    |
+| `rm_*`   | Response model curve functions (S-curves) |
+| `hlpr_*` | Internal helper functions                 |
+
+------------------------------------------------------------------------
+
+## Response Curve Types (6 total)
+
+All use 4 parameters: **b** (steepness), **c** (floor), **d** (ceiling),
+**e** (midpoint/inflection).
+
+| Type                 | Form                           | Notes           |
+|----------------------|--------------------------------|-----------------|
+| `logistic`           | `c + (d-c)/(1 + exp(b*(x-e)))` | Standard        |
+| `gompertz`           | `c + (d-c)*exp(-exp(b*(x-e)))` | Standard        |
+| `reflected_gompertz` | Reflected S-curve              | Standard        |
+| `weibull`            | Log-based                      | Requires x \> 0 |
+| `log_logistic`       | Log-based                      | Requires x \> 0 |
+| `reflected_weibull`  | Reflected log-based            | Requires x \> 0 |
+
+Log-based forms (`weibull`, `log_logistic`, `reflected_weibull`) use
+ratio scaling (x/max) and require special handling if zeros are present
+in spend data.
+
+------------------------------------------------------------------------
+
+## Core S3 Objects
+
+### `mrmfit` (extends `brmsfit`)
+
+Returned by
+[`fit_response()`](https://bdshaff.github.io/mrmopt/reference/fit_response.md).
+Key fields: - `$response_df` — cached inference results (unscaled) -
+`$summary` — `mrm_summary` object - `$params_summary` — parameter
+summaries - `$scale_values` — scaling metadata for unscaling -
+`$rc_type` — response curve type string - `$cost_per_unit` —
+cost-per-unit if `units` supplied - `$date_range` —
+`c(min_date, max_date)` from input data
+
+### `mrm_prior`
+
+List-based prior specification. Created with
+[`mrm_prior()`](https://bdshaff.github.io/mrmopt/reference/mrm_prior.md).
+
+### `mrm_summary`
+
+Tibble with attributes for formatted printing.
+
+------------------------------------------------------------------------
+
+## Main Workflow
+
+``` r
+
+# 1. Fit
+fit <- fit_response(
+  data    = my_data,
+  spend   = "ad_spend",
+  kpi     = "conversions",
+  date    = "week",
+  units   = "impressions",   # optional
+  type    = "gompertz",
+  midpoint_range = c(0.1, 0.5),
+  ceiling_max    = 3
+)
+
+# 2. Inspect
+print(fit)
+plot(fit)            # dashboard: response + AR/MR + cost-per
+plot(fit, type = "diagnostics")  # trace plots + PPCs
+
+# 3. Analyze
+mrm_params(fit)
+mrm_summary(fit)
+
+# 4. Compare models
+mrm_plot_compare(list(gompertz = fit_g, logistic = fit_l), layout = "overlay")
+
+# 5. Optimize (point estimate — fast, single solution)
+opt <- opt_mix(list(ch1 = fit1, ch2 = fit2), budget = 500000)
+print(opt)
+plot(opt)
+summary(opt)
+
+# 5b. Optimize (posterior — distribution of solutions)
+opt_post <- opt_mix(list(ch1 = fit1, ch2 = fit2),
+                    method = "posterior", budget = 500000, n_draws = 200)
+plot(opt_post, type = "posterior")
+
+# 5c. Period budgets (e.g., $10M annual)
+opt_annual <- opt_mix(models, budget = 10000000, n_weeks = 52)
+
+# 6. Visualize on response curves
+plot(opt, type = "curves")     # response curves with current + optimal points
+plot(opt, type = "returns")    # AR/MR curves with current + optimal points
+
+# 7. Compare two optimization results
+comp <- compare(opt, opt_post)
+plot(comp, type = "spend")     # dumbbell chart
+summary(opt)                   # tidy comparison tibble with deltas
+```
+
+------------------------------------------------------------------------
+
+## Optimization Architecture
+
+### `opt_mix()` — Main Entry Point
+
+Single function with two methods: - **`method = "point"`** (default):
+Uses posterior median parameters → single nloptr solve (~1s) -
+**`method = "posterior"`**: Optimizes over N posterior draws →
+distribution of solutions (~6s for 200 draws × 9 channels)
+
+### Internal Architecture
+
+    opt_mix()
+    ├─ hlpr_auto_constraints() / hlpr_parse_constraints()  # constraint setup
+    ├─ opt_mix_point()          # point-estimate path
+    │  ├─ mrm_response_function()  # extract median curve
+    │  └─ hlpr_opt_solve()         # nloptr COBYLA
+    └─ opt_mix_posterior()      # posterior path
+       ├─ hlpr_extract_draws()     # pre-extract & unscale all draws (fast path)
+       ├─ make_draw_objective()    # build objective from raw draws + rm_dispatch
+       └─ hlpr_opt_solve() × N    # one solve per draw (optionally parallel)
+
+The posterior path uses raw parameter draws +
+[`rm_dispatch()`](https://bdshaff.github.io/mrmopt/reference/rm_dispatch.md)
+instead of
+[`brms::posterior_epred()`](https://mc-stan.org/rstantools/reference/posterior_epred.html)
+— a 10,000x speedup that makes posterior optimization practical.
+
+### Key Files
+
+| File | Purpose |
+|----|----|
+| `R/opt_mix.R` | Main function + constraint helpers (`hlpr_auto_constraints`, `hlpr_parse_constraints`) |
+| `R/hlpr_opt_solve.R` | Thin nloptr wrapper (shared core for both methods) |
+| `R/hlpr_extract_draws.R` | Pre-extracts & unscales all posterior draws for fast evaluation |
+| `R/hlpr_build_solution.R` | Builds the unified solution tibble (current + optimal metrics) |
+| `R/print.opt_mix_result.R` | Formatted console output |
+| `R/plot.opt_mix_result.R` | 6 plot types: allocation, kpi, comparison, posterior, curves, returns |
+| `R/summary.opt_mix_result.R` | Returns tidy comparison tibble with deltas |
+| `R/compare.opt_mix_result.R` | [`compare()`](https://bdshaff.github.io/mrmopt/reference/compare.md) generic + method: side-by-side diff of two results |
+| `R/plot.opt_mix_compare.R` | Dumbbell plot for compare results (spend + kpi) |
+| `R/hlpr_opt_metrics.R` | Interpolates KPI/AR/MR/CP at arbitrary spend from response_df |
+
+### Return Structure (`opt_mix_result` S3 class)
+
+Both methods return identical top-level structure: - `$solution` —
+unified tibble (same columns for point and posterior) - `$constraints` —
+tibble: channel, lb, ub, x0 - `$budget_info` — list: total_budget,
+weekly_budget, n_weeks, current_weekly - `$method` — `"point"` or
+`"posterior"` - `$mrms` — the named list of `mrmfit` models (used by
+`curves` and `returns` plots) - `$draws_matrix` / `$kpi_matrix` /
+`$solution_draws` / `$n_draws` / `$draw_ids` — posterior-only (NULL for
+point) - `$nloptr_result` / `$response_funs` — point-only (NULL for
+posterior)
+
+### Solution Tibble Columns
+
+The `$solution` tibble contains: - **Current state**:
+`current_weekly_spend`, `current_weekly_units`, `current_weekly_kpi`,
+`current_cost_per`, `current_rr`, `current_spend_share`,
+`current_kpi_share` - **Optimal state**: `weekly_spend`, `weekly_kpi`,
+`weekly_units`, `cost_per`, `rr` (each with `_lower`/`_upper` CI columns
+— NA for point) - **Period totals**: `period_spend`, `period_kpi`,
+`period_units` - **Shares**: `spend_share`, `kpi_share`
+
+Units assume static cost-per-unit (`mrm$cost_per_unit`). NA when model
+fit without `units`.
+
+### Constraint Specification
+
+**Auto-generated** (default): Derives bounds from model return rate
+ranges × `bounds_multiplier`.
+
+**User-supplied** via `constraints` data frame:
+
+| Column      | Required? | Description                         |
+|-------------|-----------|-------------------------------------|
+| `channel`   | Yes       | Must match model names              |
+| `min_spend` | Yes       | Absolute lower bound (weekly \$)    |
+| `max_spend` | Yes       | Absolute upper bound (weekly \$)    |
+| `min_share` | No        | Minimum share of budget \[0, 1\]    |
+| `max_share` | No        | Maximum share of budget \[0, 1\]    |
+| `fixed`     | No        | Lock spend at `min_spend` (logical) |
+
+When both absolute and share bounds are present, the tighter constraint
+wins.
+
+### Plot Types (`plot.opt_mix_result`)
+
+| Type | Description |
+|----|----|
+| `"allocation"` | Grouped bar: current vs optimal spend (default). Posterior adds CI error bars. |
+| `"kpi"` | Grouped bar: current vs optimal KPI |
+| `"comparison"` | Dumbbell chart: current → optimal spend per channel |
+| `"posterior"` | Violin + boxplot of spend distributions (posterior only) |
+| `"curves"` | Faceted response curves with current (red) + optimal (blue) points per channel |
+| `"returns"` | Faceted AR/MR curves with current + optimal points — shows marginal and average return at both positions |
+
+### `compare()` — Side-by-Side Diff
+
+`compare(a, b, labels)` takes two `opt_mix_result` objects and returns
+an `opt_mix_compare` tibble with per-channel spend/KPI/CP values from
+each result, deltas, and a TOTAL row. Column names are dynamically
+generated from `labels` (defaults to method names when comparing point
+vs posterior).
+
+`plot(comp, type = "spend")` produces a dumbbell chart with dots for
+each result and a faint current-spend reference. Also supports
+`type = "kpi"`.
+
+------------------------------------------------------------------------
+
+## Prior Specification (3-tier system)
+
+1.  **Automatic** (`auto = TRUE` in `fit_response`) — smart defaults
+2.  **Simplified** via
+    [`mrm_prior()`](https://bdshaff.github.io/mrmopt/reference/mrm_prior.md)
+    — scale-invariant bounds:
+    - `midpoint_range`: inflection point as fraction of x-axis
+    - `ceiling_max`: multiplier on observed max response
+    - `floor_min`: lower asymptote in original units
+3.  **Manual** — raw
+    [`brms::prior()`](https://paulbuerkner.com/brms/reference/set_prior.html)
+    objects
+
+------------------------------------------------------------------------
+
+## Data Scaling Strategy
+
+1.  Compute scaling parameters from real data only
+2.  For log-forms: inject offset if zeros detected, then ratio-scale
+    (x/max)
+3.  For standard forms: min-max or standardization
+4.  Append synthetic (0,0) anchor point *after* scaling (optional)
+5.  Store scaling values on `$scale_values` for automatic unscaling in
+    inference
+
+------------------------------------------------------------------------
+
+## Testing Infrastructure
+
+**25 test files** in `tests/testthat/` with **403+ tests**. Key
+conventions: - **`helper-mock.R`** provides `make_mock_mrmfit()` fixture
+— builds lightweight mock `mrmfit` objects without MCMC, enabling fast
+isolated tests. Also provides `as_draws_df.mock_brmsfit()` for testing
+posterior draw extraction. - Tests cover: response models, helpers,
+scaling, fitting (input validation), plotting, palette, parameters,
+optimization (build_solution, extract_draws, constraints, opt_mix
+validation) - Run with `devtools::test()`
+
+------------------------------------------------------------------------
+
+## Key Recent Changes (from prior sessions)
+
+- **[`compare()`](https://bdshaff.github.io/mrmopt/reference/compare.md)
+  function**: S3 generic + method for side-by-side diff of two
+  `opt_mix_result` objects with `plot.opt_mix_compare` dumbbell chart.
+- **Response curve overlay plots**: `plot(opt, type = "curves")` shows
+  response curves with current + optimal points;
+  `plot(opt, type = "returns")` shows AR/MR curves at both positions.
+  Uses
+  [`hlpr_opt_metrics()`](https://bdshaff.github.io/mrmopt/reference/hlpr_opt_metrics.md)
+  for interpolation.
+- **`mrms` stored on result**:
+  [`opt_mix()`](https://bdshaff.github.io/mrmopt/reference/opt_mix.md)
+  now stores the model list on the result so curve/returns plots can
+  access response data.
+- **[`opt_mix()`](https://bdshaff.github.io/mrmopt/reference/opt_mix.md)
+  rewrite**: Two-layer architecture with `method = "point"` (fast,
+  single solution) and `method = "posterior"` (distribution of solutions
+  via raw posterior draws — 10,000x faster than `posterior_epred()`).
+  Unified return structure, S3 class `opt_mix_result` with `print`,
+  `plot`, and `summary` methods. Budget/n_weeks support for period-level
+  optimization.
+- **Constraint system**: User-supplied constraints data frame with
+  absolute bounds (`min_spend`/`max_spend`), share-based bounds
+  (`min_share`/`max_share`), and fixed channels (`fixed = TRUE`).
+- **[`hlpr_build_solution()`](https://bdshaff.github.io/mrmopt/reference/hlpr_build_solution.md)**:
+  Shared builder for unified solution tibble with current-state metrics,
+  optimal units (static CPU), response rates, CIs, and shares.
+- **[`hlpr_extract_draws()`](https://bdshaff.github.io/mrmopt/reference/hlpr_extract_draws.md)**:
+  Pre-extracts and unscales all posterior draws from fitted models for
+  fast optimization loop evaluation.
+- **Anchor point fix**:
+  [`hlpr_get_weekly_spend()`](https://bdshaff.github.io/mrmopt/reference/hlpr_get_weekly_spend.md)
+  now excludes synthetic (0,0) anchor row for standard-form models.
+- **Trace plot labels**: Fixed strip label truncation — renamed
+  mcmc.list columns to short labels (`b`, `c`, `d`, `e`) before passing
+  to
+  [`bayesplot::mcmc_trace()`](https://mc-stan.org/bayesplot/reference/MCMC-traces.html)
+  in `R/plot.mrmfit.R`
+- **`date_range` metadata**: Stored `c(min(date), max(date))` on all
+  fitted models during
+  [`fit_response()`](https://bdshaff.github.io/mrmopt/reference/fit_response.md)
+- **[`mrm_plot_compare()`](https://bdshaff.github.io/mrmopt/reference/mrm_plot_compare.md)
+  label collision fix**: When comparing same-channel/same-type models
+  across time periods, appends short date range `"Mon 'YY–Mon 'YY"`;
+  respects user-supplied `names(models)`

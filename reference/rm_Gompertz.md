@@ -45,6 +45,7 @@ The Gompertz function is defined as: \$\$y = c + (d - c) \* exp(-exp( b
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 x_values <- seq(0, 10, by = 0.1)
 b <- -0.5
 c <- 0
@@ -52,4 +53,5 @@ d <- 1
 e <- 5
 result <- rm_Gompertz(x_values, b, c, d, e)
 plot(x_values, result, type = "l", main = "Gompertz Response Model", xlab = "x", ylab = "y")
+} # }
 ```

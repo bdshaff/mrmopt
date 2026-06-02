@@ -39,12 +39,14 @@ package. If you don’t have `devtools` installed, you can install it from
 CRAN:
 
 ``` r
+
 install.packages("devtools")
 ```
 
 Then, you can install the `mrmopt` package from GitHub:
 
 ``` r
+
 devtools::install_github("bdshaff/mrmopt")
 ```
 

@@ -1,9 +1,6 @@
-# Plot Marginal and Absolute Rates of Return for Multiple Resource Models
+# Plot Absolute and Marginal Rates of Return
 
-This function generates a plot comparing the Marginal Rate of Return
-(MR) and Absolute Rate of Return (AR) for multiple resource models. It
-highlights key points such as the maximum MR and the intersection point
-where MR equals AR.
+Plot Absolute and Marginal Rates of Return
 
 ## Usage
 
@@ -14,7 +11,8 @@ mrm_plot_return(
   xrange = NULL,
   length.out = 1000,
   scaled = TRUE,
-  markup = FALSE
+  markup = TRUE,
+  x_var = c("spend", "units")
 )
 ```
 
@@ -22,36 +20,35 @@ mrm_plot_return(
 
 - mrm:
 
-  A list of fitted model objects (e.g., brmsfit objects).
+  A fitted model object returned by
+  [`fit_response`](https://bdshaff.github.io/mrmopt/reference/fit_response.md).
 
 - location:
 
-  A character string specifying which location to use for MR and AR
-  calculations. Options are "center", "lower", or "upper". Default is
-  "center".
+  Which parameter estimate to use: `"center"` (default), `"lower"`, or
+  `"upper"`.
 
 - xrange:
 
-  A numeric vector of length 2 specifying the range of x values to
-  consider. If NULL, the range is determined from the data.
+  Numeric vector of length 2 for the x range. NULL uses defaults.
 
 - length.out:
 
-  An integer specifying the number of points to generate for the x-axis.
-  Default is NULL.
+  Number of points. Default is 1000.
 
 - scaled:
 
-  A logical value indicating whether to use scaled values for the
-  calculations. Default is TRUE.
+  Logical; plot on original scale? Default is TRUE.
+
+- markup:
+
+  Logical; add range annotations and current-point markers? Default is
+  TRUE.
+
+- x_var:
+
+  Character; `"spend"` (default) or `"units"`.
 
 ## Value
 
-A ggplot object visualizing the MR and AR for each model.
-
-## Details
-
-The function computes the MR and AR for each model in the list and
-creates a faceted plot. It highlights the maximum MR point in red and
-the intersection point where MR equals AR in blue. A shaded green area
-indicates the range between these two points.
+A ggplot object.

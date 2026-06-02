@@ -11,14 +11,11 @@ plot_optimal_mix(optimal_mix)
 
 ## Arguments
 
-- response_funs:
+- optimal_mix:
 
-  A named list of response functions.
-
-- res:
-
-  The result object from the optimization containing the optimal
-  solution.
+  The result object returned by
+  [`opt_mix()`](https://bdshaff.github.io/mrmopt/reference/opt_mix.md),
+  containing response functions and the optimal solution.
 
 ## Value
 

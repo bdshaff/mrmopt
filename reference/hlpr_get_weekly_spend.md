@@ -21,10 +21,8 @@ A numeric value representing the weekly spend.
 
 ## Details
 
-The function checks the scaling method used in the MRM object and
-calculates the weekly spend accordingly. If the scaling method is
-"min_max", it uses the mean of the data and the min-max scaling values
-to calculate the weekly spend. If the scaling method is "std", it uses
-the mean of the data and the standard deviation scaling values to
-calculate the weekly spend. If an invalid scaling method is provided, an
-error is raised.
+The function checks the scaling values stored in the MRM object and
+calculates the weekly spend accordingly. Dispatches on the keys present
+in scale_values rather than scale_method, to support log-based forms
+that use ratio scaling for x regardless of the user's scale_method
+choice.
