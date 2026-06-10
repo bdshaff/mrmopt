@@ -30,13 +30,25 @@
 #' @param maxeval Maximum nloptr evaluations per solve. Default `1000`.
 #' @param verbose Print progress information. Default `TRUE`.
 #'
-#' @return For `method = "point"`: a list with components `solution` (tibble
-#'   of optimal weekly and period allocations), `constraints` (tibble),
-#'   `budget_info` (list), and `nloptr_result` (raw solver output).
+#' @return An `opt_mix_result` S3 object. Both methods return the same
+#'   top-level structure:
+#'   \itemize{
+#'     \item `$solution` — tibble with one row per channel containing current
+#'       and optimal spend, KPI, units, cost-per, response rate, and share
+#'       columns. Posterior results include `_lower`/`_upper` CI columns.
+#'     \item `$constraints` — tibble: channel, lb, ub, x0.
+#'     \item `$budget_info` — list: total_budget, weekly_budget, n_weeks,
+#'       current_weekly.
+#'     \item `$method` — `"point"` or `"posterior"`.
+#'     \item `$mrms` — the named list of `mrmfit` models.
+#'   }
+#'   Point-only fields: `$nloptr_result`, `$response_funs`. \cr
+#'   Posterior-only fields: `$draws_matrix`, `$kpi_matrix`,
+#'   `$solution_draws`, `$n_draws`, `$draw_ids`.
 #'
-#'   For `method = "posterior"`: a list with components `solution_summary`
-#'   (tibble with median/CI for each channel), `draws_matrix` (matrix of all
-#'   solutions), `solution_draws` (tibble in long form), and `budget_info`.
+#'   Use [print()] or [summary()] for a formatted console summary,
+#'   [opt_table()] for a tidy comparison tibble, and [plot()] or the
+#'   standalone `opt_plot_*` functions for visualizations.
 #'
 #' @import nloptr
 #' @importFrom purrr map map_dbl map2_dbl

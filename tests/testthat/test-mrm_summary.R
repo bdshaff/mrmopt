@@ -6,6 +6,8 @@ test_that("mrm_summary errors on non-brmsfit input", {
   expect_error(mrm_summary(list(rc_type = "gompertz")), "fit_response")
 })
 
+
+
 test_that("print.mrm_summary runs without error on mock summary", {
   mock <- make_mock_mrmfit("gompertz")
   s    <- mock$summary

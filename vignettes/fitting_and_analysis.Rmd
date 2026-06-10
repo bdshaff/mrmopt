@@ -120,11 +120,12 @@ A note on the arguments:
 - **`auto = TRUE`** (the default): `mrmopt` scales the data to [0, 1]
   before fitting and sets sensible default priors automatically. This
   removes the need to specify priors by hand for most channels.
-- **`anchor_zero = TRUE`** (the default): injects a synthetic (spend = 0,
-  conversions = 0) data point. This encodes the domain assumption that
-  zero spend produces zero response and anchors the floor of the curve.
-  Disable it if you believe the channel generates baseline conversions
-  independent of paid spend.
+- **`anchor_strength = 0.05`** (the default via `mrmopt_prior()`): controls
+  how tightly the floor parameter (`c`) is constrained near zero. The
+  value is a fraction of the observed y range used as the prior SD.
+  Smaller values produce narrower credible intervals at low spend. Set
+  to `NULL` for loose behavior if you believe the channel generates
+  baseline conversions independent of paid spend.
 - **`chains`, `iter`, `warmup`**: passed directly to Stan. The values
   above are reduced for illustration speed. For production fits,
   use the defaults (`chains = 4, iter = 4000, warmup = 1000`).
@@ -148,8 +149,7 @@ fit
 The output has five sections:
 
 1. **Header** — channel name (taken from the spend column), curve type,
-   number of weeks in the training data, and whether the zero anchor was
-   used.
+   number of weeks in the training data.
 
 2. **Current Performance** — metrics evaluated at the observed average
    weekly spend. This tells you where the channel is operating *right now*:
@@ -187,13 +187,13 @@ The underlying data for the summary is also accessible programmatically:
 fit$summary
 ```
 
-### `mrm_params_summary()`
+### `mrm_params()`
 
 For a focused view of the four curve parameters with plain-language
-descriptions, use `mrm_params_summary()`:
+descriptions, use `mrm_params()`:
 
 ```{r params-summary}
-mrm_params_summary(fit)
+mrm_params(fit)
 ```
 
 Interpreting these in the context of Paid Search:
@@ -208,7 +208,7 @@ Interpreting these in the context of Paid Search:
 - **Steepness (b)**: controls how quickly the curve transitions from low
   to high response. More negative values mean a sharper transition.
 - **Floor (c)**: the baseline conversion level approached at zero spend.
-  With `anchor_zero = TRUE` this is typically close to zero.
+  With the default `anchor_strength = 0.05` this is typically close to zero.
 
 For programmatic access to the raw posterior estimates (centre, lower,
 upper credible bounds as named lists), use `mrm_params()`:
@@ -221,11 +221,11 @@ mrm_params(fit)
 
 ## The Dashboard Plot
 
-`plot(fit)` produces a three-panel dashboard combining the three core
+`mrm_plot(fit)` produces a three-panel dashboard combining the three core
 views of the model.
 
 ```{r fig-dashboard, fig.height = 5, fig.cap = "The three-panel dashboard: response curve (top left), AR/MR returns (top right), and cost per conversion (bottom)."}
-plot(fit)
+mrm_plot(fit)
 ```
 
 **Response curve (top left)**: the fitted curve with a 95% credible band,
@@ -247,10 +247,10 @@ Two useful options:
 
 ```{r fig-dashboard-options, eval = FALSE}
 # Remove range annotations for a cleaner look
-plot(fit, markup = FALSE)
+mrm_plot(fit, markup = FALSE)
 
 # When units are present, flip the x-axis to media units
-plot(fit, x_var = "units")
+mrm_plot(fit, x_var = "units")
 ```
 
 ---
@@ -361,7 +361,7 @@ cost per 1,000 impressions — and all inference output includes an
 `impressions` column alongside `spend`.
 
 ```{r fig-units-dashboard, fig.height = 5, fig.cap = "Dashboard with impressions as the x-axis. The x-axis now shows media delivery rather than dollars, giving a units-based view of the response curve."}
-plot(fit_units, x_var = "units")
+mrm_plot(fit_units, x_var = "units")
 ```
 
 ```{r units-cpu}
@@ -395,9 +395,9 @@ fit_auto <- fit_response(
 )
 ```
 
-### Approach 2: Simplified via `mrm_prior()`
+### Approach 2: Simplified via `mrmopt_prior()`
 
-`mrm_prior()` provides scale-invariant controls on three intuitive
+`mrmopt_prior()` provides scale-invariant controls on three intuitive
 quantities:
 
 - `midpoint_range`: where the curve's inflection point can fall,
@@ -411,7 +411,7 @@ quantities:
   original KPI units.
 
 ```{r prior-simplified, eval = FALSE}
-my_prior <- mrm_prior(
+my_prior <- mrmopt_prior(
   midpoint_range = c(0.2, 0.7),
   ceiling_max    = 2,
   floor_min      = 0
@@ -451,7 +451,7 @@ fit_manual <- fit_response(
 ::: {.callout-note}
 When `auto = FALSE` and `scale_data = FALSE`, the prior must be specified
 in the original data units. This is rarely necessary — scaled fitting with
-`mrm_prior()` covers the vast majority of use cases.
+`mrmopt_prior()` covers the vast majority of use cases.
 :::
 
 ---
@@ -460,7 +460,7 @@ in the original data units. This is rarely necessary — scaled fitting with
 
 In practice you will fit models for each channel in your media portfolio
 and collect them in a named list. This is the natural input format for
-model comparison (`mrm_plot_compare()`) and optimization (`opt_mix()`),
+model comparison (`mrms_plot_compare()`) and optimization (`opt_mix()`),
 both covered in later vignettes.
 
 The code below fits all five channels from `mrmopt_data` using their
@@ -497,7 +497,7 @@ Once fitted, you can inspect any model by name:
 
 ```{r inspect-list, eval = FALSE}
 fits[["Paid Social"]]
-plot(fits[["TV"]])
+mrm_plot(fits[["TV"]])
 ```
 
 Or map across the list to extract a summary metric from each:
@@ -507,6 +507,6 @@ map_dfr(fits, ~ as.data.frame(.x$R2), .id = "channel") |>
   arrange(desc(Estimate))
 ```
 
-The `fits` list is the input to `mrm_plot_compare()` in the next
+The `fits` list is the input to `mrms_plot_compare()` in the next
 vignette, where we evaluate which curve type fits each channel best and
 check whether the models are well-calibrated.

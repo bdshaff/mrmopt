@@ -33,7 +33,7 @@
 
 mrm_summary <- function(mrm, mr_decay = 0.7) {
 
-  if (!brms::is.brmsfit(mrm)) {
+  if (!inherits(mrm, "mrmfit")) {
     stop("mrm must be a fitted model object created by fit_response()", call. = FALSE)
   }
 
@@ -64,7 +64,7 @@ mrm_summary <- function(mrm, mr_decay = 0.7) {
   rr_at_current  <- if (has_units) kpi_at_current / weekly_units else NA_real_
 
   # --- RC parameters ---
-  params <- mrm_params(mrm, scaled = TRUE)$center
+  params <- hlpr_params(mrm, scaled = TRUE)$center
 
   # --- Detect if curve is a log-form type (monotonically decreasing MR) ---
   log_forms <- c("log_logistic", "weibull", "reflected_weibull")
@@ -216,8 +216,7 @@ mrm_summary <- function(mrm, mr_decay = 0.7) {
     pct_weeks_above  = pct_above
   )
 
-  attr(result, "params_summary")    <- mrm_params(mrm, scaled = TRUE)
-  attr(result, "anchor_zero")       <- if (!is.null(mrm$anchor_zero)) mrm$anchor_zero else FALSE
+  attr(result, "params_summary")    <- hlpr_params(mrm, scaled = TRUE)
   attr(result, "log_curve_no_peak") <- log_curve_no_peak
   attr(result, "R2")                <- r2
   class(result) <- c("mrm_summary", class(result))
@@ -248,7 +247,6 @@ print.mrm_summary <- function(x, ...) {
   cat(cli_rule(paste0("Response Curve Summary: ", s$rc_type)), "\n")
   cat("Channel: ", s$channel, "\n", sep = "")
   cat("Weeks: ", s$n_weeks, sep = "")
-  if (isTRUE(attr(x, "anchor_zero"))) cat(" | Anchor: yes")
   cat("\n")
 
   cat(cli_rule("Current Performance"), "\n")

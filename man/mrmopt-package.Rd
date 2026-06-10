@@ -6,6 +6,8 @@
 \alias{mrmopt-package}
 \title{mrmopt: mrmopt}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 Package for media response modeling and optimization.
 }
 \seealso{

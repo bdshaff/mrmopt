@@ -1,0 +1,417 @@
+---
+title: "Getting Started"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment  = "#>",
+  fig.width  = 7,
+  fig.height = 4.5,
+  message  = FALSE,
+  warning  = FALSE
+)
+library(mrmopt)
+library(dplyr)
+library(ggplot2)
+```
+
+This vignette walks through the full `mrmopt` workflow from raw data to an
+optimized media allocation, using the built-in `mrmopt_data` dataset. By the
+end you will have fit response curves for five channels, compared curve types,
+checked diagnostics, and produced a budget optimization with uncertainty.
+
+---
+
+## Where mrmopt sits in the analytics stack
+
+`mrmopt` is a **response curve and optimization layer**. It takes
+weekly spend and attributed KPI data by channel — the kind of output produced
+by an upstream Media Mix Model or Multi-Touch Attribution model — and adds
+three things the upstream model typically doesn't provide:
+
+1. **Nonlinear saturation curves** — explicitly modeling diminishing returns
+   rather than assuming a linear relationship between spend and KPI
+2. **Bayesian uncertainty** — credible intervals on curves, marginal returns,
+   and cost-per-unit that honestly reflect what the data does and doesn't tell
+   you
+3. **Uncertainty-aware optimization** — budget allocation that accounts for
+   parameter uncertainty rather than optimizing against a single point estimate
+
+`mrmopt` does not replace a joint MMM. It operates downstream of one.
+
+---
+
+## The workflow
+
+Every analysis in `mrmopt` follows the same iterative loop:
+
+```{r workflow-diagram, echo = FALSE, eval = FALSE}
+# Rendered as a Mermaid diagram in pkgdown
+```
+
+```
+Raw data
+  └─► fit_response()          # Fit one channel, one curve type
+        └─► mrm_plot_diagnostics()  # Check convergence
+              └─► mrms_plot_compare()  # Compare curve types
+                    └─► fit_response()  # Best type, full iterations, all channels
+                          └─► opt_mix()  # Optimize the portfolio
+                                └─► opt_summary() / opt_plot_*()
+```
+
+The two loops — convergence checking and curve type selection — are the parts
+new users most often skip. Skipping them produces unreliable curves and
+misleading optimization results. This vignette shows you what to look for at
+each step.
+
+---
+
+## The data
+
+`mrmopt_data` is a built-in dataset with five media channels, each with 104
+weeks (two years) of weekly spend and attributed conversions.
+
+```{r data}
+data(mrmopt_data)
+mrmopt_data
+```
+
+```{r data-summary}
+mrmopt_data |>
+  group_by(channel) |>
+  summarise(
+    weeks        = n(),
+    total_spend  = sum(spend),
+    total_conv   = sum(conversions),
+    avg_wk_spend = mean(spend),
+    avg_wk_conv  = mean(conversions)
+  )
+```
+
+**Required format:** One row per channel-week. At minimum you need `date`,
+`spend`, and `kpi` columns. An optional `units` column (impressions, GRPs,
+clicks) unlocks cost-per-unit metrics. Channels are modeled one at a time —
+filter to a single channel before calling `fit_response()`.
+
+---
+
+## Step 1: Fit a response curve
+
+Start with one channel and one curve type. Gompertz is a reasonable default
+for channels with concave diminishing returns from the start.
+
+```{r fit-ps, results = "hide"}
+ps_data <- mrmopt_data |> filter(channel == "Paid Search")
+
+fit_ps <- fit_response(
+  data           = ps_data,
+  spend          = "spend",
+  kpi            = "conversions",
+  date           = "week",
+  type           = "gompertz",
+  midpoint_range = c(0.1, 0.5),
+  ceiling_max    = 3
+)
+```
+
+`fit_response()` fits a Bayesian nonlinear model using Stan via `brms`.
+`midpoint_range` and `ceiling_max` are scale-invariant prior controls —
+you do not need to specify raw Stan priors unless you want to.
+
+---
+
+## Step 2: Read the output
+
+`print()` gives a five-section summary of the fitted model:
+
+```{r print-fit}
+print(fit_ps)
+```
+
+Reading this top to bottom:
+
+- **Response Curve Summary** — the curve type and the channel/KPI columns used
+- **Current Performance** — where the channel sits right now: weekly spend,
+  KPI, cost-per-conversion, average return (AR), and marginal return (MR)
+- **Parameters** — the four fitted curve parameters. `d` (ceiling) and `e`
+  (midpoint) are the most interpretable: ceiling is the maximum predicted KPI,
+  midpoint is the spend level where the curve is steepest
+- **Response Curve Summary** — three reference points on the curve anchored to
+  MR multiples, helping you see how much room is left to grow and how quickly
+  returns are declining
+- **Bayes R²** — a posterior distribution of explained variance. Higher is
+  better; values below 0.4 suggest the curve may not be well-identified from
+  this data
+
+`mrm_params()` gives a focused table of just the four parameters:
+
+```{r params}
+mrm_params(fit_ps)
+```
+
+---
+
+## Step 3: Check diagnostics
+
+Before interpreting anything, confirm the model converged.
+
+```{r diagnostics, fig.height = 6}
+mrm_plot_diagnostics(fit_ps)
+```
+
+Two things to check:
+
+- **Trace plots** — four chains should mix freely (overlap completely, no
+  trends or drifts). If chains are separating or stuck, the model has
+  convergence problems.
+- **Posterior predictive check** — the blue posterior draws should envelope
+  the black observed data line. A systematic gap means the curve form is
+  misspecified.
+
+The numerical indicators to target are **Rhat ≤ 1.01** and **Bulk ESS > 400**
+for all parameters. These are printed in `mrm_summary()`:
+
+```{r mrm-summary}
+mrm_summary(fit_ps)
+```
+
+If convergence is poor, try increasing `iter` and `warmup`, or adjust the
+priors with a tighter `midpoint_range`.
+
+---
+
+## Step 4: Visualize the response curve
+
+Once convergence is confirmed, look at the curve itself:
+
+```{r plot-fit}
+mrm_plot(fit_ps)
+```
+
+This dashboard shows three panels:
+
+- **Response curve** — KPI vs. spend with posterior credible band. The current
+  operating point is marked.
+- **Average & marginal return** — AR and MR curves. Where MR is well below AR,
+  the channel is in the diminishing returns zone. Where MR ≈ AR, it is
+  underinvested.
+- **Cost-per** — cost-per-conversion across the spend range. Flat or declining
+  cost-per means the channel absorbs more spend efficiently.
+
+---
+
+## Step 5: Compare curve types
+
+`mrmopt` supports six curve forms. The right choice depends on the data — some
+channels have S-shaped response (low returns at very low spend, peak efficiency
+in the middle, diminishing returns at high spend) while others show concave
+diminishing returns from the first dollar.
+
+Fit a second type and compare them visually:
+
+```{r fit-compare, results = "hide"}
+fit_ps_ll <- fit_response(
+  data           = ps_data,
+  spend          = "spend",
+  kpi            = "conversions",
+  date           = "week",
+  type           = "log_logistic",
+  midpoint_range = c(0.1, 0.5),
+  ceiling_max    = 3
+)
+```
+
+```{r compare-plot}
+mrms_plot_compare(
+  list(gompertz = fit_ps, log_logistic = fit_ps_ll),
+  interval = "confidence"
+)
+```
+
+Prefer the curve that:
+
+1. Has tighter credible bands (better identified from the data)
+2. Has higher Bayes R²
+3. Shows no systematic gap between the predictive band and the data in the
+   diagnostic PPC
+
+For a full comparison across all six types, see the
+[Diagnostics & Comparison](diagnostics_and_comparison.html) vignette.
+
+---
+
+## Step 6: Fit all channels
+
+Once you have a curve type for each channel, fit the full portfolio. Here we
+use the best-fit type for each of the five channels in `mrmopt_data`:
+
+```{r fit-all, results = "hide"}
+channel_types <- list(
+  "Paid Search"  = "log_logistic",
+  "Paid Social"  = "gompertz",
+  "Display"      = "gompertz",
+  "Online Video" = "gompertz",
+  "TV"           = "gompertz"
+)
+
+fits <- lapply(names(channel_types), function(ch) {
+  fit_response(
+    data  = mrmopt_data |> filter(channel == ch),
+    spend = "spend",
+    kpi   = "conversions",
+    date  = "week",
+    type  = channel_types[[ch]],
+    midpoint_range = c(0.1, 0.5),
+    ceiling_max    = 3
+  )
+})
+names(fits) <- names(channel_types)
+```
+
+Compare all five on the same axes to get an immediate sense of relative
+efficiency:
+
+```{r compare-all}
+mrms_plot_compare(fits, interval = "confidence")
+```
+
+---
+
+## Step 7: Optimize the portfolio
+
+`opt_mix()` finds the spend allocation that maximizes total KPI subject to a
+total budget constraint. The default `method = "point"` uses the posterior
+median parameters and runs in under a second:
+
+```{r opt, results = "hide"}
+opt <- opt_mix(fits, budget = 500000)
+```
+
+`opt_summary()` prints a formatted allocation table:
+
+```{r opt-summary}
+opt_summary(opt)
+```
+
+Reading the output:
+
+- **Weekly Spend** — the optimal spend per channel at the given budget
+- **Weekly KPI** — predicted conversions at the optimal spend
+- **CP** — cost-per-conversion at the optimal point
+- **Share** — share of total budget
+- **Totals** — current vs. optimal KPI and cost-per, with the overall change
+
+`opt_table()` returns the same information as a tidy tibble for further
+analysis or reporting:
+
+```{r opt-table}
+opt_table(opt) |>
+  select(channel, current_spend, optimal_spend, spend_delta_pct,
+         current_kpi, optimal_kpi, kpi_delta_pct, cp_delta)
+```
+
+---
+
+## Step 8: Visualize the allocation
+
+Two plot functions cover the most common views:
+
+```{r plot-alloc}
+opt_plot_allocation(opt)
+```
+
+```{r plot-comparison}
+opt_plot_comparison(opt)
+```
+
+To see exactly where the optimal spend falls on each channel's response curve:
+
+```{r plot-curves, fig.height = 6}
+opt_plot_curves(opt)
+```
+
+And on the marginal return curves — the view that shows *why* the optimizer
+moved spend the way it did:
+
+```{r plot-returns, fig.height = 6}
+opt_plot_returns(opt)
+```
+
+---
+
+## Step 9: Add uncertainty with posterior optimization
+
+The point estimate result is fast but treats the posterior median parameters as
+if they were known exactly. `method = "posterior"` runs the optimizer over a
+sample of posterior draws, producing a distribution of optimal allocations:
+
+```{r opt-post, results = "hide"}
+opt_post <- opt_mix(fits, budget = 500000, method = "posterior", n_draws = 200)
+```
+
+```{r opt-post-summary}
+opt_summary(opt_post)
+```
+
+The `[95% CI]` column shows the range of optimal spend across draws.
+`opt_plot_allocation()` adds error bars:
+
+```{r plot-post-alloc}
+opt_plot_allocation(opt_post)
+```
+
+And `opt_plot_posterior()` shows the full spend distribution per channel:
+
+```{r plot-post-posterior}
+opt_plot_posterior(opt_post)
+```
+
+Wide distributions signal channels where the data does not strongly constrain
+the curve — the optimizer is uncertain about where to put spend because the
+response is uncertain. Narrow distributions signal well-identified channels
+where the allocation decision is robust.
+
+---
+
+## Scenario analysis
+
+`opt_mix()` supports several common scenario needs:
+
+**Period budgets** — optimize a quarterly or annual budget broken into weekly
+allocations:
+
+```{r opt-annual, results = "hide"}
+opt_annual <- opt_mix(fits, budget = 26000000, n_weeks = 52)
+```
+
+**Custom constraints** — set channel-level floors, ceilings, and share bounds:
+
+```{r opt-constrained, results = "hide"}
+constraints <- data.frame(
+  channel   = names(fits),
+  min_spend = c(10000, 5000, 2000, 5000, 50000),
+  max_spend = c(200000, 150000, 50000, 100000, 300000)
+)
+
+opt_constrained <- opt_mix(fits, budget = 500000, constraints = constraints)
+```
+
+See the [Optimization](optimization.html) vignette for the full constraint
+specification including share bounds and fixed channels.
+
+---
+
+## Where to go next
+
+| Topic | Vignette |
+|-------|----------|
+| Prior specification, `mrm_prior()`, and curve types in depth | [Fitting & Analysis](fitting_and_analysis.html) |
+| Convergence diagnostics, PPC, and comparing models across time periods | [Diagnostics & Comparison](diagnostics_and_comparison.html) |
+| Constraints, posterior optimization, and scenario planning | [Optimization](optimization.html) |
+| Mathematical derivations of all six curve forms | [Response Curve Theory](response_curve_theory.html) |

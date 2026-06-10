@@ -1,5 +1,11 @@
 #' Plot the response curve of a fitted model
 #'
+#' Draws the response curve with a credible-interval ribbon and optional data
+#' points, range annotations, and marginal-return overlay. This is the first
+#' panel of the dashboard produced by [plot.mrmfit()]; call it directly when
+#' you need a standalone response-curve plot or want to control parameters
+#' (e.g., `xrange`, `length.out`) not exposed by `plot()`.
+#'
 #' @param mrm A fitted model object returned by \code{\link{fit_response}}.
 #' @param xrange A vector of length 2 specifying the x range. If NULL, uses
 #'   the default from inference.
@@ -13,7 +19,13 @@
 #'   y-axis? Default is FALSE.
 #' @param x_var Character; \code{"spend"} (default) or \code{"units"} for the
 #'   x-axis variable.
+#' @param interval Type of credible interval. \code{"prediction"} (default)
+#'   includes observation noise. \code{"confidence"} shows uncertainty about
+#'   the mean curve only (tighter bands).
 #' @return A ggplot object.
+#'
+#' @seealso [plot.mrmfit()] for the combined dashboard,
+#'   [mrm_plot_return()], [mrm_plot_costper()] for the other panels.
 #' @export
 
 mrm_plot_response <- function(mrm,
@@ -23,20 +35,29 @@ mrm_plot_response <- function(mrm,
                               points = TRUE,
                               markup = TRUE,
                               show_mr = FALSE,
-                              x_var = c("spend", "units")) {
+                              x_var = c("spend", "units"),
+                              interval = c("prediction", "confidence")) {
 
-  if (!brms::is.brmsfit(mrm)) {
+  if (!inherits(mrm, "mrmfit")) {
     stop("mrm must be a fitted model object created by fit_response()", call. = FALSE)
   }
 
   x_var <- match.arg(x_var)
-  pal <- mrm_palette()
+  interval <- match.arg(interval)
+  pal <- mrmopt_palette()
 
   # --- Data ---
   if (!is.null(xrange) || length.out != 1000 || !isTRUE(scaled)) {
-    response_df <- mrm_infer(mrm, xrange = xrange, length.out = length.out, scaled = scaled)
+    response_df <- mrm_infer(mrm, xrange = xrange, length.out = length.out,
+                             scaled = scaled)
   } else {
     response_df <- mrm$response_df
+  }
+
+  # Select which interval columns to use for the ribbon
+  if (interval == "confidence") {
+    response_df$lower <- response_df$lower_mu
+    response_df$upper <- response_df$upper_mu
   }
 
   rc_data <- mrm$data
@@ -186,13 +207,6 @@ hlpr_unscale_data_points <- function(mrm, x_var = "spend") {
     } else if (!is.null(sv$y_mean) && !is.null(sv$y_sd)) {
       y_vals <- y_vals * sv$y_sd + sv$y_mean
     }
-  }
-
-  # Remove anchor rows
-  n_anchor <- if (!is.null(mrm$n_anchor_rows)) mrm$n_anchor_rows else 0L
-  if (n_anchor > 0L) {
-    x_vals <- x_vals[-seq_len(n_anchor)]
-    y_vals <- y_vals[-seq_len(n_anchor)]
   }
 
   if (x_var == "units" && !is.null(mrm$cost_per_unit)) {

@@ -1,11 +1,11 @@
 #' Resolve an mrm_prior specification into a brms prior object
 #'
-#' Converts user-friendly prior specifications from \code{\link{mrm_prior}}
+#' Converts user-friendly prior specifications from \code{\link{mrmopt_prior}}
 #' into \code{brms::prior} objects appropriate for the given scaling method,
 #' scale values, and response form type. Also performs form-aware validation
 #' to prevent mathematically invalid prior configurations.
 #'
-#' @param mrm_prior An object of class \code{mrm_prior}, or \code{NULL} for
+#' @param mrm_prior An object of class \code{mrmopt_prior}, or \code{NULL} for
 #'   package defaults.
 #' @param scaled_data The scaled data frame.
 #' @param x Name of the x column.
@@ -24,7 +24,7 @@ hlpr_resolve_prior <- function(mrm_prior = NULL,
                                type) {
 
   if (is.null(mrm_prior)) {
-    mrm_prior <- mrm_prior()
+    mrm_prior <- mrmopt_prior()
   }
 
   # --- Identify log-based forms ---
@@ -81,19 +81,37 @@ hlpr_resolve_prior <- function(mrm_prior = NULL,
     d_mean <- (d_lb + d_ub) / 2
   }
 
-  # --- Convert floor_min (original data units) to scaled space ---
-  # floor_min is specified in original data units. Convert to scaled space.
+  # Broad SD for non-anchor parameters — let the data speak
+  prior_sd <- 10
+
+  # --- Convert floor_min to scaled space and set c prior via anchor_strength ---
+  # floor_min locates the floor; anchor_strength controls how tightly c is
+  # constrained around it (as a fraction of the observed y range).
   if (scale_method == "min_max") {
-    c_lb <- (mrm_prior$floor_min - scale_values$y_min) /
+    c_center <- (mrm_prior$floor_min - scale_values$y_min) /
       (scale_values$y_max - scale_values$y_min)
-    c_ub <- c_lb + 0.25
-    c_mean <- (c_lb + c_ub) / 2
   } else if (scale_method == "std") {
-    c_lb <- (mrm_prior$floor_min - scale_values$y_mean) / scale_values$y_sd
-    # Scale the upper bound relative to the data spread rather than a fixed offset
-    # Allow the floor to range up to ~10% of the observed y range in scaled units
-    y_range_s <- y_max_s - y_min_s
-    c_ub <- c_lb + 0.25 * y_range_s
+    c_center <- (mrm_prior$floor_min - scale_values$y_mean) / scale_values$y_sd
+  }
+
+  if (!is.null(mrm_prior$anchor_strength)) {
+    # anchor_strength sets c prior SD as a fraction of the observed y range
+    if (scale_method == "min_max") {
+      # In min-max space, y range = 1.0 by definition
+      c_sd <- mrm_prior$anchor_strength
+    } else if (scale_method == "std") {
+      y_range_orig <- scale_values$y_max - scale_values$y_min
+      c_sd <- mrm_prior$anchor_strength * y_range_orig / scale_values$y_sd
+    }
+    # Bounds wide enough that the prior SD constrains, not the truncation
+    c_lb <- c_center - 4 * c_sd
+    c_ub <- c_center + 4 * c_sd
+    c_mean <- c_center
+  } else {
+    # NULL anchor_strength: loose behavior (backward compatible)
+    c_sd <- prior_sd
+    c_lb <- c_center
+    c_ub <- c_center + 0.25
     c_mean <- (c_lb + c_ub) / 2
   }
 
@@ -110,9 +128,6 @@ hlpr_resolve_prior <- function(mrm_prior = NULL,
   b_lb <- -10
   b_ub <- 0
 
-  # Broad SD for all parameters — let the data speak
-  prior_sd <- 10
-
   # --- Assemble brms prior ---
   prior <- c(
     brms::prior_string(
@@ -120,7 +135,7 @@ hlpr_resolve_prior <- function(mrm_prior = NULL,
       nlpar = "b", lb = b_lb, ub = b_ub
     ),
     brms::prior_string(
-      paste0("normal(", round(c_mean, 4), ", ", prior_sd, ")"),
+      paste0("normal(", round(c_mean, 4), ", ", round(c_sd, 4), ")"),
       nlpar = "c", lb = round(c_lb, 4), ub = round(c_ub, 4)
     ),
     brms::prior_string(

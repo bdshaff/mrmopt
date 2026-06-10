@@ -1,12 +1,11 @@
 # hlpr_unscale_data_points is defined inside mrm_plot_response.R (internal helper)
 
 make_scale_mock <- function(x_sc, y_sc, scale_values,
-                            n_anchor = 0L, cost_per_unit = NULL) {
+                            cost_per_unit = NULL) {
   mock <- list(
     data = data.frame(opps = y_sc, spendchannel = x_sc),
     formula = list(resp = "opps"),
     scale_values = scale_values,
-    n_anchor_rows = n_anchor,
     cost_per_unit = cost_per_unit,
     units_col = if (!is.null(cost_per_unit)) "units_channel" else NULL
   )
@@ -41,15 +40,13 @@ test_that("std: correctly unscales x and y", {
   expect_equal(res$y_plot_val, y_sc * 100 + 500, tolerance = 1e-6)
 })
 
-test_that("excludes anchor rows from output", {
+test_that("all data rows are returned (no anchor exclusion)", {
   sv     <- list(x_min = 0, x_max = 1e6, x_offset = 0, y_min = 0, y_max = 1000)
-  # First row is the anchor (x=0, y=0)
-  x_sc   <- c(0, 0.2, 0.5, 0.8)
-  y_sc   <- c(0, 0.2, 0.5, 0.8)
-  mock   <- make_scale_mock(x_sc, y_sc, sv, n_anchor = 1L)
+  x_sc   <- c(0.2, 0.5, 0.8)
+  y_sc   <- c(0.2, 0.5, 0.8)
+  mock   <- make_scale_mock(x_sc, y_sc, sv)
   res    <- hlpr_unscale_data_points(mock, "spend")
   expect_equal(nrow(res), 3)
-  expect_false(any(res$x_plot_val == 0))
 })
 
 test_that("converts x to units when x_var = 'units' and cost_per_unit is set", {

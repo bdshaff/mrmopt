@@ -27,7 +27,8 @@ Suggests:
     future.apply,
     plotly,
     gt,
-    patchwork
+    patchwork,
+    forcats
 VignetteBuilder: knitr
 URL: https://bdshaff.github.io/mrmopt/
 Depends: 

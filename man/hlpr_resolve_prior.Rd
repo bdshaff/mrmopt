@@ -15,7 +15,7 @@ hlpr_resolve_prior(
 )
 }
 \arguments{
-\item{mrm_prior}{An object of class \code{mrm_prior}, or \code{NULL} for
+\item{mrm_prior}{An object of class \code{mrmopt_prior}, or \code{NULL} for
 package defaults.}
 
 \item{scaled_data}{The scaled data frame.}
@@ -34,7 +34,7 @@ package defaults.}
 A \code{brmsprior} object.
 }
 \description{
-Converts user-friendly prior specifications from \code{\link{mrm_prior}}
+Converts user-friendly prior specifications from \code{\link{mrmopt_prior}}
 into \code{brms::prior} objects appropriate for the given scaling method,
 scale values, and response form type. Also performs form-aware validation
 to prevent mathematically invalid prior configurations.

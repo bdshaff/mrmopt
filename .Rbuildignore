@@ -12,3 +12,5 @@
 ^data-raw$
 ^\.RDataTmp$
 ^LICENSE\.md$
+^ROADMAP\.md$
+^conversation-export\.html$

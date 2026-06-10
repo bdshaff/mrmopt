@@ -2,23 +2,23 @@
 % Please edit documentation in R/mrm_params.R
 \name{mrm_params}
 \alias{mrm_params}
-\title{Extract parameters from a fitted model}
+\title{Extract response curve parameters from a fitted model}
 \usage{
-mrm_params(rc_fit, scaled = TRUE)
+mrm_params(mrm)
 }
 \arguments{
-\item{rc_fit}{A fitted model object.}
-
-\item{scaled}{A logical indicating whether the model was fitted on scaled data. Default is TRUE.}
+\item{mrm}{A fitted model object returned by [fit_response()].}
 }
 \value{
-A list containing the center, lower, and upper bounds of the parameters.
+A tibble with columns: \code{param}, \code{name}, \code{description},
+  \code{center}, \code{lower}, \code{upper}.
 }
 \description{
-This function extracts the parameters from a fitted model object.
+Returns a 4-row tibble describing each response curve parameter (b, c, d, e)
+with its name, plain-language description, and posterior center/lower/upper
+estimates in original data units.
 }
-\details{
-The function extracts the parameters from the fitted model object
-  and returns them in a list. When \code{scaled = TRUE}, parameters are
-  unscaled back to original data units (spend for b/e, KPI for c/d).
+\seealso{
+[mrm_summary()] for a full channel-level summary,
+  [fit_response()] for model fitting.
 }

@@ -21,12 +21,12 @@
 #' @param scale_method The method used for scaling. Either "min_max" or "std".
 #' @param midpoint_range A two-element numeric vector specifying the midpoint
 #'   bounds as fractions of the x-axis range (e.g., \code{c(0.1, 0.9)}).
-#'   See \code{\link{mrm_prior}} for details.
+#'   See \code{\link{mrmopt_prior}} for details.
 #' @param ceiling_max A multiplier on the observed max of y for the ceiling
 #'   upper bound (e.g., \code{3} means ceiling can be up to 3x observed max).
-#'   See \code{\link{mrm_prior}} for details.
+#'   See \code{\link{mrmopt_prior}} for details.
 #' @param floor_min A scalar lower bound for the floor in original data units.
-#'   Default is 0. See \code{\link{mrm_prior}} for details.
+#'   Default is 0. See \code{\link{mrmopt_prior}} for details.
 #' @param prior An optional \code{brmsprior} object for full manual control
 #'   over priors. If provided, \code{midpoint_range}, \code{ceiling_max}, and
 #'   \code{floor_min} are ignored. When \code{auto = FALSE} and
@@ -40,12 +40,15 @@
 #'   the range of x in the data.
 #' @param infer_length The number of points to generate for inference.
 #'   Default is 1000.
-#' @param anchor_zero Logical indicating whether to inject a synthetic (0, 0)
-#'   data point to anchor the response curve at the origin. This encodes the
-#'   domain assumption that zero spend produces zero response. Scale values are
-#'   always computed from the real data only; the anchor is scaled using those
-#'   values and appended afterward, so it does not contaminate the scaling.
-#'   Automatically disabled for log-based forms. Default is TRUE.
+#' @param anchor_strength A single positive numeric value controlling how
+#'   tightly the floor parameter (`c`) is constrained around `floor_min`.
+#'   See \code{\link{mrmopt_prior}} for details. If supplied, overrides the
+#'   `anchor_strength` in `mrmopt_prior()`. Default is `NULL` (use `mrmopt_prior`
+#'   default of `0.05`).
+#' @param anchor_zero \[Deprecated\] Previously controlled injection of a
+#'   synthetic (0, 0) data point. Floor anchoring is now handled via
+#'   `anchor_strength` in \code{\link{mrmopt_prior}}. If set, a deprecation
+#'   warning is emitted and the argument is ignored.
 #' @param refresh How often Stan reports sampling progress (in iterations).
 #'   Default is 500. Set to 0 for silent sampling.
 #' @param ... Additional arguments to be passed to the \code{\link[brms]{brm}}
@@ -86,7 +89,8 @@ fit_response = function(data,
                         control = list(adapt_delta = 0.95),
                         infer_xrange = NULL,
                         infer_length = 1000,
-                        anchor_zero = TRUE,
+                        anchor_strength = NULL,
+                        anchor_zero = NULL,
                         refresh = 500,
                         ...){
 
@@ -135,14 +139,25 @@ fit_response = function(data,
     cost_per_unit <- sum(data[[x]], na.rm = TRUE) / sum(data[[units]], na.rm = TRUE)
   }
 
+  # --- Deprecation: anchor_zero ---
+  if (!is.null(anchor_zero)) {
+    warning(
+      "`anchor_zero` is deprecated. Floor anchoring is now handled via ",
+      "`anchor_strength` in mrm_prior(). See ?mrmopt_prior for details.",
+      call. = FALSE
+    )
+  }
+
   # --- Detect whether user provided simplified prior args ---
-  has_simple_prior <- !is.null(midpoint_range) || !is.null(ceiling_max) || !is.null(floor_min)
+  has_simple_prior <- !is.null(midpoint_range) || !is.null(ceiling_max) ||
+    !is.null(floor_min) || !is.null(anchor_strength)
   has_raw_prior <- !is.null(prior) && inherits(prior, "brmsprior")
 
   if (has_simple_prior && has_raw_prior) {
     stop(
       "Cannot specify both a raw `brmsprior` and simplified prior arguments ",
-      "(`midpoint_range`, `ceiling_max`, `floor_min`). Use one or the other.",
+      "(`midpoint_range`, `ceiling_max`, `floor_min`, `anchor_strength`). ",
+      "Use one or the other.",
       call. = FALSE
     )
   }
@@ -191,8 +206,9 @@ fit_response = function(data,
       if (!is.null(midpoint_range)) mrm_prior_args$midpoint_range <- midpoint_range
       if (!is.null(ceiling_max)) mrm_prior_args$ceiling_max <- ceiling_max
       if (!is.null(floor_min)) mrm_prior_args$floor_min <- floor_min
+      if (!is.null(anchor_strength)) mrm_prior_args$anchor_strength <- anchor_strength
 
-      user_mrm_prior <- do.call(mrm_prior, mrm_prior_args)
+      user_mrm_prior <- do.call(mrmopt_prior, mrm_prior_args)
 
       prior <- hlpr_resolve_prior(
         mrm_prior = user_mrm_prior,
@@ -218,39 +234,6 @@ fit_response = function(data,
       stop("The provided prior does not contain all required parameters (b, c, d, e).",
            call. = FALSE)
     }
-  }
-
-  # --- Inject zero-zero anchor point ---
-  # Disabled for log-based forms since log(0) is undefined and breaks the model
-  log_forms <- c("log_logistic", "weibull", "reflected_weibull")
-  n_anchor_rows <- 0L
-  if (anchor_zero && !(type %in% log_forms)) {
-    anchor_row <- data[1L, , drop = FALSE]
-    rownames(anchor_row) <- NULL
-
-    if (scale_data) {
-      sv <- scale_values
-
-      # Compute scaled x for anchor
-      if (!is.null(sv$x_min) && !is.null(sv$x_max)) {
-        anchor_row[[x]] <- (0 - sv$x_min) / (sv$x_max - sv$x_min)
-      } else if (!is.null(sv$x_mean) && !is.null(sv$x_sd)) {
-        anchor_row[[x]] <- (0 - sv$x_mean) / sv$x_sd
-      }
-
-      # Compute scaled y for anchor
-      if (!is.null(sv$y_min) && !is.null(sv$y_max)) {
-        anchor_row[[y]] <- (0 - sv$y_min) / (sv$y_max - sv$y_min)
-      } else if (!is.null(sv$y_mean) && !is.null(sv$y_sd)) {
-        anchor_row[[y]] <- (0 - sv$y_mean) / sv$y_sd
-      }
-    } else {
-      anchor_row[[x]] <- 0
-      anchor_row[[y]] <- 0
-    }
-
-    data <- rbind(anchor_row, data)
-    n_anchor_rows <- 1L
   }
 
   #rename the columns of data by removing any _ or . in the column names
@@ -283,11 +266,13 @@ fit_response = function(data,
   fit$rc_type = type
   fit$spend_col = x
   fit$kpi_col = y
-  fit$anchor_zero = n_anchor_rows > 0L
-  fit$n_anchor_rows = n_anchor_rows
   fit$cost_per_unit = if (!is.null(units)) cost_per_unit else NULL
   fit$date_col = date
   fit$units_col = units
+
+  # Assign class before post-processing so mrm_* functions pass inherits() checks
+  class(fit) <- c("mrmfit", class(fit))
+
   fit$response_df =
     mrm_infer(
       fit,
@@ -297,9 +282,7 @@ fit_response = function(data,
       )
   fit$R2 = tibble::as_tibble(brms::bayes_R2(fit))
   fit$summary = mrm_summary(fit)
-  fit$params_summary = mrm_params_summary(fit)
-
-  class(fit) <- c("mrmfit", class(fit))
+  fit$params_summary = mrm_params(fit)
 
   return(fit)
 }

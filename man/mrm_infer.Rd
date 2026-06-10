@@ -16,7 +16,10 @@ mrm_infer(mrm, xrange = NULL, length.out = 1000, scaled = TRUE)
 \item{scaled}{A logical indicating whether the model was fitted on scaled data. Default is TRUE.}
 }
 \value{
-A data frame containing the predicted response values and the model response.
+A data frame containing the predicted response values and the model
+  response. Includes both prediction intervals (\code{lower}, \code{upper} —
+  include observation noise) and mean-function credible intervals
+  (\code{lower_mu}, \code{upper_mu} — curve shape uncertainty only).
 }
 \description{
 This function infers the response from a fitted model object.

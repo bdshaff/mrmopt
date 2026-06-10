@@ -10,7 +10,8 @@ mrm_plot_costper(
   length.out = 1000,
   scaled = TRUE,
   markup = TRUE,
-  x_var = c("spend", "units")
+  x_var = c("spend", "units"),
+  interval = c("prediction", "confidence")
 )
 }
 \arguments{
@@ -26,10 +27,21 @@ mrm_plot_costper(
 Default is TRUE.}
 
 \item{x_var}{Character; \code{"spend"} (default) or \code{"units"}.}
+
+\item{interval}{Type of credible interval. \code{"prediction"} (default)
+includes observation noise. \code{"confidence"} shows uncertainty about
+the mean curve only (tighter bands).}
 }
 \value{
 A ggplot object.
 }
 \description{
-Plot cost per KPI of a fitted model
+Draws the cost-per-KPI efficiency curve with a credible-interval ribbon.
+This is the third panel of the dashboard produced by [plot.mrmfit()]; call
+it directly when you need a standalone cost-per plot or want to control
+parameters not exposed by `plot()`.
+}
+\seealso{
+[plot.mrmfit()] for the combined dashboard,
+  [mrm_plot_response()], [mrm_plot_return()] for the other panels.
 }

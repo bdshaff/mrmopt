@@ -2,6 +2,15 @@ url: https://bdshaff.github.io/mrmopt/
 template:
   bootstrap: 5
 
+navbar:
+  structure:
+    left: [intro, articles, reference, news, roadmap]
+    right: [github]
+  components:
+    roadmap:
+      text: Roadmap
+      href: articles/roadmap.html
+
 articles:
   - title: "Getting Started"
     contents:
@@ -9,4 +18,7 @@ articles:
       - fitting_and_analysis
       - diagnostics_and_comparison
       - optimization
+  - title: "Project"
+    contents:
+      - roadmap
 

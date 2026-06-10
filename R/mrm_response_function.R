@@ -7,14 +7,18 @@
 #' @return A function that takes a numeric vector of spend values and returns the corresponding KPI values based on the specified response model and parameters.
 #'
 #' @export
-mrm_response_function = function(mrm, location = "center", scaled = TRUE){
+mrm_response_function <- function(mrm, location = "center", scaled = TRUE) {
 
-  if(!(location %in% c("lower", "center", "upper"))){
+  if (!inherits(mrm, "mrmfit")) {
+    stop("mrm must be a fitted model object created by fit_response()", call. = FALSE)
+  }
+
+  if (!(location %in% c("lower", "center", "upper"))) {
     stop("location must be one of 'left', 'center', or 'right'")
   }
 
   f = rm_dispatch(mrm$rc_type)
-  p = mrm_params(mrm, scaled = scaled)[[location]]
+  p <- hlpr_params(mrm, scaled = scaled)[[location]]
   func = function(x) {
     f(x, b = p$b, c = p$c, d = p$d, e = p$e)
   }

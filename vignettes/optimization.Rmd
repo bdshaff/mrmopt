@@ -84,34 +84,34 @@ opt_point <- opt_mix(models, method = "point")
 
 ### Inspecting the Result
 
-`print()` gives a formatted summary:
+`print()` and `opt_summary()` both display a formatted console summary —
+they produce the same output:
 
 ```{r print-point}
 print(opt_point)
 ```
 
-`summary()` returns a tidy tibble comparing current vs. optimal
-allocation with absolute and percentage deltas:
+To retrieve a **tidy tibble** of current vs. optimal deltas for further
+analysis or export, use `opt_table()`:
 
-```{r summary-point}
-summary(opt_point) |>
+```{r opt-table-point}
+opt_table(opt_point) |>
   select(channel, spend_delta_pct, kpi_delta_pct, cp_delta)
 ```
 
 ### Visualising the Allocation
 
-`plot()` supports several plot types. The default is `"allocation"`,
-which shows current vs. optimal spend as grouped bars:
+`opt_plot_allocation()` shows current vs. optimal spend as grouped bars:
 
 ```{r plot-allocation, fig.cap = "Current vs. optimal spend allocation."}
-plot(opt_point, type = "allocation")
+opt_plot_allocation(opt_point)
 ```
 
-The `"comparison"` type produces a dumbbell chart showing the direction
+`opt_plot_comparison()` produces a dumbbell chart showing the direction
 and magnitude of spend reallocation:
 
 ```{r plot-comparison, fig.cap = "Spend reallocation from current to optimal."}
-plot(opt_point, type = "comparison")
+opt_plot_comparison(opt_point)
 ```
 
 ---
@@ -122,16 +122,16 @@ To understand *why* the optimizer reallocates spend, overlay the current
 and optimal positions on each channel's response curve:
 
 ```{r plot-curves, fig.cap = "Response curves with current (red) and optimal (blue) spend positions.", fig.height = 6}
-plot(opt_point, type = "curves")
+opt_plot_curves(opt_point)
 ```
 
-The `"returns"` plot shows where the current and optimal points sit on
+`opt_plot_returns()` shows where the current and optimal points sit on
 each channel's average return (AR) and marginal return (MR) curves —
 this is where you can see the efficiency trade-offs driving the
 allocation:
 
 ```{r plot-returns, fig.cap = "AR and MR curves at current and optimal spend.", fig.height = 6}
-plot(opt_point, type = "returns")
+opt_plot_returns(opt_point)
 ```
 
 ---
@@ -155,35 +155,59 @@ opt_post <- opt_mix(
 print(opt_post)
 ```
 
-The `"posterior"` plot type shows the distribution of optimal spend per
+`opt_plot_posterior()` shows the distribution of optimal spend per
 channel as violin plots:
 
 ```{r plot-posterior, fig.cap = "Posterior distribution of optimal allocations across 200 draws."}
-plot(opt_post, type = "posterior")
+opt_plot_posterior(opt_post)
 ```
 
-The `"allocation"` plot adds 95% credible interval error bars when used
+`opt_plot_allocation()` adds 95% credible interval error bars when used
 with a posterior result:
 
 ```{r plot-alloc-post, fig.cap = "Optimal allocation with 95% CIs from posterior optimization."}
-plot(opt_post, type = "allocation")
+opt_plot_allocation(opt_post)
 ```
 
 ---
 
 ## 5. Comparing Methods
 
-`compare()` produces a side-by-side diff of two optimization results:
+`opt_table()` returns a plain tibble, so comparing two results is a
+standard join:
 
 ```{r compare}
-comp <- compare(opt_point, opt_post)
-comp |> select(channel, spend_point, spend_posterior, spend_diff_pct, kpi_diff_pct)
+comp <- inner_join(
+  opt_table(opt_point) |>
+    select(channel, spend_point = optimal_spend, kpi_point = optimal_kpi),
+  opt_table(opt_post) |>
+    select(channel, spend_posterior = optimal_spend, kpi_posterior = optimal_kpi),
+  by = "channel"
+) |>
+  mutate(
+    spend_diff_pct = (spend_posterior / spend_point) - 1,
+    kpi_diff_pct   = (kpi_posterior   / kpi_point)   - 1
+  )
+
+comp
 ```
 
-`plot()` on a compare result produces a dumbbell chart:
+A dumbbell chart requires only a few lines of ggplot2:
 
 ```{r plot-compare, fig.cap = "Point vs. posterior optimal spend per channel."}
-plot(comp, type = "spend")
+comp |>
+  filter(channel != "TOTAL") |>
+  mutate(channel = forcats::fct_reorder(channel, spend_point)) |>
+  ggplot(aes(y = channel)) +
+  geom_segment(aes(x = spend_point, xend = spend_posterior, yend = channel),
+               linewidth = 0.8, color = "grey50") +
+  geom_point(aes(x = spend_point),     color = "firebrick", size = 3) +
+  geom_point(aes(x = spend_posterior), color = "steelblue", size = 3) +
+  scale_x_continuous(labels = scales::dollar_format()) +
+  labs(x = "Weekly Spend ($)", y = NULL,
+       title = "Spend: Point vs. Posterior",
+       subtitle = "Red = point  |  Blue = posterior") +
+  theme_minimal()
 ```
 
 ---
@@ -291,8 +315,23 @@ TV is locked at $50,000/week; the remaining $200,000 is optimized
 across the other four channels.
 
 ```{r compare-constrained, fig.cap = "Unconstrained vs. fixed-TV optimization."}
-comp_fixed <- compare(opt_point, opt_fixed, labels = c("unconstrained", "fixed_TV"))
-plot(comp_fixed, type = "spend")
+inner_join(
+  opt_table(opt_point) |> select(channel, spend_unconstrained = optimal_spend),
+  opt_table(opt_fixed) |> select(channel, spend_fixed = optimal_spend),
+  by = "channel"
+) |>
+  filter(channel != "TOTAL") |>
+  mutate(channel = forcats::fct_reorder(channel, spend_unconstrained)) |>
+  ggplot(aes(y = channel)) +
+  geom_segment(aes(x = spend_unconstrained, xend = spend_fixed, yend = channel),
+               linewidth = 0.8, color = "grey50") +
+  geom_point(aes(x = spend_unconstrained), color = "firebrick", size = 3) +
+  geom_point(aes(x = spend_fixed),         color = "steelblue", size = 3) +
+  scale_x_continuous(labels = scales::dollar_format()) +
+  labs(x = "Weekly Spend ($)", y = NULL,
+       title = "Spend: Unconstrained vs. Fixed TV",
+       subtitle = "Red = unconstrained  |  Blue = fixed TV") +
+  theme_minimal()
 ```
 
 ---
@@ -303,12 +342,11 @@ plot(comp_fixed, type = "spend")
 |-------------------|---------|
 | `opt_mix(method = "point")` | Fast single-solution optimization |
 | `opt_mix(method = "posterior")` | Bayesian optimization with uncertainty |
-| `print()` | Formatted console summary |
-| `summary()` | Tidy comparison tibble with deltas |
-| `plot(type = "allocation")` | Grouped bar: current vs. optimal |
-| `plot(type = "comparison")` | Dumbbell: current → optimal |
-| `plot(type = "curves")` | Response curves with current + optimal points |
-| `plot(type = "returns")` | AR/MR curves at current + optimal |
-| `plot(type = "posterior")` | Violin of posterior allocations |
-| `compare()` | Side-by-side diff of two results |
-| `plot(compare_result)` | Dumbbell chart of two results |
+| `print()` / `opt_summary()` | Formatted console summary (identical output) |
+| `opt_table()` | Tidy comparison tibble with per-channel deltas |
+| `opt_plot_allocation()` | Grouped bar: current vs. optimal spend or KPI |
+| `opt_plot_comparison()` | Dumbbell: current → optimal spend |
+| `opt_plot_curves()` | Response curves with current + optimal points |
+| `opt_plot_returns()` | AR/MR curves at current + optimal |
+| `opt_plot_posterior()` | Violin of posterior allocations (posterior only) |
+| `inner_join(opt_table(a), opt_table(b))` | Side-by-side diff of two results |

@@ -84,9 +84,10 @@ hlpr_scale_data = function(data, x, y, scale_method, type = "gompertz") {
         x_max = x_max_raw,
         x_offset = x_offset,
         y_mean = y_mean_raw,
-        y_sd = y_sd_raw
+        y_sd = y_sd_raw,
+        y_min = y_min_raw,
+        y_max = y_max_raw
       )
-      # Use a hybrid scale_method marker so unscaling knows what to do
     }
 
   } else {
@@ -121,7 +122,9 @@ hlpr_scale_data = function(data, x, y, scale_method, type = "gompertz") {
         x_sd = x_sd_raw,
         x_offset = 0,
         y_mean = y_mean_raw,
-        y_sd = y_sd_raw
+        y_sd = y_sd_raw,
+        y_min = y_min_raw,
+        y_max = y_max_raw
       )
     }
   }

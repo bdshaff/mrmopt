@@ -13,12 +13,6 @@ hlpr_get_weekly_spend = function(mrm){
   data <- mrm$data
   x_offset <- if (!is.null(sv$x_offset)) sv$x_offset else 0
 
-  # Exclude synthetic anchor (0,0) row if present
-  anchor_zero <- attr(mrm$summary, "anchor_zero")
-  if (!is.null(anchor_zero) && isTRUE(anchor_zero)) {
-    data <- utils::head(data, -1)
-  }
-
   if (!is.null(sv$x_min) && !is.null(sv$x_max)) {
     x_range <- sv$x_max - sv$x_min
     s <- mean(data[[2]]) * x_range + sv$x_min - x_offset

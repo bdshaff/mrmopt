@@ -100,11 +100,11 @@ posteriors. Running diagnostics after every fit is a good habit.
 
 ### The Diagnostics Plot
 
-`plot(fit, type = "diagnostics")` shows two panels: trace plots for the
+`mrm_plot_diagnostics(fit)` shows two panels: trace plots for the
 four parameters and a posterior predictive check.
 
 ```{r fig-diagnostics, fig.height = 7, fig.cap = "Diagnostics for the Gompertz fit. Trace plots (top) show chain mixing across b, c, d, e. The PPC (bottom) overlays observed data against 200 posterior predictive draws."}
-plot(fit_gompertz, type = "diagnostics")
+mrm_plot_diagnostics(fit_gompertz)
 ```
 
 ### Reading Trace Plots
@@ -164,7 +164,7 @@ effective draws than the mean.
 To inspect the full brms convergence output:
 
 ```{r brms-summary, eval = FALSE}
-summary(fit_gompertz)
+brms::summary(fit_gompertz)
 ```
 
 ### Posterior Predictive Check
@@ -246,12 +246,12 @@ defensible predictions. The most common comparisons are:
 
 ### Overlaying Response Curves
 
-`mrm_plot_compare()` takes a named list of fitted models and overlays
+`mrms_plot_compare()` takes a named list of fitted models and overlays
 their response curves, return curves, or cost-per curves on a single
 axis. Names are used as legend labels.
 
 ```{r fig-compare-response, fig.height = 4, fig.cap = "Gompertz and Logistic response curves overlaid on the same axis. Both fit the observed spend range well; they diverge in the extrapolated region above ~$70k."}
-mrm_plot_compare(
+mrms_plot_compare(
   models    = list(Gompertz = fit_gompertz, Logistic = fit_logistic),
   plot_type = "response"
 )
@@ -269,7 +269,7 @@ comparison, because it directly shows how each model characterises
 the efficiency of incremental spend.
 
 ```{r fig-compare-return, fig.height = 4, fig.cap = "AR and MR curves for both models. The Gompertz's earlier inflection gives it a higher marginal return peak at lower spend; the Logistic's symmetric shape keeps MR higher for longer."}
-mrm_plot_compare(
+mrms_plot_compare(
   models    = list(Gompertz = fit_gompertz, Logistic = fit_logistic),
   plot_type = "return"
 )
@@ -290,7 +290,7 @@ It directly shows the financial cost of delivering a conversion at each
 spend level.
 
 ```{r fig-compare-costper, fig.height = 4, fig.cap = "Cost per conversion curves for both models. Agreement in the observed range gives confidence that either model would support similar spend recommendations."}
-mrm_plot_compare(
+mrms_plot_compare(
   models    = list(Gompertz = fit_gompertz, Logistic = fit_logistic),
   plot_type = "costper"
 )
@@ -302,7 +302,7 @@ When comparing more than two models or when the curves are too close to
 distinguish on a single axis, use `layout = "facet"`:
 
 ```{r fig-compare-facet, fig.height = 4, fig.cap = "Faceted comparison gives each model its own panel, making the individual shapes easier to read."}
-mrm_plot_compare(
+mrms_plot_compare(
   models    = list(Gompertz = fit_gompertz, Logistic = fit_logistic),
   plot_type = "response",
   layout    = "facet"
@@ -347,7 +347,7 @@ bind_rows(
 
 ## Part 4: Comparing Across Channels
 
-`mrm_plot_compare()` is not limited to same-channel comparisons. Passing
+`mrms_plot_compare()` is not limited to same-channel comparisons. Passing
 models from different channels produces a side-by-side view of how the
 portfolio's response profiles compare — useful for identifying which
 channels are most and least saturated relative to current spend levels.
@@ -358,7 +358,7 @@ for the fitting loop.
 
 ```{r channel-compare, eval = FALSE}
 # fits is the named list from the fitting vignette
-mrm_plot_compare(fits, plot_type = "return", layout = "facet")
+mrms_plot_compare(fits, plot_type = "return", layout = "facet")
 ```
 
 When channels operate at very different spend scales, `layout = "facet"`
@@ -380,7 +380,7 @@ checks:
 | Sufficient sampling | ESS | Bulk and Tail ESS > 400 for all parameters |
 | Predictive calibration | PPC | Replicated distributions span observed data |
 | Model fit | Bayes R² | R² meaningfully above baseline; CI not spanning 0 |
-| Curve selection | `mrm_plot_compare()` | Chosen type fits as well as alternatives in observed range; sensible extrapolation |
+| Curve selection | `mrms_plot_compare()` | Chosen type fits as well as alternatives in observed range; sensible extrapolation |
 
 A model that passes all six checks can be used with confidence in
 downstream analysis. A model that fails the first four (MCMC-related)

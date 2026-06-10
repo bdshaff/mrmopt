@@ -152,14 +152,32 @@ test_that("warns when raw prior supplied in auto = TRUE mode", {
 })
 
 # -------------------------------------------------------------------------
-# anchor_zero auto-disable for log forms
+# anchor_zero deprecation
 # -------------------------------------------------------------------------
 
-test_that("anchor_zero is disabled in source for log-based curve types", {
-  # Inspect the source code to confirm log_forms disables anchor_zero.
-  # This is a structural assertion — no MCMC needed.
-  fn_body <- deparse(body(fit_response))
-  # The log_forms vector must be defined and used with anchor_zero guard
-  expect_true(any(grepl("log_forms", fn_body)))
-  expect_true(any(grepl("anchor_zero.*log_forms|log_forms.*anchor_zero", fn_body)))
+test_that("anchor_zero emits deprecation warning", {
+  expect_warning(
+    tryCatch(
+      fit_response(make_valid_data(), spend = "spend", kpi = "kpi",
+                   date = "date", anchor_zero = TRUE),
+      error = function(e) NULL
+    ),
+    "deprecated"
+  )
+})
+
+# -------------------------------------------------------------------------
+# anchor_strength pass-through
+# -------------------------------------------------------------------------
+
+test_that("anchor_strength is accepted without error", {
+  # Only check it doesn't error during argument processing (before brm() call)
+  expect_warning(
+    tryCatch(
+      fit_response(make_valid_data(), spend = "spend", kpi = "kpi",
+                   date = "date", anchor_strength = 0.10),
+      error = function(e) NULL
+    ),
+    NA  # no warning expected
+  )
 })

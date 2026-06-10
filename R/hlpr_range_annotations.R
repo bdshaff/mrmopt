@@ -16,7 +16,7 @@ hlpr_range_annotations <- function(mrm,
                                    show_current = TRUE,
                                    show_range = TRUE) {
 
-  pal <- mrm_palette()
+  pal <- mrmopt_palette()
   s <- mrm$summary
   if (is.null(s)) return(list())
 

@@ -9,12 +9,12 @@
 \arguments{
 \item{x}{An `opt_mix_result` object returned by [opt_mix()].}
 
-\item{...}{Additional arguments (ignored).}
+\item{...}{Additional arguments passed to [opt_summary()].}
 }
 \value{
 The object `x`, invisibly.
 }
 \description{
-Displays a formatted summary of the optimization result, including budget
-info, optimal allocation per channel, and totals vs. current performance.
+Displays a formatted summary of the optimization result by calling
+[opt_summary()].
 }

@@ -98,14 +98,15 @@ plot(fit, type = "diagnostics")  # trace plots + PPCs
 mrm_params(fit)
 mrm_summary(fit)
 
+
 # 4. Compare models
 mrm_plot_compare(list(gompertz = fit_g, logistic = fit_l), layout = "overlay")
 
 # 5. Optimize (point estimate — fast, single solution)
 opt <- opt_mix(list(ch1 = fit1, ch2 = fit2), budget = 500000)
-print(opt)
-plot(opt)
-summary(opt)
+print(opt)           # formatted console summary (calls summary())
+summary(opt)         # same formatted output
+opt_table(opt)       # tidy tibble with per-channel deltas (current vs optimal)
 
 # 5b. Optimize (posterior — distribution of solutions)
 opt_post <- opt_mix(list(ch1 = fit1, ch2 = fit2),
@@ -230,6 +231,7 @@ When both absolute and share bounds are present, the tighter constraint wins.
    - `midpoint_range`: inflection point as fraction of x-axis
    - `ceiling_max`: multiplier on observed max response
    - `floor_min`: lower asymptote in original units
+   - `anchor_strength`: fraction of observed y range used as prior SD on the floor (`c`) parameter (default `0.05`). Controls how tightly the floor is constrained around `floor_min`. Set to `NULL` for loose behavior.
 3. **Manual** — raw `brms::prior()` objects
 
 ---
@@ -239,8 +241,7 @@ When both absolute and share bounds are present, the tighter constraint wins.
 1. Compute scaling parameters from real data only
 2. For log-forms: inject offset if zeros detected, then ratio-scale (x/max)
 3. For standard forms: min-max or standardization
-4. Append synthetic (0,0) anchor point *after* scaling (optional)
-5. Store scaling values on `$scale_values` for automatic unscaling in inference
+4. Store scaling values on `$scale_values` for automatic unscaling in inference
 
 ---
 
@@ -255,6 +256,7 @@ When both absolute and share bounds are present, the tighter constraint wins.
 
 ## Key Recent Changes (from prior sessions)
 
+- **opt_mix API redesign**: `summary.opt_mix_result()` now produces the formatted console output (previously done by `print`). `print.opt_mix_result()` is a thin wrapper calling `summary()`. `opt_table()` is a new plain exported function that returns the tidy comparison tibble (previously returned by `summary()`). All internal `plot_opt_*` helpers are now standalone exported functions named `opt_plot_allocation()`, `opt_plot_comparison()`, `opt_plot_posterior()`, `opt_plot_curves()`, `opt_plot_returns()`, and `opt_plot_compare()`. `plot.opt_mix_result()` and `plot.opt_mix_compare()` are thin dispatchers calling the `opt_plot_*` functions. `opt_plot_posterior()` now hard-errors (instead of message + fallback) when called on a point result.
 - **`compare()` function**: S3 generic + method for side-by-side diff of two `opt_mix_result` objects with `plot.opt_mix_compare` dumbbell chart.
 - **Response curve overlay plots**: `plot(opt, type = "curves")` shows response curves with current + optimal points; `plot(opt, type = "returns")` shows AR/MR curves at both positions. Uses `hlpr_opt_metrics()` for interpolation.
 - **`mrms` stored on result**: `opt_mix()` now stores the model list on the result so curve/returns plots can access response data.
@@ -262,7 +264,7 @@ When both absolute and share bounds are present, the tighter constraint wins.
 - **Constraint system**: User-supplied constraints data frame with absolute bounds (`min_spend`/`max_spend`), share-based bounds (`min_share`/`max_share`), and fixed channels (`fixed = TRUE`).
 - **`hlpr_build_solution()`**: Shared builder for unified solution tibble with current-state metrics, optimal units (static CPU), response rates, CIs, and shares.
 - **`hlpr_extract_draws()`**: Pre-extracts and unscales all posterior draws from fitted models for fast optimization loop evaluation.
-- **Anchor point fix**: `hlpr_get_weekly_spend()` now excludes synthetic (0,0) anchor row for standard-form models.
+- **`anchor_strength` prior**: Replaced the synthetic (0,0) anchor point injection with `anchor_strength` in `mrm_prior()` — a prior-based floor constraint that works uniformly across all 6 curve types. `anchor_zero` is deprecated.
 - **Trace plot labels**: Fixed strip label truncation — renamed mcmc.list columns to short labels (`b`, `c`, `d`, `e`) before passing to `bayesplot::mcmc_trace()` in `R/plot.mrmfit.R`
 - **`date_range` metadata**: Stored `c(min(date), max(date))` on all fitted models during `fit_response()`
 - **`mrm_plot_compare()` label collision fix**: When comparing same-channel/same-type models across time periods, appends short date range `"Mon 'YY–Mon 'YY"`; respects user-supplied `names(models)`

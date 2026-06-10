@@ -85,7 +85,9 @@ test_that("std + log form works: ratio-scales x, std-scales y", {
   # y should be std-scaled
   expect_true(!is.null(res$scale_values$y_mean))
   expect_true(!is.null(res$scale_values$y_sd))
-  expect_true(is.null(res$scale_values$y_min))
+  # y_min and y_max are also stored for anchor_strength prior computation
+  expect_equal(res$scale_values$y_min, 0)
+  expect_equal(res$scale_values$y_max, 500)
 })
 
 test_that("std + log form with x zeros applies offset", {
@@ -102,6 +104,22 @@ test_that("std scaling still works for non-log forms", {
 
   expect_true(!is.null(res$scale_values$x_mean))
   expect_true(!is.null(res$scale_values$x_sd))
+})
+
+test_that("std scale_values includes y_min and y_max for non-log forms", {
+  df <- data.frame(x = c(0, 50, 100), y = c(10, 250, 500))
+  res <- hlpr_scale_data(df, "x", "y", "std", type = "gompertz")
+
+  expect_equal(res$scale_values$y_min, 10)
+  expect_equal(res$scale_values$y_max, 500)
+})
+
+test_that("std scale_values includes y_min and y_max for log forms", {
+  df <- data.frame(x = c(10, 50, 100), y = c(10, 250, 500))
+  res <- hlpr_scale_data(df, "x", "y", "std", type = "log_logistic")
+
+  expect_equal(res$scale_values$y_min, 10)
+  expect_equal(res$scale_values$y_max, 500)
 })
 
 test_that("ratio scaling infer_xrange starts above 0 for log forms", {

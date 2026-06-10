@@ -3,7 +3,7 @@
 #' @description
 #' `r lifecycle::badge("deprecated")`
 #'
-#' This function is deprecated in favor of [mrm_prior()] and the internal
+#' This function is deprecated in favor of [mrmopt_prior()] and the internal
 #' [hlpr_resolve_prior()]. It is retained for backward compatibility and
 #' now delegates to the new prior resolution system.
 #'
@@ -41,7 +41,7 @@ hlpr_default_prior_for_scaled_data <- function(scaled_data, x, y, scale_method,
   }
 
   hlpr_resolve_prior(
-    mrm_prior = mrm_prior(),
+    mrm_prior = mrmopt_prior(),
     scaled_data = scaled_data,
     x = x, y = y,
     scale_method = scale_method,

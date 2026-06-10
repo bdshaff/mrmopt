@@ -24,7 +24,8 @@ fit_response(
   control = list(adapt_delta = 0.95),
   infer_xrange = NULL,
   infer_length = 1000,
-  anchor_zero = TRUE,
+  anchor_strength = NULL,
+  anchor_zero = NULL,
   refresh = 500,
   ...
 )
@@ -58,14 +59,14 @@ Default is TRUE.}
 
 \item{midpoint_range}{A two-element numeric vector specifying the midpoint
 bounds as fractions of the x-axis range (e.g., \code{c(0.1, 0.9)}).
-See \code{\link{mrm_prior}} for details.}
+See \code{\link{mrmopt_prior}} for details.}
 
 \item{ceiling_max}{A multiplier on the observed max of y for the ceiling
 upper bound (e.g., \code{3} means ceiling can be up to 3x observed max).
-See \code{\link{mrm_prior}} for details.}
+See \code{\link{mrmopt_prior}} for details.}
 
 \item{floor_min}{A scalar lower bound for the floor in original data units.
-Default is 0. See \code{\link{mrm_prior}} for details.}
+Default is 0. See \code{\link{mrmopt_prior}} for details.}
 
 \item{prior}{An optional \code{brmsprior} object for full manual control
 over priors. If provided, \code{midpoint_range}, \code{ceiling_max}, and
@@ -87,12 +88,16 @@ the range of x in the data.}
 \item{infer_length}{The number of points to generate for inference.
 Default is 1000.}
 
-\item{anchor_zero}{Logical indicating whether to inject a synthetic (0, 0)
-data point to anchor the response curve at the origin. This encodes the
-domain assumption that zero spend produces zero response. Scale values are
-always computed from the real data only; the anchor is scaled using those
-values and appended afterward, so it does not contaminate the scaling.
-Automatically disabled for log-based forms. Default is TRUE.}
+\item{anchor_strength}{A single positive numeric value controlling how
+tightly the floor parameter (`c`) is constrained around `floor_min`.
+See \code{\link{mrmopt_prior}} for details. If supplied, overrides the
+`anchor_strength` in `mrmopt_prior()`. Default is `NULL` (use `mrmopt_prior`
+default of `0.05`).}
+
+\item{anchor_zero}{\[Deprecated\] Previously controlled injection of a
+synthetic (0, 0) data point. Floor anchoring is now handled via
+`anchor_strength` in \code{\link{mrmopt_prior}}. If set, a deprecation
+warning is emitted and the argument is ignored.}
 
 \item{refresh}{How often Stan reports sampling progress (in iterations).
 Default is 500. Set to 0 for silent sampling.}

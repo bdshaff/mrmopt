@@ -6,6 +6,8 @@
 #' @param total_x A numeric value representing the total spend constraint when type is "total_bounded". Must be greater than 0. Default is NULL.
 #' @return A data frame containing the channel names, lower bounds (lb), upper bounds (ub), initial values (x0), weekly spend, and total spend for each channel.
 #' @details When type is "return_rates", the function calculates the lower and upper bounds for each channel based on the return rates from the MRM models, multiplied by the bounds_multiplier. The initial value (x0) is set to the midpoint between the lower and upper bounds. When type is "total_bounded", the function sets the lower bound to 0 and the upper bound to total_x for each channel, with the initial value (x0) set to total_x divided by the number of channels.
+#' @importFrom dplyr bind_rows mutate select
+#' @importFrom tibble tibble
 #' @export
 
 opt_generate_constraints <- function(mrms_list, type = "return_rates", bounds_multiplier = 3, total_x = NULL) {
@@ -19,25 +21,25 @@ opt_generate_constraints <- function(mrms_list, type = "return_rates", bounds_mu
 
     constraints_df <-
       bind_rows(
-        map(mrms_list, ~ tibble::tibble(
+        map(mrms_list, ~ tibble(
           min = .x$summary$range_min_spend,
           max = .x$summary$range_max_spend
         )),
         .id = "channel"
-      ) %>%
+      ) |>
       mutate(
         lb = min / bounds_multiplier,
         ub = max * bounds_multiplier,
         x0 = (min + max) / 2
-      ) %>%
-      select(-min, -max) %>%
-      mutate(weekly_spend = map_dbl(mrms_list, ~hlpr_get_weekly_spend(.x))) %>%
-      mutate(total_x = sum(weekly_spend)) %>%
+      ) |>
+      select(-min, -max) |>
+      mutate(weekly_spend = map_dbl(mrms_list, ~hlpr_get_weekly_spend(.x))) |>
+      mutate(total_x = sum(weekly_spend)) |>
       mutate(
         lb = pmax(lb, 0),
         ub = pmax(ub, x0),
         x0 = pmin(pmax(x0, lb), ub)
-      ) %>%
+      ) |>
       tibble()
   }else if(type == "total_bounded"){
 
@@ -52,14 +54,14 @@ opt_generate_constraints <- function(mrms_list, type = "return_rates", bounds_mu
         lb = rep(0, length(mrms_list)),
         ub = rep(total_x, length(mrms_list)),
         x0 = rep(total_x/length(mrms_list), length(mrms_list))
-      ) %>%
-      mutate(weekly_spend =  map_dbl(mrms_list, ~hlpr_get_weekly_spend(.x))) %>%
-      mutate(total_x = total_x) %>%
+      ) |>
+      mutate(weekly_spend =  map_dbl(mrms_list, ~hlpr_get_weekly_spend(.x))) |>
+      mutate(total_x = total_x) |>
       mutate(
         lb = pmax(lb, 0),
         ub = pmax(ub, x0),
         x0 = pmin(pmax(x0, lb), ub)
-      ) %>%
+      ) |>
       tibble()
 
   }

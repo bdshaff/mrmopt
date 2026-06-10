@@ -74,7 +74,6 @@ make_mock_mrmfit <- function(type        = "gompertz",
 
   log_forms  <- c("log_logistic", "weibull", "reflected_weibull")
   is_log     <- type %in% log_forms
-  anchor_n   <- if (!is_log) 1L else 0L
 
   scale_values <- list(
     x_min    = 0,
@@ -89,11 +88,6 @@ make_mock_mrmfit <- function(type        = "gompertz",
   x_sc    <- x_raw / x_max
   y_sc    <- runif(n_obs, 0.3, 0.9)
 
-  if (anchor_n > 0L) {
-    x_sc <- c(0, x_sc)
-    y_sc <- c(0, y_sc)
-  }
-
   # brms stores data with response (y) first, then x
   mock_data <- data.frame(
     opps         = y_sc,
@@ -103,9 +97,7 @@ make_mock_mrmfit <- function(type        = "gompertz",
 
   rdf <- make_mock_response_df(type = type, x_min = x_min, x_max = x_max)
 
-  weekly_spend_val <- if (anchor_n > 0L) {
-    mean(x_sc[-seq_len(anchor_n)]) * x_max
-  } else {
+  weekly_spend_val <- {
     mean(x_sc) * x_max
   }
   rdf_x   <- rdf[["spendchannel"]]
@@ -163,7 +155,6 @@ make_mock_mrmfit <- function(type        = "gompertz",
     pct_weeks_above = 20
   )
   attr(mock_summary, "log_curve_no_peak") <- is_log
-  attr(mock_summary, "anchor_zero")       <- anchor_n > 0L
   attr(mock_summary, "R2") <- tibble::tibble(
     Estimate = 0.85, Est.Error = 0.02, Q2.5 = 0.80, Q97.5 = 0.90
   )
@@ -188,8 +179,6 @@ make_mock_mrmfit <- function(type        = "gompertz",
     date_col     = "date",
     scale_values = scale_values,
     scale_method = "min_max",
-    anchor_zero  = anchor_n > 0L,
-    n_anchor_rows = anchor_n,
     cost_per_unit = if (with_units) 0.05 else NULL,
     units_col    = if (with_units) "units_channel" else NULL,
     date_range   = as.Date(c("2023-01-01", "2023-12-31")),
