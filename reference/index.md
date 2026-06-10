@@ -2,8 +2,6 @@
 
 ## All functions
 
-- [`compare()`](https://bdshaff.github.io/mrmopt/reference/compare.md) :
-  Compare two opt_mix_result objects side by side
 - [`fit_response()`](https://bdshaff.github.io/mrmopt/reference/fit_response.md)
   : Fit a response curve model using brms
 - [`hlpr_define_response_form()`](https://bdshaff.github.io/mrmopt/reference/hlpr_define_response_form.md)
@@ -20,28 +18,30 @@
   : Set a total constraint function
 - [`mrm_infer()`](https://bdshaff.github.io/mrmopt/reference/mrm_infer.md)
   : Infer response from a fitted model
-- [`mrm_palette()`](https://bdshaff.github.io/mrmopt/reference/mrm_palette.md)
-  : Package-level color palette for mrmopt plots
 - [`mrm_params()`](https://bdshaff.github.io/mrmopt/reference/mrm_params.md)
-  : Extract parameters from a fitted model
-- [`mrm_params_summary()`](https://bdshaff.github.io/mrmopt/reference/mrm_params_summary.md)
-  : Generate an interpretive summary of response curve parameters
-- [`mrm_plot_compare()`](https://bdshaff.github.io/mrmopt/reference/mrm_plot_compare.md)
-  : Compare multiple fitted response models
+  : Extract response curve parameters from a fitted model
+- [`mrm_plot()`](https://bdshaff.github.io/mrmopt/reference/mrm_plot.md)
+  : Plot a fitted response model
 - [`mrm_plot_costper()`](https://bdshaff.github.io/mrmopt/reference/mrm_plot_costper.md)
   : Plot cost per KPI of a fitted model
+- [`mrm_plot_diagnostics()`](https://bdshaff.github.io/mrmopt/reference/mrm_plot_diagnostics.md)
+  : Plot brms diagnostics for a fitted response model
 - [`mrm_plot_response()`](https://bdshaff.github.io/mrmopt/reference/mrm_plot_response.md)
   : Plot the response curve of a fitted model
 - [`mrm_plot_return()`](https://bdshaff.github.io/mrmopt/reference/mrm_plot_return.md)
   : Plot Absolute and Marginal Rates of Return
-- [`mrm_prior()`](https://bdshaff.github.io/mrmopt/reference/mrm_prior.md)
-  : Create a prior specification for response curve fitting
 - [`mrm_response_function()`](https://bdshaff.github.io/mrmopt/reference/mrm_response_function.md)
   : Get the response function from a fitted model
 - [`mrm_summary()`](https://bdshaff.github.io/mrmopt/reference/mrm_summary.md)
   : Generate a channel-level summary from a fitted response model
 - [`mrmopt_data`](https://bdshaff.github.io/mrmopt/reference/mrmopt_data.md)
   : Simulated multi-channel media spend dataset
+- [`mrmopt_palette()`](https://bdshaff.github.io/mrmopt/reference/mrmopt_palette.md)
+  : Package-level color palette for mrmopt plots
+- [`mrmopt_prior()`](https://bdshaff.github.io/mrmopt/reference/mrmopt_prior.md)
+  : Create a prior specification for response curve fitting
+- [`mrms_plot_compare()`](https://bdshaff.github.io/mrmopt/reference/mrms_plot_compare.md)
+  : Compare multiple fitted response models
 - [`opt_generate_constraints()`](https://bdshaff.github.io/mrmopt/reference/opt_generate_constraints.md)
   : Generate constraints for optimization based on MRM return rates or
   total spend This function generates constraints for optimization based
@@ -50,21 +50,25 @@
   for each channel.
 - [`opt_mix()`](https://bdshaff.github.io/mrmopt/reference/opt_mix.md) :
   Optimize media mix allocation across channels
-- [`plot(`*`<mrmfit>`*`)`](https://bdshaff.github.io/mrmopt/reference/plot.mrmfit.md)
-  : Plot method for mrmfit objects
-- [`plot(`*`<opt_mix_compare>`*`)`](https://bdshaff.github.io/mrmopt/reference/plot.opt_mix_compare.md)
-  : Plot method for opt_mix_compare objects
-- [`plot(`*`<opt_mix_result>`*`)`](https://bdshaff.github.io/mrmopt/reference/plot.opt_mix_result.md)
-  : Plot method for opt_mix_result objects
-- [`plot_optimal_mix()`](https://bdshaff.github.io/mrmopt/reference/plot_optimal_mix.md)
-  : Plot Optimal Mix
+- [`opt_plot_allocation()`](https://bdshaff.github.io/mrmopt/reference/opt_plot_allocation.md)
+  : Plot current vs. optimal spend or KPI allocation
+- [`opt_plot_comparison()`](https://bdshaff.github.io/mrmopt/reference/opt_plot_comparison.md)
+  : Dumbbell chart of spend reallocation
+- [`opt_plot_curves()`](https://bdshaff.github.io/mrmopt/reference/opt_plot_curves.md)
+  : Response curves with current and optimal spend points
+- [`opt_plot_posterior()`](https://bdshaff.github.io/mrmopt/reference/opt_plot_posterior.md)
+  : Posterior distribution of optimal spend allocation
+- [`opt_plot_returns()`](https://bdshaff.github.io/mrmopt/reference/opt_plot_returns.md)
+  : Average and marginal return curves with current and optimal points
+- [`opt_summary()`](https://bdshaff.github.io/mrmopt/reference/opt_summary.md)
+  : Print a formatted summary of an opt_mix_result object
+- [`opt_table()`](https://bdshaff.github.io/mrmopt/reference/opt_table.md)
+  : Tidy comparison table for opt_mix_result objects
+- [`print(`*`<mrm_prior>`*`)`](https://bdshaff.github.io/mrmopt/reference/print.mrm_prior.md)
+  : Print method for mrm_prior objects
 - [`print(`*`<mrmfit>`*`)`](https://bdshaff.github.io/mrmopt/reference/print.mrmfit.md)
   : Print method for mrmfit objects
 - [`print(`*`<opt_mix_result>`*`)`](https://bdshaff.github.io/mrmopt/reference/print.opt_mix_result.md)
   : Print method for opt_mix_result objects
 - [`response()`](https://bdshaff.github.io/mrmopt/reference/response.md)
   : Response Curve Function
-- [`response_models_comparison()`](https://bdshaff.github.io/mrmopt/reference/response_models_comparison.md)
-  : Compare Response Curve Models
-- [`summary(`*`<opt_mix_result>`*`)`](https://bdshaff.github.io/mrmopt/reference/summary.opt_mix_result.md)
-  : Summary method for opt_mix_result objects

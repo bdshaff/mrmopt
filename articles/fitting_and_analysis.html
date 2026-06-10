@@ -34,14 +34,11 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item"><a class="nav-link" href="../articles/index.html">Articles</a></li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/roadmap.html">Roadmap</a></li>
       </ul>
-<ul class="navbar-nav">
-<li class="nav-item"><form class="form-inline" role="search">
- <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
-</form></li>
-      </ul>
+<ul class="navbar-nav"></ul>
 </div>
 
 
@@ -182,10 +179,12 @@ options.</li>
 sensible default priors automatically. This removes the need to specify
 priors by hand for most channels.</li>
 <li>
-<strong><code>anchor_zero = TRUE</code></strong> (the default):
-injects a synthetic (spend = 0, conversions = 0) data point. This
-encodes the domain assumption that zero spend produces zero response and
-anchors the floor of the curve. Disable it if you believe the channel
+<strong><code>anchor_strength = 0.05</code></strong> (the default
+via <code><a href="../reference/mrmopt_prior.html">mrmopt_prior()</a></code>): controls how tightly the floor
+parameter (<code>c</code>) is constrained near zero. The value is a
+fraction of the observed y range used as the prior SD. Smaller values
+produce narrower credible intervals at low spend. Set to
+<code>NULL</code> for loose behavior if you believe the channel
 generates baseline conversions independent of paid spend.</li>
 <li>
 <strong><code>chains</code>, <code>iter</code>,
@@ -212,30 +211,29 @@ the console — displays a structured summary of the fitted model.</p>
 <code class="sourceCode R"><span><span class="va">fit</span></span>
 <span><span class="co">#&gt; -- Response Curve Summary: gompertz ------------------------------------------ </span></span>
 <span><span class="co">#&gt; Channel: spend</span></span>
-<span><span class="co">#&gt; Weeks: 104 | Anchor: yes</span></span>
+<span><span class="co">#&gt; Weeks: 104</span></span>
 <span><span class="co">#&gt; -- Current Performance ------------------------------------------------------- </span></span>
-<span><span class="co">#&gt; Weekly Spend: $44,963</span></span>
-<span><span class="co">#&gt; KPI: 582  |  CP: $78  |  AR: 0.0114  |  MR: 0.0562</span></span>
+<span><span class="co">#&gt; Weekly Spend: $45,395</span></span>
+<span><span class="co">#&gt; KPI: 605  |  CP: $77  |  AR: 0.0117  |  MR: 0.0539</span></span>
 <span><span class="co">#&gt; -- Parameters ---------------------------------------------------------------- </span></span>
-<span><span class="co">#&gt;   b (growth rate):     -2.02e-04</span></span>
-<span><span class="co">#&gt;   c (floor):           71</span></span>
+<span><span class="co">#&gt;   b (growth rate):     -2.03e-04</span></span>
+<span><span class="co">#&gt;   c (floor):           75</span></span>
 <span><span class="co">#&gt;   d (ceiling):         949</span></span>
-<span><span class="co">#&gt;   e (midpoint):        $41,926</span></span>
+<span><span class="co">#&gt;   e (midpoint):        $41,970</span></span>
 <span><span class="co">#&gt; -- Response Curve Summary ---------------------------------------------------- </span></span>
-<span><span class="co">#&gt;   Min (peak MR):     $41,967  -&gt;  KPI: 397  |  CP: $106</span></span>
-<span><span class="co">#&gt;   Peak (peak AR):    $53,760  -&gt;  KPI: 872  |  CP: $62</span></span>
-<span><span class="co">#&gt;   Max (70% MR):      $46,939  -&gt;  KPI: 681  |  CP: $69</span></span>
+<span><span class="co">#&gt;   Min (peak MR):     $41,976  -&gt;  KPI: 397  |  CP: $106</span></span>
+<span><span class="co">#&gt;   Peak (peak AR):    $53,797  -&gt;  KPI: 873  |  CP: $62</span></span>
+<span><span class="co">#&gt;   Max (70% MR):      $46,877  -&gt;  KPI: 678  |  CP: $69</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; 33.7% of weeks below range | 23.1% in range | 43.3% above range</span></span>
+<span><span class="co">#&gt; 33.7% of weeks below range | 22.1% in range | 44.2% above range</span></span>
 <span><span class="co">#&gt; -- Bayes R2 ------------------------------------------------------------------ </span></span>
-<span><span class="co">#&gt;   R2: 0.9926 (95% CI: [0.9920, 0.9928])</span></span>
+<span><span class="co">#&gt;   R2: 0.9930 (95% CI: [0.9924, 0.9932])</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Use summary(x) for brms model diagnostics.</span></span></code></pre></div>
 <p>The output has five sections:</p>
 <ol style="list-style-type: decimal">
 <li><p><strong>Header</strong> — channel name (taken from the spend
-column), curve type, number of weeks in the training data, and whether
-the zero anchor was used.</p></li>
+column), curve type, number of weeks in the training data.</p></li>
 <li>
 <p><strong>Current Performance</strong> — metrics evaluated at the
 observed average weekly spend. This tells you where the channel is
@@ -289,39 +287,39 @@ programmatically:</p>
 <code class="sourceCode R"><span><span class="va">fit</span><span class="op">$</span><span class="va">summary</span></span>
 <span><span class="co">#&gt; -- Response Curve Summary: gompertz ------------------------------------------ </span></span>
 <span><span class="co">#&gt; Channel: spend</span></span>
-<span><span class="co">#&gt; Weeks: 104 | Anchor: yes</span></span>
+<span><span class="co">#&gt; Weeks: 104</span></span>
 <span><span class="co">#&gt; -- Current Performance ------------------------------------------------------- </span></span>
-<span><span class="co">#&gt; Weekly Spend: $44,963</span></span>
-<span><span class="co">#&gt; KPI: 582  |  CP: $78  |  AR: 0.0114  |  MR: 0.0562</span></span>
+<span><span class="co">#&gt; Weekly Spend: $45,395</span></span>
+<span><span class="co">#&gt; KPI: 605  |  CP: $77  |  AR: 0.0117  |  MR: 0.0539</span></span>
 <span><span class="co">#&gt; -- Parameters ---------------------------------------------------------------- </span></span>
-<span><span class="co">#&gt;   b (growth rate):     -2.02e-04</span></span>
-<span><span class="co">#&gt;   c (floor):           71</span></span>
+<span><span class="co">#&gt;   b (growth rate):     -2.03e-04</span></span>
+<span><span class="co">#&gt;   c (floor):           75</span></span>
 <span><span class="co">#&gt;   d (ceiling):         949</span></span>
-<span><span class="co">#&gt;   e (midpoint):        $41,926</span></span>
+<span><span class="co">#&gt;   e (midpoint):        $41,970</span></span>
 <span><span class="co">#&gt; -- Response Curve Summary ---------------------------------------------------- </span></span>
-<span><span class="co">#&gt;   Min (peak MR):     $41,967  -&gt;  KPI: 397  |  CP: $106</span></span>
-<span><span class="co">#&gt;   Peak (peak AR):    $53,760  -&gt;  KPI: 872  |  CP: $62</span></span>
-<span><span class="co">#&gt;   Max (70% MR):      $46,939  -&gt;  KPI: 681  |  CP: $69</span></span>
+<span><span class="co">#&gt;   Min (peak MR):     $41,976  -&gt;  KPI: 397  |  CP: $106</span></span>
+<span><span class="co">#&gt;   Peak (peak AR):    $53,797  -&gt;  KPI: 873  |  CP: $62</span></span>
+<span><span class="co">#&gt;   Max (70% MR):      $46,877  -&gt;  KPI: 678  |  CP: $69</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; 33.7% of weeks below range | 23.1% in range | 43.3% above range</span></span>
+<span><span class="co">#&gt; 33.7% of weeks below range | 22.1% in range | 44.2% above range</span></span>
 <span><span class="co">#&gt; -- Bayes R2 ------------------------------------------------------------------ </span></span>
-<span><span class="co">#&gt;   R2: 0.9926 (95% CI: [0.9920, 0.9928])</span></span></code></pre></div>
+<span><span class="co">#&gt;   R2: 0.9930 (95% CI: [0.9924, 0.9932])</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="mrm_params_summary">
-<code>mrm_params_summary()</code><a class="anchor" aria-label="anchor" href="#mrm_params_summary"></a>
+<h3 id="mrm_params">
+<code>mrm_params()</code><a class="anchor" aria-label="anchor" href="#mrm_params"></a>
 </h3>
 <p>For a focused view of the four curve parameters with plain-language
-descriptions, use <code><a href="../reference/mrm_params_summary.html">mrm_params_summary()</a></code>:</p>
+descriptions, use <code><a href="../reference/mrm_params.html">mrm_params()</a></code>:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/mrm_params_summary.html">mrm_params_summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mrm_params.html">mrm_params</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 6</span></span></span>
 <span><span class="co">#&gt;   param name        description                         center    lower    upper</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> b     Growth Rate Controls how quickly the curve r… -<span style="color: #BB0000;">2.02</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span> -<span style="color: #BB0000;">2.08</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span> -<span style="color: #BB0000;">1.92</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> c     Floor       Baseline KPI level at zero spend…  7.10<span style="color: #949494;">e</span>+1  5.69<span style="color: #949494;">e</span>+1  8.40<span style="color: #949494;">e</span>+1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> d     Ceiling     Maximum achievable KPI at satura…  9.49<span style="color: #949494;">e</span>+2  9.35<span style="color: #949494;">e</span>+2  9.64<span style="color: #949494;">e</span>+2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> e     Midpoint    Spend level at the inflection po…  4.19<span style="color: #949494;">e</span>+4  4.17<span style="color: #949494;">e</span>+4  4.21<span style="color: #949494;">e</span>+4</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> b     Growth Rate Controls how quickly the curve r… -<span style="color: #BB0000;">2.03</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span> -<span style="color: #BB0000;">2.08</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span> -<span style="color: #BB0000;">1.93</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> c     Floor       Baseline KPI level at zero spend…  7.48<span style="color: #949494;">e</span>+1  6.10<span style="color: #949494;">e</span>+1  8.79<span style="color: #949494;">e</span>+1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> d     Ceiling     Maximum achievable KPI at satura…  9.49<span style="color: #949494;">e</span>+2  9.37<span style="color: #949494;">e</span>+2  9.64<span style="color: #949494;">e</span>+2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> e     Midpoint    Spend level at the inflection po…  4.20<span style="color: #949494;">e</span>+4  4.17<span style="color: #949494;">e</span>+4  4.22<span style="color: #949494;">e</span>+4</span></span></code></pre></div>
 <p>Interpreting these in the context of Paid Search:</p>
 <ul>
 <li>
@@ -340,64 +338,31 @@ transitions from low to high response. More negative values mean a
 sharper transition.</li>
 <li>
 <strong>Floor (c)</strong>: the baseline conversion level approached
-at zero spend. With <code>anchor_zero = TRUE</code> this is typically
-close to zero.</li>
+at zero spend. With the default <code>anchor_strength = 0.05</code> this
+is typically close to zero.</li>
 </ul>
 <p>For programmatic access to the raw posterior estimates (centre,
 lower, upper credible bounds as named lists), use
 <code><a href="../reference/mrm_params.html">mrm_params()</a></code>:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/mrm_params.html">mrm_params</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
-<span><span class="co">#&gt; $center</span></span>
-<span><span class="co">#&gt; $center$b</span></span>
-<span><span class="co">#&gt; [1] -0.0002019047</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $center$c</span></span>
-<span><span class="co">#&gt; [1] 70.99089</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $center$d</span></span>
-<span><span class="co">#&gt; [1] 948.8347</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $center$e</span></span>
-<span><span class="co">#&gt; [1] 41926.39</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $lower</span></span>
-<span><span class="co">#&gt; $lower$b</span></span>
-<span><span class="co">#&gt; [1] -0.0002081297</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $lower$c</span></span>
-<span><span class="co">#&gt; [1] 56.9242</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $lower$d</span></span>
-<span><span class="co">#&gt; [1] 934.6899</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $lower$e</span></span>
-<span><span class="co">#&gt; [1] 41700.5</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $upper</span></span>
-<span><span class="co">#&gt; $upper$b</span></span>
-<span><span class="co">#&gt; [1] -0.0001919015</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $upper$c</span></span>
-<span><span class="co">#&gt; [1] 84.03074</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $upper$d</span></span>
-<span><span class="co">#&gt; [1] 964.4554</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $upper$e</span></span>
-<span><span class="co">#&gt; [1] 42138.58</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 6</span></span></span>
+<span><span class="co">#&gt;   param name        description                         center    lower    upper</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> b     Growth Rate Controls how quickly the curve r… -<span style="color: #BB0000;">2.03</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span> -<span style="color: #BB0000;">2.08</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span> -<span style="color: #BB0000;">1.93</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> c     Floor       Baseline KPI level at zero spend…  7.48<span style="color: #949494;">e</span>+1  6.10<span style="color: #949494;">e</span>+1  8.79<span style="color: #949494;">e</span>+1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> d     Ceiling     Maximum achievable KPI at satura…  9.49<span style="color: #949494;">e</span>+2  9.37<span style="color: #949494;">e</span>+2  9.64<span style="color: #949494;">e</span>+2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> e     Midpoint    Spend level at the inflection po…  4.20<span style="color: #949494;">e</span>+4  4.17<span style="color: #949494;">e</span>+4  4.22<span style="color: #949494;">e</span>+4</span></span></code></pre></div>
 <hr>
 </div>
 </div>
 <div class="section level2">
 <h2 id="the-dashboard-plot">The Dashboard Plot<a class="anchor" aria-label="anchor" href="#the-dashboard-plot"></a>
 </h2>
-<p><code>plot(fit)</code> produces a three-panel dashboard combining the
-three core views of the model.</p>
+<p><code>mrm_plot(fit)</code> produces a three-panel dashboard combining
+the three core views of the model.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mrm_plot.html">mrm_plot</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="fitting_and_analysis_files/figure-html/fig-dashboard-1.png" class="r-plt" alt="The three-panel dashboard: response curve (top left), AR/MR returns (top right), and cost per conversion (bottom)." width="672"><p class="caption">
 The three-panel dashboard: response curve (top left), AR/MR returns (top
@@ -420,10 +385,10 @@ into the saturated region of the curve.</p>
 <p>Two useful options:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Remove range annotations for a cleaner look</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span>, markup <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/mrm_plot.html">mrm_plot</a></span><span class="op">(</span><span class="va">fit</span>, markup <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># When units are present, flip the x-axis to media units</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span>, x_var <span class="op">=</span> <span class="st">"units"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/mrm_plot.html">mrm_plot</a></span><span class="op">(</span><span class="va">fit</span>, x_var <span class="op">=</span> <span class="st">"units"</span><span class="op">)</span></span></code></pre></div>
 <hr>
 </div>
 <div class="section level2">
@@ -471,15 +436,15 @@ our current maximum?</em></p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">spend</span>, <span class="va">center</span>, <span class="va">lower</span>, <span class="va">upper</span>, <span class="va">ar</span>, <span class="va">mr</span>, <span class="va">cp</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">spend</span> <span class="op">&gt;</span> <span class="fl">70000</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">8</span><span class="op">)</span></span>
-<span><span class="co">#&gt;       spend   center    lower     upper           ar           mr        cp</span></span>
-<span><span class="co">#&gt; 1  24142603 948.8347 891.0954  996.9744 3.636078e-05 3.639015e-05  25434.91</span></span>
-<span><span class="co">#&gt; 2  48265718 948.8347 910.1926 1014.5787 1.818773e-05 0.000000e+00  50849.30</span></span>
-<span><span class="co">#&gt; 3  72388834 948.8347 881.5282  987.0303 1.212678e-05 0.000000e+00  76263.68</span></span>
-<span><span class="co">#&gt; 4  96511949 948.8347 899.7091 1007.0329 9.095701e-06 0.000000e+00 101678.07</span></span>
-<span><span class="co">#&gt; 5 120635065 948.8347 899.2205 1007.0706 7.276854e-06 0.000000e+00 127092.45</span></span>
-<span><span class="co">#&gt; 6 144758180 948.8347 889.1932  996.8995 6.064209e-06 0.000000e+00 152506.83</span></span>
-<span><span class="co">#&gt; 7 168881296 948.8347 890.5446  998.3932 5.197993e-06 0.000000e+00 177921.22</span></span>
-<span><span class="co">#&gt; 8 193004412 948.8347 896.6933 1004.6227 4.548310e-06 0.000000e+00 203335.60</span></span></code></pre></div>
+<span><span class="co">#&gt;       spend  center    lower     upper           ar           mr        cp</span></span>
+<span><span class="co">#&gt; 1  24142603 948.656 893.9560  996.3702 3.619491e-05 3.622415e-05  25439.19</span></span>
+<span><span class="co">#&gt; 2  48265718 948.656 912.4340 1012.3497 1.810476e-05 0.000000e+00  50857.84</span></span>
+<span><span class="co">#&gt; 3  72388834 948.656 884.8306  983.9595 1.207147e-05 0.000000e+00  76276.50</span></span>
+<span><span class="co">#&gt; 4  96511949 948.656 904.4259 1003.9766 9.054208e-06 0.000000e+00 101695.15</span></span>
+<span><span class="co">#&gt; 5 120635065 948.656 904.5862 1005.0662 7.243659e-06 0.000000e+00 127113.81</span></span>
+<span><span class="co">#&gt; 6 144758180 948.656 893.7162  995.4342 6.036545e-06 0.000000e+00 152532.46</span></span>
+<span><span class="co">#&gt; 7 168881296 948.656 892.6892  995.8166 5.174281e-06 0.000000e+00 177951.12</span></span>
+<span><span class="co">#&gt; 8 193004412 948.656 897.2143 1001.5299 4.527561e-06 0.000000e+00 203369.77</span></span></code></pre></div>
 <p>The columns returned are:</p>
 <table class="table">
 <thead><tr class="header">
@@ -523,7 +488,7 @@ callable function from the fitted model:</p>
 <span></span>
 <span><span class="co"># Predicted conversions at three hypothetical spend levels</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30000</span>, <span class="fl">50000</span>, <span class="fl">80000</span><span class="op">)</span>, <span class="va">f</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1]  71.0040 792.6543 948.4322</span></span></code></pre></div>
+<span><span class="co">#&gt; [1]  74.82742 792.76002 948.26261</span></span></code></pre></div>
 <hr>
 </div>
 <div class="section level2">
@@ -560,7 +525,7 @@ impressions per dollar).</p>
 includes an <code>impressions</code> column alongside
 <code>spend</code>.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit_units</span>, x_var <span class="op">=</span> <span class="st">"units"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mrm_plot.html">mrm_plot</a></span><span class="op">(</span><span class="va">fit_units</span>, x_var <span class="op">=</span> <span class="st">"units"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="fitting_and_analysis_files/figure-html/fig-units-dashboard-1.png" class="r-plt" alt="Dashboard with impressions as the x-axis. The x-axis now shows media delivery rather than dollars, giving a units-based view of the response curve." width="672"><p class="caption">
 Dashboard with impressions as the x-axis. The x-axis now shows media
@@ -579,23 +544,23 @@ unit-denominated metrics.</p>
 <code class="sourceCode R"><span><span class="va">fit_units</span></span>
 <span><span class="co">#&gt; -- Response Curve Summary: gompertz ------------------------------------------ </span></span>
 <span><span class="co">#&gt; Channel: spend</span></span>
-<span><span class="co">#&gt; Weeks: 104 | Anchor: yes</span></span>
+<span><span class="co">#&gt; Weeks: 104</span></span>
 <span><span class="co">#&gt; -- Current Performance ------------------------------------------------------- </span></span>
-<span><span class="co">#&gt; Weekly Spend: $44,963  |  Weekly Units: 3,746,940</span></span>
-<span><span class="co">#&gt; KPI: 582  |  CP: $78  |  AR: 0.0114  |  MR: 0.0561</span></span>
+<span><span class="co">#&gt; Weekly Spend: $45,395  |  Weekly Units: 3,782,968</span></span>
+<span><span class="co">#&gt; KPI: 605  |  CP: $77  |  AR: 0.0117  |  MR: 0.0539</span></span>
 <span><span class="co">#&gt; -- Parameters ---------------------------------------------------------------- </span></span>
-<span><span class="co">#&gt;   b (growth rate):     -2.02e-04</span></span>
-<span><span class="co">#&gt;   c (floor):           70</span></span>
-<span><span class="co">#&gt;   d (ceiling):         949</span></span>
-<span><span class="co">#&gt;   e (midpoint):        $41,918</span></span>
+<span><span class="co">#&gt;   b (growth rate):     -2.03e-04</span></span>
+<span><span class="co">#&gt;   c (floor):           75</span></span>
+<span><span class="co">#&gt;   d (ceiling):         948</span></span>
+<span><span class="co">#&gt;   e (midpoint):        $41,974</span></span>
 <span><span class="co">#&gt; -- Response Curve Summary ---------------------------------------------------- </span></span>
-<span><span class="co">#&gt;   Min (peak MR):     $41,967  -&gt;  KPI: 397  |  CP: $106</span></span>
-<span><span class="co">#&gt;   Peak (peak AR):    $53,760  -&gt;  KPI: 872  |  CP: $62</span></span>
-<span><span class="co">#&gt;   Max (70% MR):      $46,939  -&gt;  KPI: 681  |  CP: $69</span></span>
+<span><span class="co">#&gt;   Min (peak MR):     $41,976  -&gt;  KPI: 396  |  CP: $106</span></span>
+<span><span class="co">#&gt;   Peak (peak AR):    $53,797  -&gt;  KPI: 872  |  CP: $62</span></span>
+<span><span class="co">#&gt;   Max (70% MR):      $46,877  -&gt;  KPI: 678  |  CP: $69</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; 33.7% of weeks below range | 23.1% in range | 43.3% above range</span></span>
+<span><span class="co">#&gt; 33.7% of weeks below range | 22.1% in range | 44.2% above range</span></span>
 <span><span class="co">#&gt; -- Bayes R2 ------------------------------------------------------------------ </span></span>
-<span><span class="co">#&gt;   R2: 0.9926 (95% CI: [0.9919, 0.9928])</span></span>
+<span><span class="co">#&gt;   R2: 0.9930 (95% CI: [0.9924, 0.9932])</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Use summary(x) for brms model diagnostics.</span></span></code></pre></div>
 <hr>
@@ -618,10 +583,10 @@ beliefs about the plausible spend range for saturation.</p>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="approach-2-simplified-via-mrm_prior">Approach 2: Simplified via <code>mrm_prior()</code><a class="anchor" aria-label="anchor" href="#approach-2-simplified-via-mrm_prior"></a>
+<h3 id="approach-2-simplified-via-mrmopt_prior">Approach 2: Simplified via <code>mrmopt_prior()</code><a class="anchor" aria-label="anchor" href="#approach-2-simplified-via-mrmopt_prior"></a>
 </h3>
-<p><code><a href="../reference/mrm_prior.html">mrm_prior()</a></code> provides scale-invariant controls on three
-intuitive quantities:</p>
+<p><code><a href="../reference/mrmopt_prior.html">mrmopt_prior()</a></code> provides scale-invariant controls on
+three intuitive quantities:</p>
 <ul>
 <li>
 <code>midpoint_range</code>: where the curve’s inflection point can
@@ -639,7 +604,7 @@ best week.</li>
 value in original KPI units.</li>
 </ul>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">my_prior</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mrm_prior.html">mrm_prior</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">my_prior</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mrmopt_prior.html">mrmopt_prior</a></span><span class="op">(</span></span>
 <span>  midpoint_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.7</span><span class="op">)</span>,</span>
 <span>  ceiling_max    <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  floor_min      <span class="op">=</span> <span class="fl">0</span></span>
@@ -676,8 +641,8 @@ defaults.</p>
 <div class="callout-note">
 <p>When <code>auto = FALSE</code> and <code>scale_data = FALSE</code>,
 the prior must be specified in the original data units. This is rarely
-necessary — scaled fitting with <code><a href="../reference/mrm_prior.html">mrm_prior()</a></code> covers the vast
-majority of use cases.</p>
+necessary — scaled fitting with <code><a href="../reference/mrmopt_prior.html">mrmopt_prior()</a></code> covers the
+vast majority of use cases.</p>
 </div>
 <hr>
 </div>
@@ -687,7 +652,7 @@ majority of use cases.</p>
 </h2>
 <p>In practice you will fit models for each channel in your media
 portfolio and collect them in a named list. This is the natural input
-format for model comparison (<code><a href="../reference/mrm_plot_compare.html">mrm_plot_compare()</a></code>) and
+format for model comparison (<code><a href="../reference/mrms_plot_compare.html">mrms_plot_compare()</a></code>) and
 optimization (<code><a href="../reference/opt_mix.html">opt_mix()</a></code>), both covered in later
 vignettes.</p>
 <p>The code below fits all five channels from <code>mrmopt_data</code>
@@ -721,13 +686,13 @@ interactively.</p>
 <p>Once fitted, you can inspect any model by name:</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fits</span><span class="op">[[</span><span class="st">"Paid Social"</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fits</span><span class="op">[[</span><span class="st">"TV"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/mrm_plot.html">mrm_plot</a></span><span class="op">(</span><span class="va">fits</span><span class="op">[[</span><span class="st">"TV"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <p>Or map across the list to extract a summary metric from each:</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map_dfr.html" class="external-link">map_dfr</a></span><span class="op">(</span><span class="va">fits</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">.x</span><span class="op">$</span><span class="va">R2</span><span class="op">)</span>, .id <span class="op">=</span> <span class="st">"channel"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">Estimate</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>The <code>fits</code> list is the input to
-<code><a href="../reference/mrm_plot_compare.html">mrm_plot_compare()</a></code> in the next vignette, where we evaluate
+<code><a href="../reference/mrms_plot_compare.html">mrms_plot_compare()</a></code> in the next vignette, where we evaluate
 which curve type fits each channel best and check whether the models are
 well-calibrated.</p>
 </div>

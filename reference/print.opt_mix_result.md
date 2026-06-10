@@ -1,8 +1,7 @@
 # Print method for opt_mix_result objects
 
-Displays a formatted summary of the optimization result, including
-budget info, optimal allocation per channel, and totals vs. current
-performance.
+Displays a formatted summary of the optimization result by calling
+\[opt_summary()\].
 
 ## Usage
 
@@ -19,7 +18,7 @@ print(x, ...)
 
 - ...:
 
-  Additional arguments (ignored).
+  Additional arguments passed to \[opt_summary()\].
 
 ## Value
 

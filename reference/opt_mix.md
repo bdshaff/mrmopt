@@ -92,11 +92,26 @@ opt_mix(
 
 ## Value
 
-For \`method = "point"\`: a list with components \`solution\` (tibble of
-optimal weekly and period allocations), \`constraints\` (tibble),
-\`budget_info\` (list), and \`nloptr_result\` (raw solver output).
+An \`opt_mix_result\` S3 object. Both methods return the same top-level
+structure:
 
-For \`method = "posterior"\`: a list with components
-\`solution_summary\` (tibble with median/CI for each channel),
-\`draws_matrix\` (matrix of all solutions), \`solution_draws\` (tibble
-in long form), and \`budget_info\`.
+- \`\$solution\` — tibble with one row per channel containing current
+  and optimal spend, KPI, units, cost-per, response rate, and share
+  columns. Posterior results include \`\_lower\`/\`\_upper\` CI columns.
+
+- \`\$constraints\` — tibble: channel, lb, ub, x0.
+
+- \`\$budget_info\` — list: total_budget, weekly_budget, n_weeks,
+  current_weekly.
+
+- \`\$method\` — \`"point"\` or \`"posterior"\`.
+
+- \`\$mrms\` — the named list of \`mrmfit\` models.
+
+Point-only fields: \`\$nloptr_result\`, \`\$response_funs\`.  
+Posterior-only fields: \`\$draws_matrix\`, \`\$kpi_matrix\`,
+\`\$solution_draws\`, \`\$n_draws\`, \`\$draw_ids\`.
+
+Use \[print()\] or \[summary()\] for a formatted console summary,
+\[opt_table()\] for a tidy comparison tibble, and \[plot()\] or the
+standalone \`opt_plot\_\*\` functions for visualizations.

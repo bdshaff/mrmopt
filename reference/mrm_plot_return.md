@@ -1,6 +1,10 @@
 # Plot Absolute and Marginal Rates of Return
 
-Plot Absolute and Marginal Rates of Return
+Draws absolute return (AR) and marginal return (MR) curves on a dual
+y-axis. This is the second panel of the dashboard produced by
+\[plot.mrmfit()\]; call it directly when you need a standalone
+return-curve plot or want to control parameters not exposed by
+\`plot()\`.
 
 ## Usage
 
@@ -12,7 +16,8 @@ mrm_plot_return(
   length.out = 1000,
   scaled = TRUE,
   markup = TRUE,
-  x_var = c("spend", "units")
+  x_var = c("spend", "units"),
+  interval = c("prediction", "confidence")
 )
 ```
 
@@ -49,6 +54,17 @@ mrm_plot_return(
 
   Character; `"spend"` (default) or `"units"`.
 
+- interval:
+
+  Type of credible interval. `"prediction"` (default) includes
+  observation noise. `"confidence"` shows uncertainty about the mean
+  curve only (tighter bands).
+
 ## Value
 
 A ggplot object.
+
+## See also
+
+\[plot.mrmfit()\] for the combined dashboard, \[mrm_plot_response()\],
+\[mrm_plot_costper()\] for the other panels.

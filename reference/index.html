@@ -15,11 +15,10 @@
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="../articles/index.html">Articles</a></li>
-      </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
- <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
-      </ul></div>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/index.html">Articles</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/roadmap.html">Roadmap</a></li>
+      </ul><ul class="navbar-nav"></ul></div>
 
 
   </div>
@@ -40,13 +39,6 @@
 
 
       <dl><dt>
-
-          <code><a href="compare.html">compare()</a></code>
-
-        </dt>
-        <dd>Compare two opt_mix_result objects side by side</dd>
-
-        <dt>
 
           <code><a href="fit_response.html">fit_response()</a></code>
 
@@ -104,31 +96,17 @@
 
         <dt>
 
-          <code><a href="mrm_palette.html">mrm_palette()</a></code>
-
-        </dt>
-        <dd>Package-level color palette for mrmopt plots</dd>
-
-        <dt>
-
           <code><a href="mrm_params.html">mrm_params()</a></code>
 
         </dt>
-        <dd>Extract parameters from a fitted model</dd>
+        <dd>Extract response curve parameters from a fitted model</dd>
 
         <dt>
 
-          <code><a href="mrm_params_summary.html">mrm_params_summary()</a></code>
+          <code><a href="mrm_plot.html">mrm_plot()</a></code>
 
         </dt>
-        <dd>Generate an interpretive summary of response curve parameters</dd>
-
-        <dt>
-
-          <code><a href="mrm_plot_compare.html">mrm_plot_compare()</a></code>
-
-        </dt>
-        <dd>Compare multiple fitted response models</dd>
+        <dd>Plot a fitted response model</dd>
 
         <dt>
 
@@ -136,6 +114,13 @@
 
         </dt>
         <dd>Plot cost per KPI of a fitted model</dd>
+
+        <dt>
+
+          <code><a href="mrm_plot_diagnostics.html">mrm_plot_diagnostics()</a></code>
+
+        </dt>
+        <dd>Plot brms diagnostics for a fitted response model</dd>
 
         <dt>
 
@@ -150,13 +135,6 @@
 
         </dt>
         <dd>Plot Absolute and Marginal Rates of Return</dd>
-
-        <dt>
-
-          <code><a href="mrm_prior.html">mrm_prior()</a></code>
-
-        </dt>
-        <dd>Create a prior specification for response curve fitting</dd>
 
         <dt>
 
@@ -181,6 +159,27 @@
 
         <dt>
 
+          <code><a href="mrmopt_palette.html">mrmopt_palette()</a></code>
+
+        </dt>
+        <dd>Package-level color palette for mrmopt plots</dd>
+
+        <dt>
+
+          <code><a href="mrmopt_prior.html">mrmopt_prior()</a></code>
+
+        </dt>
+        <dd>Create a prior specification for response curve fitting</dd>
+
+        <dt>
+
+          <code><a href="mrms_plot_compare.html">mrms_plot_compare()</a></code>
+
+        </dt>
+        <dd>Compare multiple fitted response models</dd>
+
+        <dt>
+
           <code><a href="opt_generate_constraints.html">opt_generate_constraints()</a></code>
 
         </dt>
@@ -195,31 +194,59 @@
 
         <dt>
 
-          <code><a href="plot.mrmfit.html">plot(<i>&lt;mrmfit&gt;</i>)</a></code>
+          <code><a href="opt_plot_allocation.html">opt_plot_allocation()</a></code>
 
         </dt>
-        <dd>Plot method for mrmfit objects</dd>
+        <dd>Plot current vs. optimal spend or KPI allocation</dd>
 
         <dt>
 
-          <code><a href="plot.opt_mix_compare.html">plot(<i>&lt;opt_mix_compare&gt;</i>)</a></code>
+          <code><a href="opt_plot_comparison.html">opt_plot_comparison()</a></code>
 
         </dt>
-        <dd>Plot method for opt_mix_compare objects</dd>
+        <dd>Dumbbell chart of spend reallocation</dd>
 
         <dt>
 
-          <code><a href="plot.opt_mix_result.html">plot(<i>&lt;opt_mix_result&gt;</i>)</a></code>
+          <code><a href="opt_plot_curves.html">opt_plot_curves()</a></code>
 
         </dt>
-        <dd>Plot method for opt_mix_result objects</dd>
+        <dd>Response curves with current and optimal spend points</dd>
 
         <dt>
 
-          <code><a href="plot_optimal_mix.html">plot_optimal_mix()</a></code>
+          <code><a href="opt_plot_posterior.html">opt_plot_posterior()</a></code>
 
         </dt>
-        <dd>Plot Optimal Mix</dd>
+        <dd>Posterior distribution of optimal spend allocation</dd>
+
+        <dt>
+
+          <code><a href="opt_plot_returns.html">opt_plot_returns()</a></code>
+
+        </dt>
+        <dd>Average and marginal return curves with current and optimal points</dd>
+
+        <dt>
+
+          <code><a href="opt_summary.html">opt_summary()</a></code>
+
+        </dt>
+        <dd>Print a formatted summary of an opt_mix_result object</dd>
+
+        <dt>
+
+          <code><a href="opt_table.html">opt_table()</a></code>
+
+        </dt>
+        <dd>Tidy comparison table for opt_mix_result objects</dd>
+
+        <dt>
+
+          <code><a href="print.mrm_prior.html">print(<i>&lt;mrm_prior&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Print method for mrm_prior objects</dd>
 
         <dt>
 
@@ -241,20 +268,6 @@
 
         </dt>
         <dd>Response Curve Function</dd>
-
-        <dt>
-
-          <code><a href="response_models_comparison.html">response_models_comparison()</a></code>
-
-        </dt>
-        <dd>Compare Response Curve Models</dd>
-
-        <dt>
-
-          <code><a href="summary.opt_mix_result.html">summary(<i>&lt;opt_mix_result&gt;</i>)</a></code>
-
-        </dt>
-        <dd>Summary method for opt_mix_result objects</dd>
       </dl></div>
   </main></div>
 

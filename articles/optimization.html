@@ -34,14 +34,11 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item"><a class="nav-link" href="../articles/index.html">Articles</a></li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/roadmap.html">Roadmap</a></li>
       </ul>
-<ul class="navbar-nav">
-<li class="nav-item"><form class="form-inline" role="search">
- <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
-</form></li>
-      </ul>
+<ul class="navbar-nav"></ul>
 </div>
 
 
@@ -123,66 +120,66 @@ required input for <code><a href="../reference/opt_mix.html">opt_mix()</a></code
 across all channels) and point-estimate parameters:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">opt_point</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/opt_mix.html">opt_mix</a></span><span class="op">(</span><span class="va">models</span>, method <span class="op">=</span> <span class="st">"point"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; No budget supplied; using total current weekly spend: 203,497 </span></span>
+<span><span class="co">#&gt; No budget supplied; using total current weekly spend: 204,641 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Optimization setup:</span></span>
 <span><span class="co">#&gt;   Channels:       5 </span></span>
 <span><span class="co">#&gt;   Method:         point </span></span>
-<span><span class="co">#&gt;   Weekly budget:  203,497 </span></span>
+<span><span class="co">#&gt;   Weekly budget:  204,641 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Optimization converged (status: 4 )</span></span>
-<span><span class="co">#&gt; Total weekly KPI: 2,907</span></span></code></pre></div>
+<span><span class="co">#&gt; Total weekly KPI: 3,013</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="inspecting-the-result">Inspecting the Result<a class="anchor" aria-label="anchor" href="#inspecting-the-result"></a>
 </h3>
-<p><code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> gives a formatted summary:</p>
+<p><code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> and <code><a href="../reference/opt_summary.html">opt_summary()</a></code> both display a
+formatted console summary — they produce the same output:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">opt_point</span><span class="op">)</span></span>
 <span><span class="co">#&gt; -- Optimization Result (point) ----------------------------------------------- </span></span>
-<span><span class="co">#&gt; Budget: $203,497/week  |  Channels: 5</span></span>
+<span><span class="co">#&gt; Budget: $204,641/week  |  Channels: 5</span></span>
 <span><span class="co">#&gt; -- Optimal Allocation -------------------------------------------------------- </span></span>
 <span><span class="co">#&gt;   Channel           Weekly Spend    Weekly KPI          CP    Share </span></span>
-<span><span class="co">#&gt;   Paid Social            $31,279           531         $59   15.4%</span></span>
-<span><span class="co">#&gt;   Paid Search            $51,017           819         $62   25.1%</span></span>
-<span><span class="co">#&gt;   Online Video           $38,937           614         $63   19.1%</span></span>
-<span><span class="co">#&gt;   Display                $19,547           289         $68    9.6%</span></span>
-<span><span class="co">#&gt;   TV                     $62,718           654         $96   30.8%</span></span>
+<span><span class="co">#&gt;   Paid Search            $52,132           844         $62   25.5%</span></span>
+<span><span class="co">#&gt;   Online Video           $40,980           660         $62   20.0%</span></span>
+<span><span class="co">#&gt;   Display                $20,022           299         $67    9.8%</span></span>
+<span><span class="co">#&gt;   TV                     $83,186         1,127         $74   40.6%</span></span>
+<span><span class="co">#&gt;   Paid Social             $8,321            83        $101    4.1%</span></span>
 <span><span class="co">#&gt; -- Totals -------------------------------------------------------------------- </span></span>
-<span><span class="co">#&gt;   Optimal:  Spend $203,497  |  KPI 2,907  |  Avg CP $70</span></span>
-<span><span class="co">#&gt;   Current:  Spend $203,461  |  KPI 2,704  |  Avg CP $75</span></span>
-<span><span class="co">#&gt;   Change:   KPI +7.5%  |  CP $5</span></span></code></pre></div>
-<p><code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> returns a tidy tibble comparing current
-vs. optimal allocation with absolute and percentage deltas:</p>
+<span><span class="co">#&gt;   Optimal:  Spend $204,641  |  KPI 3,013  |  Avg CP $68</span></span>
+<span><span class="co">#&gt;   Current:  Spend $204,641  |  KPI 2,757  |  Avg CP $74</span></span>
+<span><span class="co">#&gt;   Change:   KPI +9.3%  |  CP $6</span></span></code></pre></div>
+<p>To retrieve a <strong>tidy tibble</strong> of current vs. optimal
+deltas for further analysis or export, use <code><a href="../reference/opt_table.html">opt_table()</a></code>:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">opt_point</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/opt_table.html">opt_table</a></span><span class="op">(</span><span class="va">opt_point</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">channel</span>, <span class="va">spend_delta_pct</span>, <span class="va">kpi_delta_pct</span>, <span class="va">cp_delta</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
 <span><span class="co">#&gt;   channel      spend_delta_pct kpi_delta_pct cp_delta</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Paid Social         0.166           0.401    -<span style="color: #BB0000;">15.4</span> </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Paid Search         0.135           0.408    -<span style="color: #BB0000;">15.5</span> </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Online Video        0.162           0.357    -<span style="color: #BB0000;">13.7</span> </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Display             0.122           0.362    -<span style="color: #BB0000;">14.5</span> </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> TV                 -<span style="color: #BB0000;">0.223</span>          -<span style="color: #BB0000;">0.393</span>     14.5 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> TOTAL               0.000<span style="text-decoration: underline;">179</span>        0.075<span style="text-decoration: underline;">2</span>    -<span style="color: #BB0000;">5.25</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Paid Search         1.48<span style="color: #949494;">e</span><span style="color: #BB0000;">- 1</span>        0.395    -<span style="color: #BB0000;">14.9</span> </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Online Video        2.11<span style="color: #949494;">e</span><span style="color: #BB0000;">- 1</span>        0.423    -<span style="color: #BB0000;">14.2</span> </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Display             1.39<span style="color: #949494;">e</span><span style="color: #BB0000;">- 1</span>        0.360    -<span style="color: #BB0000;">14.1</span> </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> TV                  3.01<span style="color: #949494;">e</span><span style="color: #BB0000;">- 2</span>        0.045<span style="text-decoration: underline;">9</span>    -<span style="color: #BB0000;">7.06</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Paid Social        -<span style="color: #BB0000;">6.93</span><span style="color: #949494;">e</span><span style="color: #BB0000;">- 1</span>       -<span style="color: #BB0000;">0.788</span>     26.7 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> TOTAL              -<span style="color: #BB0000;">1.11</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-16</span>        0.093<span style="text-decoration: underline;">0</span>    -<span style="color: #BB0000;">6.32</span></span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="visualising-the-allocation">Visualising the Allocation<a class="anchor" aria-label="anchor" href="#visualising-the-allocation"></a>
 </h3>
-<p><code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> supports several plot types. The default is
-<code>"allocation"</code>, which shows current vs. optimal spend as
+<p><code><a href="../reference/opt_plot_allocation.html">opt_plot_allocation()</a></code> shows current vs. optimal spend as
 grouped bars:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">opt_point</span>, type <span class="op">=</span> <span class="st">"allocation"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/opt_plot_allocation.html">opt_plot_allocation</a></span><span class="op">(</span><span class="va">opt_point</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="optimization_files/figure-html/plot-allocation-1.png" class="r-plt" alt="Current vs. optimal spend allocation." width="672"><p class="caption">
 Current vs. optimal spend allocation.
 </p>
 </div>
-<p>The <code>"comparison"</code> type produces a dumbbell chart showing
+<p><code><a href="../reference/opt_plot_comparison.html">opt_plot_comparison()</a></code> produces a dumbbell chart showing
 the direction and magnitude of spend reallocation:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">opt_point</span>, type <span class="op">=</span> <span class="st">"comparison"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/opt_plot_comparison.html">opt_plot_comparison</a></span><span class="op">(</span><span class="va">opt_point</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="optimization_files/figure-html/plot-comparison-1.png" class="r-plt" alt="Spend reallocation from current to optimal." width="672"><p class="caption">
 Spend reallocation from current to optimal.
@@ -197,18 +194,18 @@ Spend reallocation from current to optimal.
 <p>To understand <em>why</em> the optimizer reallocates spend, overlay
 the current and optimal positions on each channel’s response curve:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">opt_point</span>, type <span class="op">=</span> <span class="st">"curves"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/opt_plot_curves.html">opt_plot_curves</a></span><span class="op">(</span><span class="va">opt_point</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="optimization_files/figure-html/plot-curves-1.png" class="r-plt" alt="Response curves with current (red) and optimal (blue) spend positions." width="672"><p class="caption">
 Response curves with current (red) and optimal (blue) spend positions.
 </p>
 </div>
-<p>The <code>"returns"</code> plot shows where the current and optimal
+<p><code><a href="../reference/opt_plot_returns.html">opt_plot_returns()</a></code> shows where the current and optimal
 points sit on each channel’s average return (AR) and marginal return
 (MR) curves — this is where you can see the efficiency trade-offs
 driving the allocation:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">opt_point</span>, type <span class="op">=</span> <span class="st">"returns"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/opt_plot_returns.html">opt_plot_returns</a></span><span class="op">(</span><span class="va">opt_point</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="optimization_files/figure-html/plot-returns-1.png" class="r-plt" alt="AR and MR curves at current and optimal spend." width="672"><p class="caption">
 AR and MR curves at current and optimal spend.
@@ -229,46 +226,46 @@ solutions:</p>
 <span>  n_draws <span class="op">=</span> <span class="fl">200</span>,</span>
 <span>  seed    <span class="op">=</span> <span class="fl">5291</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; No budget supplied; using total current weekly spend: 203,497 </span></span>
+<span><span class="co">#&gt; No budget supplied; using total current weekly spend: 204,641 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Optimization setup:</span></span>
 <span><span class="co">#&gt;   Channels:       5 </span></span>
 <span><span class="co">#&gt;   Method:         posterior </span></span>
-<span><span class="co">#&gt;   Weekly budget:  203,497 </span></span>
+<span><span class="co">#&gt;   Weekly budget:  204,641 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Optimizing across 200 posterior draws...</span></span>
 <span><span class="co">#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |=                                                                     |   1%  |                                                                              |=                                                                     |   2%  |                                                                              |==                                                                    |   2%  |                                                                              |==                                                                    |   3%  |                                                                              |==                                                                    |   4%  |                                                                              |===                                                                   |   4%  |                                                                              |====                                                                  |   5%  |                                                                              |====                                                                  |   6%  |                                                                              |=====                                                                 |   6%  |                                                                              |=====                                                                 |   7%  |                                                                              |=====                                                                 |   8%  |                                                                              |======                                                                |   8%  |                                                                              |======                                                                |   9%  |                                                                              |=======                                                               |  10%  |                                                                              |========                                                              |  11%  |                                                                              |========                                                              |  12%  |                                                                              |=========                                                             |  12%  |                                                                              |=========                                                             |  13%  |                                                                              |=========                                                             |  14%  |                                                                              |==========                                                            |  14%  |                                                                              |==========                                                            |  15%  |                                                                              |===========                                                           |  16%  |                                                                              |============                                                          |  16%  |                                                                              |============                                                          |  17%  |                                                                              |============                                                          |  18%  |                                                                              |=============                                                         |  18%  |                                                                              |=============                                                         |  19%  |                                                                              |==============                                                        |  20%  |                                                                              |===============                                                       |  21%  |                                                                              |===============                                                       |  22%  |                                                                              |================                                                      |  22%  |                                                                              |================                                                      |  23%  |                                                                              |================                                                      |  24%  |                                                                              |=================                                                     |  24%  |                                                                              |==================                                                    |  25%  |                                                                              |==================                                                    |  26%  |                                                                              |===================                                                   |  26%  |                                                                              |===================                                                   |  27%  |                                                                              |===================                                                   |  28%  |                                                                              |====================                                                  |  28%  |                                                                              |====================                                                  |  29%  |                                                                              |=====================                                                 |  30%  |                                                                              |======================                                                |  31%  |                                                                              |======================                                                |  32%  |                                                                              |=======================                                               |  32%  |                                                                              |=======================                                               |  33%  |                                                                              |=======================                                               |  34%  |                                                                              |========================                                              |  34%  |                                                                              |========================                                              |  35%  |                                                                              |=========================                                             |  36%  |                                                                              |==========================                                            |  36%  |                                                                              |==========================                                            |  37%  |                                                                              |==========================                                            |  38%  |                                                                              |===========================                                           |  38%  |                                                                              |===========================                                           |  39%  |                                                                              |============================                                          |  40%  |                                                                              |=============================                                         |  41%  |                                                                              |=============================                                         |  42%  |                                                                              |==============================                                        |  42%  |                                                                              |==============================                                        |  43%  |                                                                              |==============================                                        |  44%  |                                                                              |===============================                                       |  44%  |                                                                              |================================                                      |  45%  |                                                                              |================================                                      |  46%  |                                                                              |=================================                                     |  46%  |                                                                              |=================================                                     |  47%  |                                                                              |=================================                                     |  48%  |                                                                              |==================================                                    |  48%  |                                                                              |==================================                                    |  49%  |                                                                              |===================================                                   |  50%  |                                                                              |====================================                                  |  51%  |                                                                              |====================================                                  |  52%  |                                                                              |=====================================                                 |  52%  |                                                                              |=====================================                                 |  53%  |                                                                              |=====================================                                 |  54%  |                                                                              |======================================                                |  54%  |                                                                              |======================================                                |  55%  |                                                                              |=======================================                               |  56%  |                                                                              |========================================                              |  56%  |                                                                              |========================================                              |  57%  |                                                                              |========================================                              |  58%  |                                                                              |=========================================                             |  58%  |                                                                              |=========================================                             |  59%  |                                                                              |==========================================                            |  60%  |                                                                              |===========================================                           |  61%  |                                                                              |===========================================                           |  62%  |                                                                              |============================================                          |  62%  |                                                                              |============================================                          |  63%  |                                                                              |============================================                          |  64%  |                                                                              |=============================================                         |  64%  |                                                                              |==============================================                        |  65%  |                                                                              |==============================================                        |  66%  |                                                                              |===============================================                       |  66%  |                                                                              |===============================================                       |  67%  |                                                                              |===============================================                       |  68%  |                                                                              |================================================                      |  68%  |                                                                              |================================================                      |  69%  |                                                                              |=================================================                     |  70%  |                                                                              |==================================================                    |  71%  |                                                                              |==================================================                    |  72%  |                                                                              |===================================================                   |  72%  |                                                                              |===================================================                   |  73%  |                                                                              |===================================================                   |  74%  |                                                                              |====================================================                  |  74%  |                                                                              |====================================================                  |  75%  |                                                                              |=====================================================                 |  76%  |                                                                              |======================================================                |  76%  |                                                                              |======================================================                |  77%  |                                                                              |======================================================                |  78%  |                                                                              |=======================================================               |  78%  |                                                                              |=======================================================               |  79%  |                                                                              |========================================================              |  80%  |                                                                              |=========================================================             |  81%  |                                                                              |=========================================================             |  82%  |                                                                              |==========================================================            |  82%  |                                                                              |==========================================================            |  83%  |                                                                              |==========================================================            |  84%  |                                                                              |===========================================================           |  84%  |                                                                              |============================================================          |  85%  |                                                                              |============================================================          |  86%  |                                                                              |=============================================================         |  86%  |                                                                              |=============================================================         |  87%  |                                                                              |=============================================================         |  88%  |                                                                              |==============================================================        |  88%  |                                                                              |==============================================================        |  89%  |                                                                              |===============================================================       |  90%  |                                                                              |================================================================      |  91%  |                                                                              |================================================================      |  92%  |                                                                              |=================================================================     |  92%  |                                                                              |=================================================================     |  93%  |                                                                              |=================================================================     |  94%  |                                                                              |==================================================================    |  94%  |                                                                              |==================================================================    |  95%  |                                                                              |===================================================================   |  96%  |                                                                              |====================================================================  |  96%  |                                                                              |====================================================================  |  97%  |                                                                              |====================================================================  |  98%  |                                                                              |===================================================================== |  98%  |                                                                              |===================================================================== |  99%  |                                                                              |======================================================================| 100%</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Posterior optimization complete.</span></span>
-<span><span class="co">#&gt; Median total weekly KPI: 2,934</span></span></code></pre></div>
+<span><span class="co">#&gt; Median total weekly KPI: 2,993</span></span></code></pre></div>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">opt_post</span><span class="op">)</span></span>
 <span><span class="co">#&gt; -- Optimization Result (posterior, 200 draws) -------------------------------- </span></span>
-<span><span class="co">#&gt; Budget: $203,497/week  |  Channels: 5</span></span>
+<span><span class="co">#&gt; Budget: $204,641/week  |  Channels: 5</span></span>
 <span><span class="co">#&gt; -- Optimal Allocation -------------------------------------------------------- </span></span>
 <span><span class="co">#&gt;   Channel           Weekly Spend                  [95% CI]          CP    Share </span></span>
-<span><span class="co">#&gt;   Paid Social            $31,534      [$8,310 – $43,484]         $59  +15.4%</span></span>
-<span><span class="co">#&gt;   Paid Search            $51,334     [$50,659 – $63,719]         $62  +25.1%</span></span>
-<span><span class="co">#&gt;   Online Video           $39,389     [$10,262 – $59,822]         $63  +19.3%</span></span>
-<span><span class="co">#&gt;   Display                $19,643      [$5,361 – $24,940]         $67   +9.6%</span></span>
-<span><span class="co">#&gt;   TV                     $62,549     [$14,425 – $87,211]         $96  +30.6%</span></span>
+<span><span class="co">#&gt;   Paid Social            $31,212      [$8,321 – $33,266]         $59  +15.1%</span></span>
+<span><span class="co">#&gt;   Paid Search            $51,329     [$50,644 – $52,842]         $62  +24.8%</span></span>
+<span><span class="co">#&gt;   Online Video           $39,528     [$10,272 – $41,489]         $63  +19.1%</span></span>
+<span><span class="co">#&gt;   Display                $19,571      [$5,363 – $20,524]         $68   +9.5%</span></span>
+<span><span class="co">#&gt;   TV                     $65,282     [$62,073 – $87,706]         $91  +31.5%</span></span>
 <span><span class="co">#&gt; -- Totals -------------------------------------------------------------------- </span></span>
-<span><span class="co">#&gt;   Optimal:  Spend $204,449  |  KPI 2,934  |  Avg CP $70</span></span>
-<span><span class="co">#&gt;   Current:  Spend $203,461  |  KPI 2,704  |  Avg CP $75</span></span>
-<span><span class="co">#&gt;   Change:   KPI +8.5%  |  CP $6</span></span></code></pre></div>
-<p>The <code>"posterior"</code> plot type shows the distribution of
-optimal spend per channel as violin plots:</p>
+<span><span class="co">#&gt;   Optimal:  Spend $206,922  |  KPI 2,993  |  Avg CP $69</span></span>
+<span><span class="co">#&gt;   Current:  Spend $204,641  |  KPI 2,757  |  Avg CP $74</span></span>
+<span><span class="co">#&gt;   Change:   KPI +8.6%  |  CP $5</span></span></code></pre></div>
+<p><code><a href="../reference/opt_plot_posterior.html">opt_plot_posterior()</a></code> shows the distribution of optimal
+spend per channel as violin plots:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">opt_post</span>, type <span class="op">=</span> <span class="st">"posterior"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/opt_plot_posterior.html">opt_plot_posterior</a></span><span class="op">(</span><span class="va">opt_post</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="optimization_files/figure-html/plot-posterior-1.png" class="r-plt" alt="Posterior distribution of optimal allocations across 200 draws." width="672"><p class="caption">
 Posterior distribution of optimal allocations across 200 draws.
 </p>
 </div>
-<p>The <code>"allocation"</code> plot adds 95% credible interval error
+<p><code><a href="../reference/opt_plot_allocation.html">opt_plot_allocation()</a></code> adds 95% credible interval error
 bars when used with a posterior result:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">opt_post</span>, type <span class="op">=</span> <span class="st">"allocation"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/opt_plot_allocation.html">opt_plot_allocation</a></span><span class="op">(</span><span class="va">opt_post</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="optimization_files/figure-html/plot-alloc-post-1.png" class="r-plt" alt="Optimal allocation with 95% CIs from posterior optimization." width="672"><p class="caption">
 Optimal allocation with 95% CIs from posterior optimization.
@@ -279,24 +276,47 @@ Optimal allocation with 95% CIs from posterior optimization.
 <div class="section level2">
 <h2 id="comparing-methods">5. Comparing Methods<a class="anchor" aria-label="anchor" href="#comparing-methods"></a>
 </h2>
-<p><code><a href="../reference/compare.html">compare()</a></code> produces a side-by-side diff of two
-optimization results:</p>
+<p><code><a href="../reference/opt_table.html">opt_table()</a></code> returns a plain tibble, so comparing two
+results is a standard join:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">comp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compare.html">compare</a></span><span class="op">(</span><span class="va">opt_point</span>, <span class="va">opt_post</span><span class="op">)</span></span>
-<span><span class="va">comp</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">channel</span>, <span class="va">spend_point</span>, <span class="va">spend_posterior</span>, <span class="va">spend_diff_pct</span>, <span class="va">kpi_diff_pct</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
-<span><span class="co">#&gt;   channel      spend_point spend_posterior spend_diff_pct kpi_diff_pct</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Paid Social       <span style="text-decoration: underline;">31</span>279.          <span style="text-decoration: underline;">31</span>534.        0.008<span style="text-decoration: underline;">14</span>     0.011<span style="text-decoration: underline;">1</span>  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Paid Search       <span style="text-decoration: underline;">51</span>017.          <span style="text-decoration: underline;">51</span>334.        0.006<span style="text-decoration: underline;">22</span>     0.009<span style="text-decoration: underline;">53</span> </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Online Video      <span style="text-decoration: underline;">38</span>937.          <span style="text-decoration: underline;">39</span>389.        0.011<span style="text-decoration: underline;">6</span>      0.017<span style="text-decoration: underline;">5</span>  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Display           <span style="text-decoration: underline;">19</span>547.          <span style="text-decoration: underline;">19</span>643.        0.004<span style="text-decoration: underline;">95</span>     0.009<span style="text-decoration: underline;">17</span> </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> TV                <span style="text-decoration: underline;">62</span>718.          <span style="text-decoration: underline;">62</span>549.       -<span style="color: #BB0000;">0.002</span><span style="color: #BB0000; text-decoration: underline;">69</span>    -<span style="color: #BB0000;">0.000</span><span style="color: #BB0000; text-decoration: underline;">118</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> TOTAL            <span style="text-decoration: underline;">203</span>497.         <span style="text-decoration: underline;">204</span>449.        0.004<span style="text-decoration: underline;">68</span>     0.009<span style="text-decoration: underline;">28</span></span></span></code></pre></div>
-<p><code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> on a compare result produces a dumbbell
-chart:</p>
+<code class="sourceCode R"><span><span class="va">comp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="../reference/opt_table.html">opt_table</a></span><span class="op">(</span><span class="va">opt_point</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">channel</span>, spend_point <span class="op">=</span> <span class="va">optimal_spend</span>, kpi_point <span class="op">=</span> <span class="va">optimal_kpi</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="../reference/opt_table.html">opt_table</a></span><span class="op">(</span><span class="va">opt_post</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">channel</span>, spend_posterior <span class="op">=</span> <span class="va">optimal_spend</span>, kpi_posterior <span class="op">=</span> <span class="va">optimal_kpi</span><span class="op">)</span>,</span>
+<span>  by <span class="op">=</span> <span class="st">"channel"</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    spend_diff_pct <span class="op">=</span> <span class="op">(</span><span class="va">spend_posterior</span> <span class="op">/</span> <span class="va">spend_point</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>,</span>
+<span>    kpi_diff_pct   <span class="op">=</span> <span class="op">(</span><span class="va">kpi_posterior</span>   <span class="op">/</span> <span class="va">kpi_point</span><span class="op">)</span>   <span class="op">-</span> <span class="fl">1</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">comp</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 7</span></span></span>
+<span><span class="co">#&gt;   channel     spend_point kpi_point spend_posterior kpi_posterior spend_diff_pct</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Paid Search      <span style="text-decoration: underline;">52</span>132.     844.           <span style="text-decoration: underline;">51</span>329.          827.        -<span style="color: #BB0000;">0.015</span><span style="color: #BB0000; text-decoration: underline;">4</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Online Vid…      <span style="text-decoration: underline;">40</span>980.     660.           <span style="text-decoration: underline;">39</span>528.          629.        -<span style="color: #BB0000;">0.035</span><span style="color: #BB0000; text-decoration: underline;">4</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Display          <span style="text-decoration: underline;">20</span>022.     299.           <span style="text-decoration: underline;">19</span>571.          290.        -<span style="color: #BB0000;">0.022</span><span style="color: #BB0000; text-decoration: underline;">5</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> TV               <span style="text-decoration: underline;">83</span>186.    <span style="text-decoration: underline;">1</span>127.           <span style="text-decoration: underline;">65</span>282.          720.        -<span style="color: #BB0000;">0.215</span> </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Paid Social       <span style="text-decoration: underline;">8</span>321.      82.7          <span style="text-decoration: underline;">31</span>212.          528.         2.75  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> TOTAL           <span style="text-decoration: underline;">204</span>641.    <span style="text-decoration: underline;">3</span>013.          <span style="text-decoration: underline;">206</span>922.         <span style="text-decoration: underline;">2</span>993.         0.011<span style="text-decoration: underline;">1</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: kpi_diff_pct &lt;dbl&gt;</span></span></span></code></pre></div>
+<p>A dumbbell chart requires only a few lines of ggplot2:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">comp</span>, type <span class="op">=</span> <span class="st">"spend"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">comp</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">channel</span> <span class="op">!=</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>channel <span class="op">=</span> <span class="fu">forcats</span><span class="fu">::</span><span class="fu"><a href="https://forcats.tidyverse.org/reference/fct_reorder.html" class="external-link">fct_reorder</a></span><span class="op">(</span><span class="va">channel</span>, <span class="va">spend_point</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">channel</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_segment.html" class="external-link">geom_segment</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">spend_point</span>, xend <span class="op">=</span> <span class="va">spend_posterior</span>, yend <span class="op">=</span> <span class="va">channel</span><span class="op">)</span>,</span>
+<span>               linewidth <span class="op">=</span> <span class="fl">0.8</span>, color <span class="op">=</span> <span class="st">"grey50"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">spend_point</span><span class="op">)</span>,     color <span class="op">=</span> <span class="st">"firebrick"</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">spend_posterior</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"steelblue"</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/dollar_format.html" class="external-link">dollar_format</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Weekly Spend ($)"</span>, y <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>       title <span class="op">=</span> <span class="st">"Spend: Point vs. Posterior"</span>,</span>
+<span>       subtitle <span class="op">=</span> <span class="st">"Red = point  |  Blue = posterior"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="optimization_files/figure-html/plot-compare-1.png" class="r-plt" alt="Point vs. posterior optimal spend per channel." width="672"><p class="caption">
 Point vs. posterior optimal spend per channel.
@@ -325,25 +345,25 @@ translate a total period budget into weekly optimization:</p>
 <span><span class="co">#&gt;   Weekly budget:  192,308 </span></span>
 <span><span class="co">#&gt;   Period budget:  1e+07  ( 52  weeks)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Optimization converged (status: 5 )</span></span>
-<span><span class="co">#&gt; Total weekly KPI: 2,799 </span></span>
-<span><span class="co">#&gt; Total period KPI: 145,562</span></span>
+<span><span class="co">#&gt; Optimization converged (status: 4 )</span></span>
+<span><span class="co">#&gt; Total weekly KPI: 2,722 </span></span>
+<span><span class="co">#&gt; Total period KPI: 141,539</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">opt_annual</span><span class="op">)</span></span>
 <span><span class="co">#&gt; -- Optimization Result (point) ----------------------------------------------- </span></span>
 <span><span class="co">#&gt; Budget: $192,308/week  |  $10,000,000 over 52 weeks  |  Channels: 5</span></span>
 <span><span class="co">#&gt; -- Optimal Allocation -------------------------------------------------------- </span></span>
 <span><span class="co">#&gt;   Channel           Weekly Spend    Weekly KPI          CP    Share </span></span>
-<span><span class="co">#&gt;   Paid Social            $39,897           632         $63   20.7%</span></span>
-<span><span class="co">#&gt;   Paid Search            $60,312           927         $65   31.4%</span></span>
-<span><span class="co">#&gt;   Online Video           $54,225           797         $68   28.2%</span></span>
-<span><span class="co">#&gt;   Display                $23,449           334         $70   12.2%</span></span>
-<span><span class="co">#&gt;   TV                     $14,425           108        $133    7.5%</span></span>
+<span><span class="co">#&gt;   Paid Social            $39,879           631         $63   20.7%</span></span>
+<span><span class="co">#&gt;   Paid Search            $60,369           928         $65   31.4%</span></span>
+<span><span class="co">#&gt;   Online Video           $54,151           796         $68   28.2%</span></span>
+<span><span class="co">#&gt;   Display                $23,485           335         $70   12.2%</span></span>
+<span><span class="co">#&gt;   TV                     $14,425            32        $448    7.5%</span></span>
 <span><span class="co">#&gt; -- Totals -------------------------------------------------------------------- </span></span>
-<span><span class="co">#&gt;   Optimal:  Spend $192,308  |  KPI 2,799  |  Avg CP $69</span></span>
-<span><span class="co">#&gt;   Current:  Spend $203,461  |  KPI 2,704  |  Avg CP $75</span></span>
-<span><span class="co">#&gt;   Change:   KPI +3.5%  |  CP $7</span></span>
+<span><span class="co">#&gt;   Optimal:  Spend $192,308  |  KPI 2,722  |  Avg CP $71</span></span>
+<span><span class="co">#&gt;   Current:  Spend $204,641  |  KPI 2,757  |  Avg CP $74</span></span>
+<span><span class="co">#&gt;   Change:   KPI -1.3%  |  CP $4</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   Period (52 weeks): $10,000,000 spend  |  145,562 KPI</span></span></code></pre></div>
+<span><span class="co">#&gt;   Period (52 weeks): $10,000,000 spend  |  141,539 KPI</span></span></code></pre></div>
 <p>The solution reports both weekly and period-level totals. The
 underlying assumption is that the response curve is stationary across
 the period — if spend-response relationships vary seasonally, this is an
@@ -385,21 +405,21 @@ levels.</p>
 <span><span class="co">#&gt;   Weekly budget:  250,000 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Optimization converged (status: 4 )</span></span>
-<span><span class="co">#&gt; Total weekly KPI: 3,849</span></span>
+<span><span class="co">#&gt; Total weekly KPI: 3,847</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">opt_constrained</span><span class="op">)</span></span>
 <span><span class="co">#&gt; -- Optimization Result (point) ----------------------------------------------- </span></span>
 <span><span class="co">#&gt; Budget: $250,000/week  |  Channels: 5</span></span>
 <span><span class="co">#&gt; -- Optimal Allocation -------------------------------------------------------- </span></span>
 <span><span class="co">#&gt;   Channel           Weekly Spend    Weekly KPI          CP    Share </span></span>
-<span><span class="co">#&gt;   Paid Social            $34,137           584         $58   13.7%</span></span>
-<span><span class="co">#&gt;   Paid Search            $54,012           875         $62   21.6%</span></span>
-<span><span class="co">#&gt;   Online Video           $44,211           714         $62   17.7%</span></span>
-<span><span class="co">#&gt;   Display                $20,815           313         $67    8.3%</span></span>
-<span><span class="co">#&gt;   TV                     $96,825         1,363         $71   38.7%</span></span>
+<span><span class="co">#&gt;   Paid Social            $34,062           583         $58   13.6%</span></span>
+<span><span class="co">#&gt;   Paid Search            $53,962           875         $62   21.6%</span></span>
+<span><span class="co">#&gt;   Online Video           $44,079           712         $62   17.6%</span></span>
+<span><span class="co">#&gt;   Display                $20,797           312         $67    8.3%</span></span>
+<span><span class="co">#&gt;   TV                     $97,099         1,364         $71   38.8%</span></span>
 <span><span class="co">#&gt; -- Totals -------------------------------------------------------------------- </span></span>
-<span><span class="co">#&gt;   Optimal:  Spend $250,000  |  KPI 3,849  |  Avg CP $65</span></span>
-<span><span class="co">#&gt;   Current:  Spend $203,461  |  KPI 2,704  |  Avg CP $75</span></span>
-<span><span class="co">#&gt;   Change:   KPI +42.3%  |  CP $10</span></span></code></pre></div>
+<span><span class="co">#&gt;   Optimal:  Spend $250,000  |  KPI 3,847  |  Avg CP $65</span></span>
+<span><span class="co">#&gt;   Current:  Spend $204,641  |  KPI 2,757  |  Avg CP $74</span></span>
+<span><span class="co">#&gt;   Change:   KPI +39.6%  |  CP $9</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="share-based-constraints">Share-Based Constraints<a class="anchor" aria-label="anchor" href="#share-based-constraints"></a>
@@ -428,22 +448,22 @@ budget:</p>
 <span><span class="co">#&gt;   Method:         point </span></span>
 <span><span class="co">#&gt;   Weekly budget:  250,000 </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Optimization converged (status: 5 )</span></span>
-<span><span class="co">#&gt; Total weekly KPI: 3,760</span></span>
+<span><span class="co">#&gt; Optimization converged (status: 4 )</span></span>
+<span><span class="co">#&gt; Total weekly KPI: 3,419</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">opt_share</span><span class="op">)</span></span>
 <span><span class="co">#&gt; -- Optimization Result (point) ----------------------------------------------- </span></span>
 <span><span class="co">#&gt; Budget: $250,000/week  |  Channels: 5</span></span>
 <span><span class="co">#&gt; -- Optimal Allocation -------------------------------------------------------- </span></span>
 <span><span class="co">#&gt;   Channel           Weekly Spend    Weekly KPI          CP    Share </span></span>
-<span><span class="co">#&gt;   Display                     $0            18          $0    0.0%</span></span>
-<span><span class="co">#&gt;   Paid Social            $38,737           626         $62   15.5%</span></span>
-<span><span class="co">#&gt;   Paid Search            $59,031           921         $64   23.6%</span></span>
-<span><span class="co">#&gt;   Online Video           $52,233           788         $66   20.9%</span></span>
-<span><span class="co">#&gt;   TV                    $100,000         1,406         $71   40.0%</span></span>
+<span><span class="co">#&gt;   Online Video                $0            78          $0    0.0%</span></span>
+<span><span class="co">#&gt;   TV                    $100,000         1,404         $71   40.0%</span></span>
+<span><span class="co">#&gt;   Paid Search            $71,744           946         $76   28.7%</span></span>
+<span><span class="co">#&gt;   Paid Social            $50,026           648         $77   20.0%</span></span>
+<span><span class="co">#&gt;   Display                $28,230           342         $82   11.3%</span></span>
 <span><span class="co">#&gt; -- Totals -------------------------------------------------------------------- </span></span>
-<span><span class="co">#&gt;   Optimal:  Spend $250,000  |  KPI 3,760  |  Avg CP $66</span></span>
-<span><span class="co">#&gt;   Current:  Spend $203,461  |  KPI 2,704  |  Avg CP $75</span></span>
-<span><span class="co">#&gt;   Change:   KPI +39%  |  CP $9</span></span></code></pre></div>
+<span><span class="co">#&gt;   Optimal:  Spend $250,000  |  KPI 3,419  |  Avg CP $73</span></span>
+<span><span class="co">#&gt;   Current:  Spend $204,641  |  KPI 2,757  |  Avg CP $74</span></span>
+<span><span class="co">#&gt;   Change:   KPI +24%  |  CP $1</span></span></code></pre></div>
 <p>When both absolute and share-based bounds are present, the
 <strong>tighter constraint wins</strong>.</p>
 </div>
@@ -473,12 +493,27 @@ commitment), set <code>fixed = TRUE</code>:</p>
 <span><span class="co">#&gt;   Weekly budget:  250,000 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Optimization converged (status: 4 )</span></span>
-<span><span class="co">#&gt; Total weekly KPI: 3,124</span></span></code></pre></div>
+<span><span class="co">#&gt; Total weekly KPI: 3,111</span></span></code></pre></div>
 <p>TV is locked at $50,000/week; the remaining $200,000 is optimized
 across the other four channels.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">comp_fixed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compare.html">compare</a></span><span class="op">(</span><span class="va">opt_point</span>, <span class="va">opt_fixed</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"unconstrained"</span>, <span class="st">"fixed_TV"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">comp_fixed</span>, type <span class="op">=</span> <span class="st">"spend"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="../reference/opt_table.html">opt_table</a></span><span class="op">(</span><span class="va">opt_point</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">channel</span>, spend_unconstrained <span class="op">=</span> <span class="va">optimal_spend</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="../reference/opt_table.html">opt_table</a></span><span class="op">(</span><span class="va">opt_fixed</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">channel</span>, spend_fixed <span class="op">=</span> <span class="va">optimal_spend</span><span class="op">)</span>,</span>
+<span>  by <span class="op">=</span> <span class="st">"channel"</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">channel</span> <span class="op">!=</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>channel <span class="op">=</span> <span class="fu">forcats</span><span class="fu">::</span><span class="fu"><a href="https://forcats.tidyverse.org/reference/fct_reorder.html" class="external-link">fct_reorder</a></span><span class="op">(</span><span class="va">channel</span>, <span class="va">spend_unconstrained</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">channel</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_segment.html" class="external-link">geom_segment</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">spend_unconstrained</span>, xend <span class="op">=</span> <span class="va">spend_fixed</span>, yend <span class="op">=</span> <span class="va">channel</span><span class="op">)</span>,</span>
+<span>               linewidth <span class="op">=</span> <span class="fl">0.8</span>, color <span class="op">=</span> <span class="st">"grey50"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">spend_unconstrained</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"firebrick"</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">spend_fixed</span><span class="op">)</span>,         color <span class="op">=</span> <span class="st">"steelblue"</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/dollar_format.html" class="external-link">dollar_format</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Weekly Spend ($)"</span>, y <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>       title <span class="op">=</span> <span class="st">"Spend: Unconstrained vs. Fixed TV"</span>,</span>
+<span>       subtitle <span class="op">=</span> <span class="st">"Red = unconstrained  |  Blue = fixed TV"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="optimization_files/figure-html/compare-constrained-1.png" class="r-plt" alt="Unconstrained vs. fixed-TV optimization." width="672"><p class="caption">
 Unconstrained vs. fixed-TV optimization.
@@ -509,40 +544,38 @@ Unconstrained vs. fixed-TV optimization.
 <td>Bayesian optimization with uncertainty</td>
 </tr>
 <tr class="odd">
-<td><code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code></td>
-<td>Formatted console summary</td>
+<td>
+<code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> / <code><a href="../reference/opt_summary.html">opt_summary()</a></code>
+</td>
+<td>Formatted console summary (identical output)</td>
 </tr>
 <tr class="even">
-<td><code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code></td>
-<td>Tidy comparison tibble with deltas</td>
+<td><code><a href="../reference/opt_table.html">opt_table()</a></code></td>
+<td>Tidy comparison tibble with per-channel deltas</td>
 </tr>
 <tr class="odd">
-<td><code>plot(type = "allocation")</code></td>
-<td>Grouped bar: current vs. optimal</td>
+<td><code><a href="../reference/opt_plot_allocation.html">opt_plot_allocation()</a></code></td>
+<td>Grouped bar: current vs. optimal spend or KPI</td>
 </tr>
 <tr class="even">
-<td><code>plot(type = "comparison")</code></td>
-<td>Dumbbell: current → optimal</td>
+<td><code><a href="../reference/opt_plot_comparison.html">opt_plot_comparison()</a></code></td>
+<td>Dumbbell: current → optimal spend</td>
 </tr>
 <tr class="odd">
-<td><code>plot(type = "curves")</code></td>
+<td><code><a href="../reference/opt_plot_curves.html">opt_plot_curves()</a></code></td>
 <td>Response curves with current + optimal points</td>
 </tr>
 <tr class="even">
-<td><code>plot(type = "returns")</code></td>
+<td><code><a href="../reference/opt_plot_returns.html">opt_plot_returns()</a></code></td>
 <td>AR/MR curves at current + optimal</td>
 </tr>
 <tr class="odd">
-<td><code>plot(type = "posterior")</code></td>
-<td>Violin of posterior allocations</td>
+<td><code><a href="../reference/opt_plot_posterior.html">opt_plot_posterior()</a></code></td>
+<td>Violin of posterior allocations (posterior only)</td>
 </tr>
 <tr class="even">
-<td><code><a href="../reference/compare.html">compare()</a></code></td>
+<td><code>inner_join(opt_table(a), opt_table(b))</code></td>
 <td>Side-by-side diff of two results</td>
-</tr>
-<tr class="odd">
-<td><code>plot(compare_result)</code></td>
-<td>Dumbbell chart of two results</td>
 </tr>
 </tbody>
 </table>

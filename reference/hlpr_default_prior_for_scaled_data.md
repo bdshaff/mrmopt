@@ -2,9 +2,9 @@
 
 \`r lifecycle::badge("deprecated")\`
 
-This function is deprecated in favor of \[mrm_prior()\] and the internal
-\[hlpr_resolve_prior()\]. It is retained for backward compatibility and
-now delegates to the new prior resolution system.
+This function is deprecated in favor of \[mrmopt_prior()\] and the
+internal \[hlpr_resolve_prior()\]. It is retained for backward
+compatibility and now delegates to the new prior resolution system.
 
 ## Usage
 

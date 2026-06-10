@@ -1,30 +1,27 @@
-# Extract parameters from a fitted model
+# Extract response curve parameters from a fitted model
 
-This function extracts the parameters from a fitted model object.
+Returns a 4-row tibble describing each response curve parameter (b, c,
+d, e) with its name, plain-language description, and posterior
+center/lower/upper estimates in original data units.
 
 ## Usage
 
 ``` r
-mrm_params(rc_fit, scaled = TRUE)
+mrm_params(mrm)
 ```
 
 ## Arguments
 
-- rc_fit:
+- mrm:
 
-  A fitted model object.
-
-- scaled:
-
-  A logical indicating whether the model was fitted on scaled data.
-  Default is TRUE.
+  A fitted model object returned by \[fit_response()\].
 
 ## Value
 
-A list containing the center, lower, and upper bounds of the parameters.
+A tibble with columns: `param`, `name`, `description`, `center`,
+`lower`, `upper`.
 
-## Details
+## See also
 
-The function extracts the parameters from the fitted model object and
-returns them in a list. When `scaled = TRUE`, parameters are unscaled
-back to original data units (spend for b/e, KPI for c/d).
+\[mrm_summary()\] for a full channel-level summary, \[fit_response()\]
+for model fitting.

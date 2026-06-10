@@ -37,14 +37,11 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="articles/index.html">Articles</a></li>
+<li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="articles/roadmap.html">Roadmap</a></li>
       </ul>
-<ul class="navbar-nav">
-<li class="nav-item"><form class="form-inline" role="search">
- <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json">
-</form></li>
-      </ul>
+<ul class="navbar-nav"></ul>
 </div>
 
 
@@ -53,41 +50,166 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header">
-<img src="logo.png" class="logo" alt=""><h1 id="media-response-modeling">Media Response Modeling<a class="anchor" aria-label="anchor" href="#media-response-modeling"></a>
+<img src="logo.png" class="logo" alt=""><h1 id="mrmopt-">mrmopt <a class="anchor" aria-label="anchor" href="#mrmopt-"></a>
 </h1>
 </div>
-<p>Media Response Modeling (MRM) is part of a broader set of techniques and models under the Media Mix Modeling (MMM) umbrella. MRM focuses on modeling, quantifying, and analyzing the non-linear saturation (diminishing returns) relationship between media spend and/or (impressions/clicks/GRPs) and business outcomes, such as sales or conversions. These relationships are modeled as non-linear response curves that capture the diminishing returns of media investments. Establishing response curves for a mix of media is critical for optimizing the media mix for better performance, as it allows marketers to understand the effectiveness of their media investments beyond observed levels.</p>
-</div>
-<div class="section level1">
-<h1 id="mrmopt-media-response-modeling-in-r">mrmopt: Media Response Modeling in R<a class="anchor" aria-label="anchor" href="#mrmopt-media-response-modeling-in-r"></a>
-</h1>
-<p><code>mrmopt</code> is an R package designed to facilitate media response modeling using Bayesian methods. It provides tools for fitting media response models, analyzing response curves, and optimizing media mix for improved performance. The goal of the <code>mrmopt</code> package is to make it easier for marketers and analysts to apply media response modeling techniques to their data, enabling them to make informed decisions about their media investments. The focus of the package is to comprehensively model the uncertainly around the response curves and build optimizations from a broader set of scenarios, rather than just optimizing for a single point estimate of the response curve. Bayesian estimation powered by <code>brms</code> package enables simultaneously a robust and flexible framework for modeling media response while remaining within the bounds of a set the non-linear response models commonly used (Logistic, Weibull, Gompertz, etc.). While flexible, the package is designed to be user-friendly and accessible to marketers and analysts who may not have extensive experience with Bayesian modeling, providing smart automations, defaults, and tools to guide customization.</p>
+<p><strong>Bayesian media response modeling and optimization in R.</strong></p>
+<p><code>mrmopt</code> fits nonlinear saturation curves to media spend and KPI data using Bayesian estimation, quantifies uncertainty across the full response curve, and optimizes media mix allocation from the resulting posterior distributions. It is designed to be accessible to analysts and marketers without deep Bayesian modeling experience, while remaining flexible enough for rigorous applied work.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>You can install the <code>mrmopt</code> package from GitHub using the <code>devtools</code> package. If you don’t have <code>devtools</code> installed, you can install it from CRAN:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span></code></pre></div>
-<p>Then, you can install the <code>mrmopt</code> package from GitHub:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"bdshaff/mrmopt"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"bdshaff/mrmopt"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="workflow">Workflow<a class="anchor" aria-label="anchor" href="#workflow"></a>
+</h2>
+<pre class="mermaid"><code>flowchart TD
+    A([Raw Data\nweekly spend · KPI · units]) --&gt; B
+
+    B[fit_response\none channel · one curve type]
+
+    B --&gt; C{Diagnostics\nmrm_plot_diagnostics}
+    C --&gt;|chains mixed\nRhat ≤ 1.01 · ESS &gt; 400| D
+    C --&gt;|convergence issues| B2[adjust priors\nor iter/warmup]
+    B2 --&gt; B
+
+    D[mrm_summary\nmrm_params\nmrm_plot]
+
+    D --&gt; E{Compare curve types\nmrms_plot_compare\nBayes R²}
+    E --&gt;|try all 6 types\nper channel| B
+    E --&gt;|best type selected\nper channel| F
+
+    F[fit_response\nbest type · full iterations\nall channels in loop]
+
+    F --&gt; G[mrm_infer\nspend grid → posterior predictive\ncenter · lower · upper · AR · MR · CP]
+
+    G --&gt; H[opt_mix\nmethod = point or posterior\nbudget · constraints]
+
+    H --&gt; I[opt_summary\nopt_table\nopt_plot_allocation\nopt_plot_comparison]
+
+    I --&gt; J{Scenario Analysis}
+    J --&gt; K[period budgets\nn_weeks]
+    J --&gt; L[custom constraints\nmin/max spend · fixed channels]
+    J --&gt; M[posterior uncertainty\nopt_plot_posterior]
+
+    K &amp; L &amp; M --&gt; N([Allocation Decision])
+
+    style A fill:#f0f4ff,stroke:#4a6fa5
+    style N fill:#f0fff4,stroke:#4a6fa5
+    style C fill:#fff8e1,stroke:#f0a500
+    style E fill:#fff8e1,stroke:#f0a500
+    style J fill:#fff8e1,stroke:#f0a500</code></pre>
+</div>
+<div class="section level2">
+<h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
+</h2>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bdshaff.github.io/mrmopt/">mrmopt</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Built-in example data: 5 channels, 104 weeks each</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mrmopt_data</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 1. Fit a response curve for a single channel</span></span>
+<span><span class="va">paid_search</span> <span class="op">&lt;-</span> <span class="va">mrmopt_data</span><span class="op">[</span><span class="va">mrmopt_data</span><span class="op">$</span><span class="va">channel</span> <span class="op">==</span> <span class="st">"Paid Search"</span>, <span class="op">]</span></span>
+<span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fit_response.html">fit_response</a></span><span class="op">(</span></span>
+<span>  data           <span class="op">=</span> <span class="va">paid_search</span>,</span>
+<span>  spend          <span class="op">=</span> <span class="st">"spend"</span>,</span>
+<span>  kpi            <span class="op">=</span> <span class="st">"conversions"</span>,</span>
+<span>  date           <span class="op">=</span> <span class="st">"week"</span>,</span>
+<span>  type           <span class="op">=</span> <span class="st">"gompertz"</span>,</span>
+<span>  midpoint_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.5</span><span class="op">)</span>,</span>
+<span>  ceiling_max    <span class="op">=</span> <span class="fl">3</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 2. Inspect and visualize</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span>                       <span class="co"># performance summary, parameters, Bayes R²</span></span>
+<span><span class="fu"><a href="reference/mrm_plot.html">mrm_plot</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span>                    <span class="co"># response curve + AR/MR + cost-per dashboard</span></span>
+<span><span class="fu"><a href="reference/mrm_plot_diagnostics.html">mrm_plot_diagnostics</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span>        <span class="co"># trace plots and posterior predictive checks</span></span>
+<span></span>
+<span><span class="co"># 3. Optimize across a portfolio of fitted channels</span></span>
+<span><span class="va">opt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/opt_mix.html">opt_mix</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    paid_search  <span class="op">=</span> <span class="va">fit_ps</span>,</span>
+<span>    paid_social  <span class="op">=</span> <span class="va">fit_soc</span>,</span>
+<span>    display      <span class="op">=</span> <span class="va">fit_dis</span>,</span>
+<span>    online_video <span class="op">=</span> <span class="va">fit_ov</span>,</span>
+<span>    tv           <span class="op">=</span> <span class="va">fit_tv</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  budget <span class="op">=</span> <span class="fl">500000</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="reference/opt_summary.html">opt_summary</a></span><span class="op">(</span><span class="va">opt</span><span class="op">)</span>                 <span class="co"># formatted allocation summary</span></span>
+<span><span class="fu"><a href="reference/opt_table.html">opt_table</a></span><span class="op">(</span><span class="va">opt</span><span class="op">)</span>                   <span class="co"># tidy tibble of current vs. optimal deltas</span></span>
+<span><span class="fu"><a href="reference/opt_plot_allocation.html">opt_plot_allocation</a></span><span class="op">(</span><span class="va">opt</span><span class="op">)</span>         <span class="co"># grouped bar: current vs. optimal spend</span></span>
+<span><span class="fu"><a href="reference/opt_plot_curves.html">opt_plot_curves</a></span><span class="op">(</span><span class="va">opt</span><span class="op">)</span>             <span class="co"># response curves with optimal spend marked</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
 </h2>
 <ul>
-<li>Fit Bayesian media response models using <code>brms</code>.</li>
-<li>Analyze response curves to understand media effectiveness.</li>
-<li>Optimize media mix for improved performance.</li>
+<li>
+<strong>6 response curve types</strong> — Logistic, Gompertz, Reflected Gompertz, Log-Logistic, Weibull, and Reflected Weibull, covering concave and S-shaped diminishing returns</li>
+<li>
+<strong>Full posterior uncertainty</strong> — credible intervals on curves, marginal returns, average returns, and cost-per-unit at every spend level</li>
+<li>
+<strong>Smart prior automation</strong> — scale-invariant prior specification via <code>midpoint_range</code> and <code>ceiling_max</code>; no manual Stan required</li>
+<li>
+<strong>Model diagnostics and comparison</strong> — trace plots, posterior predictive checks, and overlay plots for comparing curve types or time periods via <code><a href="reference/mrms_plot_compare.html">mrms_plot_compare()</a></code>
+</li>
+<li>
+<strong>Portfolio optimization</strong> — point-estimate (fast, ~1s) and posterior (distributional, ~6s for 200 draws) optimization via <code><a href="reference/opt_mix.html">opt_mix()</a></code>, with flexible constraint specification including absolute bounds, share constraints, and fixed channels</li>
+<li>
+<strong>Explicit analysis functions</strong> — <code><a href="reference/opt_summary.html">opt_summary()</a></code>, <code><a href="reference/opt_table.html">opt_table()</a></code>, <code><a href="reference/opt_plot_allocation.html">opt_plot_allocation()</a></code>, <code><a href="reference/opt_plot_comparison.html">opt_plot_comparison()</a></code>, <code><a href="reference/opt_plot_curves.html">opt_plot_curves()</a></code>, <code><a href="reference/opt_plot_returns.html">opt_plot_returns()</a></code>, and <code><a href="reference/opt_plot_posterior.html">opt_plot_posterior()</a></code> expose each output directly rather than hiding behind a single dispatcher</li>
+<li>
+<strong>Period budgeting</strong> — optimize for any planning horizon (e.g., annual $10M broken into weekly allocations via <code>n_weeks</code>)</li>
 </ul>
 </div>
 <div class="section level2">
 <h2 id="documentation-and-tutorials">Documentation and Tutorials<a class="anchor" aria-label="anchor" href="#documentation-and-tutorials"></a>
 </h2>
-<p>Visit the companion website for detailed documentation, tutorials, and examples on how to use the <code>mrmopt</code> package for media response modeling: <a href="https://bdshaff.github.io/mrmopt/">https://bdshaff.github.io/mrmopt/</a></p>
+<p>Full documentation, tutorials, and examples are available at <a href="https://bdshaff.github.io/mrmopt/">bdshaff.github.io/mrmopt</a>.</p>
+<table class="table">
+<colgroup>
+<col width="52%">
+<col width="47%">
+</colgroup>
+<thead><tr>
+<th>Vignette</th>
+<th>Content</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><a href="https://bdshaff.github.io/mrmopt/getting_started.html">Getting Started</a></td>
+<td>End-to-end walkthrough using built-in data</td>
+</tr>
+<tr>
+<td><a href="https://bdshaff.github.io/mrmopt/fitting_and_analysis.html">Fitting &amp; Analysis</a></td>
+<td>Prior specification, curve types, model inspection</td>
+</tr>
+<tr>
+<td><a href="https://bdshaff.github.io/mrmopt/diagnostics_and_comparison.html">Diagnostics &amp; Comparison</a></td>
+<td>Convergence checks, curve type comparison</td>
+</tr>
+<tr>
+<td><a href="https://bdshaff.github.io/mrmopt/optimization.html">Optimization</a></td>
+<td>Budget allocation, constraints, scenario analysis</td>
+</tr>
+<tr>
+<td><a href="https://bdshaff.github.io/mrmopt/response_curve_theory.html">Response Curve Theory</a></td>
+<td>Mathematical background on the six curve forms</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level2">
+<h2 id="roadmap">Roadmap<a class="anchor" aria-label="anchor" href="#roadmap"></a>
+</h2>
+<p>See the <a href="https://bdshaff.github.io/mrmopt/roadmap.html">Roadmap</a> for planned features, including within-channel hierarchical response curves, rolling window parameter drift analysis, time-varying response curves, cross-channel synergy modeling, and adstock support.</p>
 </div>
 </div>
-
   </main><aside class="col-md-3"><div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">

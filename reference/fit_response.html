@@ -15,11 +15,10 @@
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="../articles/index.html">Articles</a></li>
-      </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
- <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
-      </ul></div>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/index.html">Articles</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/roadmap.html">Roadmap</a></li>
+      </ul><ul class="navbar-nav"></ul></div>
 
 
   </div>
@@ -57,7 +56,8 @@
 <span>  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>adapt_delta <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span>,</span>
 <span>  infer_xrange <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  infer_length <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  anchor_zero <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  anchor_strength <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  anchor_zero <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  refresh <span class="op">=</span> <span class="fl">500</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -114,18 +114,18 @@ Default is TRUE.</p></dd>
 <dt id="arg-midpoint-range">midpoint_range<a class="anchor" aria-label="anchor" href="#arg-midpoint-range"></a></dt>
 <dd><p>A two-element numeric vector specifying the midpoint
 bounds as fractions of the x-axis range (e.g., <code>c(0.1, 0.9)</code>).
-See <code><a href="mrm_prior.html">mrm_prior</a></code> for details.</p></dd>
+See <code><a href="mrmopt_prior.html">mrmopt_prior</a></code> for details.</p></dd>
 
 
 <dt id="arg-ceiling-max">ceiling_max<a class="anchor" aria-label="anchor" href="#arg-ceiling-max"></a></dt>
 <dd><p>A multiplier on the observed max of y for the ceiling
 upper bound (e.g., <code>3</code> means ceiling can be up to 3x observed max).
-See <code><a href="mrm_prior.html">mrm_prior</a></code> for details.</p></dd>
+See <code><a href="mrmopt_prior.html">mrmopt_prior</a></code> for details.</p></dd>
 
 
 <dt id="arg-floor-min">floor_min<a class="anchor" aria-label="anchor" href="#arg-floor-min"></a></dt>
 <dd><p>A scalar lower bound for the floor in original data units.
-Default is 0. See <code><a href="mrm_prior.html">mrm_prior</a></code> for details.</p></dd>
+Default is 0. See <code><a href="mrmopt_prior.html">mrmopt_prior</a></code> for details.</p></dd>
 
 
 <dt id="arg-prior">prior<a class="anchor" aria-label="anchor" href="#arg-prior"></a></dt>
@@ -162,13 +162,19 @@ the range of x in the data.</p></dd>
 Default is 1000.</p></dd>
 
 
+<dt id="arg-anchor-strength">anchor_strength<a class="anchor" aria-label="anchor" href="#arg-anchor-strength"></a></dt>
+<dd><p>A single positive numeric value controlling how
+tightly the floor parameter (`c`) is constrained around `floor_min`.
+See <code><a href="mrmopt_prior.html">mrmopt_prior</a></code> for details. If supplied, overrides the
+`anchor_strength` in `mrmopt_prior()`. Default is `NULL` (use `mrmopt_prior`
+default of `0.05`).</p></dd>
+
+
 <dt id="arg-anchor-zero">anchor_zero<a class="anchor" aria-label="anchor" href="#arg-anchor-zero"></a></dt>
-<dd><p>Logical indicating whether to inject a synthetic (0, 0)
-data point to anchor the response curve at the origin. This encodes the
-domain assumption that zero spend produces zero response. Scale values are
-always computed from the real data only; the anchor is scaled using those
-values and appended afterward, so it does not contaminate the scaling.
-Automatically disabled for log-based forms. Default is TRUE.</p></dd>
+<dd><p>\[Deprecated\] Previously controlled injection of a
+synthetic (0, 0) data point. Floor anchoring is now handled via
+`anchor_strength` in <code><a href="mrmopt_prior.html">mrmopt_prior</a></code>. If set, a deprecation
+warning is emitted and the argument is ignored.</p></dd>
 
 
 <dt id="arg-refresh">refresh<a class="anchor" aria-label="anchor" href="#arg-refresh"></a></dt>

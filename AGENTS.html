@@ -15,11 +15,10 @@
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="articles/index.html">Articles</a></li>
-      </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
- <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json"></form></li>
-      </ul></div>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="articles/index.html">Articles</a></li>
+<li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="articles/roadmap.html">Roadmap</a></li>
+      </ul><ul class="navbar-nav"></ul></div>
 
 
   </div>
@@ -42,6 +41,23 @@
 <li>
 <strong>Docs</strong>: <a href="https://bdshaff.github.io/mrmopt/" class="uri">https://bdshaff.github.io/mrmopt/</a>
 </li>
+</ul><hr></div>
+<div class="section level2">
+<h2 id="recent-build-fixes-june-2026">Recent Build Fixes (June 2026)<a class="anchor" aria-label="anchor" href="#recent-build-fixes-june-2026"></a></h2>
+<ul><li>
+<strong>Rd cross-references</strong>: <code>\link{mrm_prior}</code> → <code>\link{mrmopt_prior}</code> in <code>R/fit_response.R</code> and <code>R/hlpr_resolve_prior.R</code> (the function is named <code>mrmopt_prior</code>, not <code>mrm_prior</code>)</li>
+<li>
+<strong><code>.Rbuildignore</code></strong>: Added <code>^ROADMAP\.md$</code> and <code>^conversation-export\.html$</code> to suppress non-standard top-level file NOTE</li>
+<li>
+<strong>Undefined globals</strong>: Added <code>@importFrom stats fitted</code> to <code>R/mrm_infer.R</code>; added <code>@importFrom dplyr bind_rows mutate select</code> and <code>@importFrom tibble tibble</code> to <code>R/opt_generate_constraints.R</code>; replaced <code>%&gt;%</code> with <code>|&gt;</code> in <code>opt_generate_constraints.R</code>
+</li>
+<li>
+<strong>Vignette error (<code>getting_started.Rmd</code>)</strong>: <code><a href="reference/mrm_plot_diagnostics.html">mrm_plot_diagnostics()</a></code> used <code>trace_plot / pp_plot</code> where <code>trace_plot</code> is a <code>bayesplot_grid</code> S7 object — S7 intercepts the <code>/</code> operator before patchwork can. Fixed by wrapping: <code>patchwork::wrap_elements(trace_plot) / pp_plot</code>
+</li>
+<li>
+<strong><code>forcats</code> undeclared</strong>: Added <code>forcats</code> to <code>Suggests</code> in DESCRIPTION (used via <code><a href="https://forcats.tidyverse.org/reference/fct_reorder.html" class="external-link">forcats::fct_reorder()</a></code> in <code>vignettes/optimization.Rmd</code>)</li>
+<li>
+<strong>pkgdown build</strong>: <code>getting_started</code> vignette was missing from <code>_pkgdown.yml</code> articles index — added as first entry under “Getting Started”</li>
 </ul><hr></div>
 <div class="section level2">
 <h2 id="package-structure">Package Structure<a class="anchor" aria-label="anchor" href="#package-structure"></a></h2>
@@ -103,8 +119,8 @@
 <p>Returned by <code><a href="reference/fit_response.html">fit_response()</a></code>. Key fields: - <code>$response_df</code> — cached inference results (unscaled) - <code>$summary</code> — <code>mrm_summary</code> object - <code>$params_summary</code> — parameter summaries - <code>$scale_values</code> — scaling metadata for unscaling - <code>$rc_type</code> — response curve type string - <code>$cost_per_unit</code> — cost-per-unit if <code>units</code> supplied - <code>$date_range</code> — <code>c(min_date, max_date)</code> from input data</p>
 </div>
 <div class="section level3">
-<h3 id="mrm_prior"><code>mrm_prior</code><a class="anchor" aria-label="anchor" href="#mrm_prior"></a></h3>
-<p>List-based prior specification. Created with <code><a href="reference/mrm_prior.html">mrm_prior()</a></code>.</p>
+<h3 id="mrmopt_prior"><code>mrmopt_prior</code><a class="anchor" aria-label="anchor" href="#mrmopt_prior"></a></h3>
+<p>List-based prior specification. Created with <code><a href="reference/mrmopt_prior.html">mrmopt_prior()</a></code>.</p>
 </div>
 <div class="section level3">
 <h3 id="mrm_summary"><code>mrm_summary</code><a class="anchor" aria-label="anchor" href="#mrm_summary"></a></h3>
@@ -135,14 +151,15 @@
 <span><span class="fu"><a href="reference/mrm_params.html">mrm_params</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/mrm_summary.html">mrm_summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
 <span></span>
+<span></span>
 <span><span class="co"># 4. Compare models</span></span>
-<span><span class="fu"><a href="reference/mrm_plot_compare.html">mrm_plot_compare</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>gompertz <span class="op">=</span> <span class="va">fit_g</span>, logistic <span class="op">=</span> <span class="va">fit_l</span><span class="op">)</span>, layout <span class="op">=</span> <span class="st">"overlay"</span><span class="op">)</span></span>
+<span><span class="fu">mrm_plot_compare</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>gompertz <span class="op">=</span> <span class="va">fit_g</span>, logistic <span class="op">=</span> <span class="va">fit_l</span><span class="op">)</span>, layout <span class="op">=</span> <span class="st">"overlay"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># 5. Optimize (point estimate — fast, single solution)</span></span>
 <span><span class="va">opt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/opt_mix.html">opt_mix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ch1 <span class="op">=</span> <span class="va">fit1</span>, ch2 <span class="op">=</span> <span class="va">fit2</span><span class="op">)</span>, budget <span class="op">=</span> <span class="fl">500000</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">opt</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">opt</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">opt</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">opt</span><span class="op">)</span>           <span class="co"># formatted console summary (calls summary())</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">opt</span><span class="op">)</span>         <span class="co"># same formatted output</span></span>
+<span><span class="fu"><a href="reference/opt_table.html">opt_table</a></span><span class="op">(</span><span class="va">opt</span><span class="op">)</span>       <span class="co"># tidy tibble with per-channel deltas (current vs optimal)</span></span>
 <span></span>
 <span><span class="co"># 5b. Optimize (posterior — distribution of solutions)</span></span>
 <span><span class="va">opt_post</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/opt_mix.html">opt_mix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ch1 <span class="op">=</span> <span class="va">fit1</span>, ch2 <span class="op">=</span> <span class="va">fit2</span><span class="op">)</span>,</span>
@@ -157,7 +174,7 @@
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">opt</span>, type <span class="op">=</span> <span class="st">"returns"</span><span class="op">)</span>    <span class="co"># AR/MR curves with current + optimal points</span></span>
 <span></span>
 <span><span class="co"># 7. Compare two optimization results</span></span>
-<span><span class="va">comp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compare.html">compare</a></span><span class="op">(</span><span class="va">opt</span>, <span class="va">opt_post</span><span class="op">)</span></span>
+<span><span class="va">comp</span> <span class="op">&lt;-</span> <span class="fu">compare</span><span class="op">(</span><span class="va">opt</span>, <span class="va">opt_post</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">comp</span>, type <span class="op">=</span> <span class="st">"spend"</span><span class="op">)</span>     <span class="co"># dumbbell chart</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">opt</span><span class="op">)</span>                   <span class="co"># tidy comparison tibble with deltas</span></span></code></pre></div>
 <hr></div>
@@ -201,7 +218,7 @@
 <td>Returns tidy comparison tibble with deltas</td>
 </tr><tr><td><code>R/compare.opt_mix_result.R</code></td>
 <td>
-<code><a href="reference/compare.html">compare()</a></code> generic + method: side-by-side diff of two results</td>
+<code>compare()</code> generic + method: side-by-side diff of two results</td>
 </tr><tr><td><code>R/plot.opt_mix_compare.R</code></td>
 <td>Dumbbell plot for compare results (spend + kpi)</td>
 </tr><tr><td><code>R/hlpr_opt_metrics.R</code></td>
@@ -272,13 +289,15 @@
 <ol style="list-style-type: decimal"><li>
 <strong>Automatic</strong> (<code>auto = TRUE</code> in <code>fit_response</code>) — smart defaults</li>
 <li>
-<strong>Simplified</strong> via <code><a href="reference/mrm_prior.html">mrm_prior()</a></code> — scale-invariant bounds:
+<strong>Simplified</strong> via <code><a href="reference/mrmopt_prior.html">mrmopt_prior()</a></code> — scale-invariant bounds:
 <ul><li>
 <code>midpoint_range</code>: inflection point as fraction of x-axis</li>
 <li>
 <code>ceiling_max</code>: multiplier on observed max response</li>
 <li>
 <code>floor_min</code>: lower asymptote in original units</li>
+<li>
+<code>anchor_strength</code>: fraction of observed y range used as prior SD on the floor (<code>c</code>) parameter (default <code>0.05</code>). Controls how tightly the floor is constrained around <code>floor_min</code>. Set to <code>NULL</code> for loose behavior.</li>
 </ul></li>
 <li>
 <strong>Manual</strong> — raw <code><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">brms::prior()</a></code> objects</li>
@@ -288,7 +307,6 @@
 <ol style="list-style-type: decimal"><li>Compute scaling parameters from real data only</li>
 <li>For log-forms: inject offset if zeros detected, then ratio-scale (x/max)</li>
 <li>For standard forms: min-max or standardization</li>
-<li>Append synthetic (0,0) anchor point <em>after</em> scaling (optional)</li>
 <li>Store scaling values on <code>$scale_values</code> for automatic unscaling in inference</li>
 </ol><hr></div>
 <div class="section level2">
@@ -298,7 +316,9 @@
 <div class="section level2">
 <h2 id="key-recent-changes-from-prior-sessions">Key Recent Changes (from prior sessions)<a class="anchor" aria-label="anchor" href="#key-recent-changes-from-prior-sessions"></a></h2>
 <ul><li>
-<strong><code><a href="reference/compare.html">compare()</a></code> function</strong>: S3 generic + method for side-by-side diff of two <code>opt_mix_result</code> objects with <code>plot.opt_mix_compare</code> dumbbell chart.</li>
+<strong>opt_mix API redesign</strong>: <code>summary.opt_mix_result()</code> now produces the formatted console output (previously done by <code>print</code>). <code><a href="reference/print.opt_mix_result.html">print.opt_mix_result()</a></code> is a thin wrapper calling <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>. <code><a href="reference/opt_table.html">opt_table()</a></code> is a new plain exported function that returns the tidy comparison tibble (previously returned by <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>). All internal <code>plot_opt_*</code> helpers are now standalone exported functions named <code><a href="reference/opt_plot_allocation.html">opt_plot_allocation()</a></code>, <code><a href="reference/opt_plot_comparison.html">opt_plot_comparison()</a></code>, <code><a href="reference/opt_plot_posterior.html">opt_plot_posterior()</a></code>, <code><a href="reference/opt_plot_curves.html">opt_plot_curves()</a></code>, <code><a href="reference/opt_plot_returns.html">opt_plot_returns()</a></code>, and <code>opt_plot_compare()</code>. <code>plot.opt_mix_result()</code> and <code>plot.opt_mix_compare()</code> are thin dispatchers calling the <code>opt_plot_*</code> functions. <code><a href="reference/opt_plot_posterior.html">opt_plot_posterior()</a></code> now hard-errors (instead of message + fallback) when called on a point result.</li>
+<li>
+<strong><code>compare()</code> function</strong>: S3 generic + method for side-by-side diff of two <code>opt_mix_result</code> objects with <code>plot.opt_mix_compare</code> dumbbell chart.</li>
 <li>
 <strong>Response curve overlay plots</strong>: <code>plot(opt, type = "curves")</code> shows response curves with current + optimal points; <code>plot(opt, type = "returns")</code> shows AR/MR curves at both positions. Uses <code><a href="reference/hlpr_opt_metrics.html">hlpr_opt_metrics()</a></code> for interpolation.</li>
 <li>
@@ -312,7 +332,7 @@
 <li>
 <strong><code><a href="reference/hlpr_extract_draws.html">hlpr_extract_draws()</a></code></strong>: Pre-extracts and unscales all posterior draws from fitted models for fast optimization loop evaluation.</li>
 <li>
-<strong>Anchor point fix</strong>: <code><a href="reference/hlpr_get_weekly_spend.html">hlpr_get_weekly_spend()</a></code> now excludes synthetic (0,0) anchor row for standard-form models.</li>
+<strong><code>anchor_strength</code> prior</strong>: Replaced the synthetic (0,0) anchor point injection with <code>anchor_strength</code> in <code><a href="reference/mrmopt_prior.html">mrmopt_prior()</a></code> — a prior-based floor constraint that works uniformly across all 6 curve types. <code>anchor_zero</code> is deprecated.</li>
 <li>
 <strong>Trace plot labels</strong>: Fixed strip label truncation — renamed mcmc.list columns to short labels (<code>b</code>, <code>c</code>, <code>d</code>, <code>e</code>) before passing to <code><a href="https://mc-stan.org/bayesplot/reference/MCMC-traces.html" class="external-link">bayesplot::mcmc_trace()</a></code> in <code>R/plot.mrmfit.R</code>
 </li>
@@ -320,7 +340,7 @@
 <strong><code>date_range</code> metadata</strong>: Stored <code>c(min(date), max(date))</code> on all fitted models during <code><a href="reference/fit_response.html">fit_response()</a></code>
 </li>
 <li>
-<strong><code><a href="reference/mrm_plot_compare.html">mrm_plot_compare()</a></code> label collision fix</strong>: When comparing same-channel/same-type models across time periods, appends short date range <code>"Mon 'YY–Mon 'YY"</code>; respects user-supplied <code>names(models)</code>
+<strong><code>mrm_plot_compare()</code> label collision fix</strong>: When comparing same-channel/same-type models across time periods, appends short date range <code>"Mon 'YY–Mon 'YY"</code>; respects user-supplied <code>names(models)</code>
 </li>
 </ul></div>
 </div>

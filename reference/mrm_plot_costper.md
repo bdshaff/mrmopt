@@ -1,6 +1,9 @@
 # Plot cost per KPI of a fitted model
 
-Plot cost per KPI of a fitted model
+Draws the cost-per-KPI efficiency curve with a credible-interval ribbon.
+This is the third panel of the dashboard produced by \[plot.mrmfit()\];
+call it directly when you need a standalone cost-per plot or want to
+control parameters not exposed by \`plot()\`.
 
 ## Usage
 
@@ -11,7 +14,8 @@ mrm_plot_costper(
   length.out = 1000,
   scaled = TRUE,
   markup = TRUE,
-  x_var = c("spend", "units")
+  x_var = c("spend", "units"),
+  interval = c("prediction", "confidence")
 )
 ```
 
@@ -43,6 +47,17 @@ mrm_plot_costper(
 
   Character; `"spend"` (default) or `"units"`.
 
+- interval:
+
+  Type of credible interval. `"prediction"` (default) includes
+  observation noise. `"confidence"` shows uncertainty about the mean
+  curve only (tighter bands).
+
 ## Value
 
 A ggplot object.
+
+## See also
+
+\[plot.mrmfit()\] for the combined dashboard, \[mrm_plot_response()\],
+\[mrm_plot_return()\] for the other panels.

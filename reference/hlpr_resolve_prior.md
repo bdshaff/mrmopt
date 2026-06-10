@@ -1,7 +1,7 @@
 # Resolve an mrm_prior specification into a brms prior object
 
 Converts user-friendly prior specifications from
-[`mrm_prior`](https://bdshaff.github.io/mrmopt/reference/mrm_prior.md)
+[`mrmopt_prior`](https://bdshaff.github.io/mrmopt/reference/mrmopt_prior.md)
 into
 [`brms::prior`](https://paulbuerkner.com/brms/reference/set_prior.html)
 objects appropriate for the given scaling method, scale values, and
@@ -26,7 +26,7 @@ hlpr_resolve_prior(
 
 - mrm_prior:
 
-  An object of class `mrm_prior`, or `NULL` for package defaults.
+  An object of class `mrmopt_prior`, or `NULL` for package defaults.
 
 - scaled_data:
 

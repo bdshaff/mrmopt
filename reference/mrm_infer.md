@@ -32,7 +32,9 @@ mrm_infer(mrm, xrange = NULL, length.out = 1000, scaled = TRUE)
 ## Value
 
 A data frame containing the predicted response values and the model
-response.
+response. Includes both prediction intervals (`lower`, `upper` — include
+observation noise) and mean-function credible intervals (`lower_mu`,
+`upper_mu` — curve shape uncertainty only).
 
 ## Details
 

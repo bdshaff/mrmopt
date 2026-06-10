@@ -135,11 +135,13 @@ A note on the arguments:
 - **`auto = TRUE`** (the default): `mrmopt` scales the data to \[0, 1\]
   before fitting and sets sensible default priors automatically. This
   removes the need to specify priors by hand for most channels.
-- **`anchor_zero = TRUE`** (the default): injects a synthetic (spend =
-  0, conversions = 0) data point. This encodes the domain assumption
-  that zero spend produces zero response and anchors the floor of the
-  curve. Disable it if you believe the channel generates baseline
-  conversions independent of paid spend.
+- **`anchor_strength = 0.05`** (the default via
+  [`mrmopt_prior()`](https://bdshaff.github.io/mrmopt/reference/mrmopt_prior.md)):
+  controls how tightly the floor parameter (`c`) is constrained near
+  zero. The value is a fraction of the observed y range used as the
+  prior SD. Smaller values produce narrower credible intervals at low
+  spend. Set to `NULL` for loose behavior if you believe the channel
+  generates baseline conversions independent of paid spend.
 - **`chains`, `iter`, `warmup`**: passed directly to Stan. The values
   above are reduced for illustration speed. For production fits, use the
   defaults (`chains = 4, iter = 4000, warmup = 1000`).
@@ -161,23 +163,23 @@ structured summary of the fitted model.
 fit
 #> -- Response Curve Summary: gompertz ------------------------------------------ 
 #> Channel: spend
-#> Weeks: 104 | Anchor: yes
+#> Weeks: 104
 #> -- Current Performance ------------------------------------------------------- 
-#> Weekly Spend: $44,963
-#> KPI: 582  |  CP: $78  |  AR: 0.0114  |  MR: 0.0562
+#> Weekly Spend: $45,395
+#> KPI: 605  |  CP: $77  |  AR: 0.0117  |  MR: 0.0539
 #> -- Parameters ---------------------------------------------------------------- 
-#>   b (growth rate):     -2.02e-04
-#>   c (floor):           71
+#>   b (growth rate):     -2.03e-04
+#>   c (floor):           75
 #>   d (ceiling):         949
-#>   e (midpoint):        $41,926
+#>   e (midpoint):        $41,970
 #> -- Response Curve Summary ---------------------------------------------------- 
-#>   Min (peak MR):     $41,967  ->  KPI: 397  |  CP: $106
-#>   Peak (peak AR):    $53,760  ->  KPI: 872  |  CP: $62
-#>   Max (70% MR):      $46,939  ->  KPI: 681  |  CP: $69
+#>   Min (peak MR):     $41,976  ->  KPI: 397  |  CP: $106
+#>   Peak (peak AR):    $53,797  ->  KPI: 873  |  CP: $62
+#>   Max (70% MR):      $46,877  ->  KPI: 678  |  CP: $69
 #> 
-#> 33.7% of weeks below range | 23.1% in range | 43.3% above range
+#> 33.7% of weeks below range | 22.1% in range | 44.2% above range
 #> -- Bayes R2 ------------------------------------------------------------------ 
-#>   R2: 0.9926 (95% CI: [0.9920, 0.9928])
+#>   R2: 0.9930 (95% CI: [0.9924, 0.9932])
 #> 
 #> Use summary(x) for brms model diagnostics.
 ```
@@ -185,8 +187,7 @@ fit
 The output has five sections:
 
 1.  **Header** — channel name (taken from the spend column), curve type,
-    number of weeks in the training data, and whether the zero anchor
-    was used.
+    number of weeks in the training data.
 
 2.  **Current Performance** — metrics evaluated at the observed average
     weekly spend. This tells you where the channel is operating *right
@@ -227,41 +228,41 @@ The underlying data for the summary is also accessible programmatically:
 fit$summary
 #> -- Response Curve Summary: gompertz ------------------------------------------ 
 #> Channel: spend
-#> Weeks: 104 | Anchor: yes
+#> Weeks: 104
 #> -- Current Performance ------------------------------------------------------- 
-#> Weekly Spend: $44,963
-#> KPI: 582  |  CP: $78  |  AR: 0.0114  |  MR: 0.0562
+#> Weekly Spend: $45,395
+#> KPI: 605  |  CP: $77  |  AR: 0.0117  |  MR: 0.0539
 #> -- Parameters ---------------------------------------------------------------- 
-#>   b (growth rate):     -2.02e-04
-#>   c (floor):           71
+#>   b (growth rate):     -2.03e-04
+#>   c (floor):           75
 #>   d (ceiling):         949
-#>   e (midpoint):        $41,926
+#>   e (midpoint):        $41,970
 #> -- Response Curve Summary ---------------------------------------------------- 
-#>   Min (peak MR):     $41,967  ->  KPI: 397  |  CP: $106
-#>   Peak (peak AR):    $53,760  ->  KPI: 872  |  CP: $62
-#>   Max (70% MR):      $46,939  ->  KPI: 681  |  CP: $69
+#>   Min (peak MR):     $41,976  ->  KPI: 397  |  CP: $106
+#>   Peak (peak AR):    $53,797  ->  KPI: 873  |  CP: $62
+#>   Max (70% MR):      $46,877  ->  KPI: 678  |  CP: $69
 #> 
-#> 33.7% of weeks below range | 23.1% in range | 43.3% above range
+#> 33.7% of weeks below range | 22.1% in range | 44.2% above range
 #> -- Bayes R2 ------------------------------------------------------------------ 
-#>   R2: 0.9926 (95% CI: [0.9920, 0.9928])
+#>   R2: 0.9930 (95% CI: [0.9924, 0.9932])
 ```
 
-### `mrm_params_summary()`
+### `mrm_params()`
 
 For a focused view of the four curve parameters with plain-language
 descriptions, use
-[`mrm_params_summary()`](https://bdshaff.github.io/mrmopt/reference/mrm_params_summary.md):
+[`mrm_params()`](https://bdshaff.github.io/mrmopt/reference/mrm_params.md):
 
 ``` r
 
-mrm_params_summary(fit)
+mrm_params(fit)
 #> # A tibble: 4 × 6
 #>   param name        description                         center    lower    upper
 #>   <chr> <chr>       <chr>                                <dbl>    <dbl>    <dbl>
-#> 1 b     Growth Rate Controls how quickly the curve r… -2.02e-4 -2.08e-4 -1.92e-4
-#> 2 c     Floor       Baseline KPI level at zero spend…  7.10e+1  5.69e+1  8.40e+1
-#> 3 d     Ceiling     Maximum achievable KPI at satura…  9.49e+2  9.35e+2  9.64e+2
-#> 4 e     Midpoint    Spend level at the inflection po…  4.19e+4  4.17e+4  4.21e+4
+#> 1 b     Growth Rate Controls how quickly the curve r… -2.03e-4 -2.08e-4 -1.93e-4
+#> 2 c     Floor       Baseline KPI level at zero spend…  7.48e+1  6.10e+1  8.79e+1
+#> 3 d     Ceiling     Maximum achievable KPI at satura…  9.49e+2  9.37e+2  9.64e+2
+#> 4 e     Midpoint    Spend level at the inflection po…  4.20e+4  4.17e+4  4.22e+4
 ```
 
 Interpreting these in the context of Paid Search:
@@ -276,7 +277,8 @@ Interpreting these in the context of Paid Search:
 - **Steepness (b)**: controls how quickly the curve transitions from low
   to high response. More negative values mean a sharper transition.
 - **Floor (c)**: the baseline conversion level approached at zero spend.
-  With `anchor_zero = TRUE` this is typically close to zero.
+  With the default `anchor_strength = 0.05` this is typically close to
+  zero.
 
 For programmatic access to the raw posterior estimates (centre, lower,
 upper credible bounds as named lists), use
@@ -285,58 +287,25 @@ upper credible bounds as named lists), use
 ``` r
 
 mrm_params(fit)
-#> $center
-#> $center$b
-#> [1] -0.0002019047
-#> 
-#> $center$c
-#> [1] 70.99089
-#> 
-#> $center$d
-#> [1] 948.8347
-#> 
-#> $center$e
-#> [1] 41926.39
-#> 
-#> 
-#> $lower
-#> $lower$b
-#> [1] -0.0002081297
-#> 
-#> $lower$c
-#> [1] 56.9242
-#> 
-#> $lower$d
-#> [1] 934.6899
-#> 
-#> $lower$e
-#> [1] 41700.5
-#> 
-#> 
-#> $upper
-#> $upper$b
-#> [1] -0.0001919015
-#> 
-#> $upper$c
-#> [1] 84.03074
-#> 
-#> $upper$d
-#> [1] 964.4554
-#> 
-#> $upper$e
-#> [1] 42138.58
+#> # A tibble: 4 × 6
+#>   param name        description                         center    lower    upper
+#>   <chr> <chr>       <chr>                                <dbl>    <dbl>    <dbl>
+#> 1 b     Growth Rate Controls how quickly the curve r… -2.03e-4 -2.08e-4 -1.93e-4
+#> 2 c     Floor       Baseline KPI level at zero spend…  7.48e+1  6.10e+1  8.79e+1
+#> 3 d     Ceiling     Maximum achievable KPI at satura…  9.49e+2  9.37e+2  9.64e+2
+#> 4 e     Midpoint    Spend level at the inflection po…  4.20e+4  4.17e+4  4.22e+4
 ```
 
 ------------------------------------------------------------------------
 
 ## The Dashboard Plot
 
-`plot(fit)` produces a three-panel dashboard combining the three core
-views of the model.
+`mrm_plot(fit)` produces a three-panel dashboard combining the three
+core views of the model.
 
 ``` r
 
-plot(fit)
+mrm_plot(fit)
 ```
 
 ![The three-panel dashboard: response curve (top left), AR/MR returns
@@ -366,10 +335,10 @@ Two useful options:
 ``` r
 
 # Remove range annotations for a cleaner look
-plot(fit, markup = FALSE)
+mrm_plot(fit, markup = FALSE)
 
 # When units are present, flip the x-axis to media units
-plot(fit, x_var = "units")
+mrm_plot(fit, x_var = "units")
 ```
 
 ------------------------------------------------------------------------
@@ -427,15 +396,15 @@ infer_extended |>
   select(spend, center, lower, upper, ar, mr, cp) |>
   filter(spend > 70000) |>
   head(8)
-#>       spend   center    lower     upper           ar           mr        cp
-#> 1  24142603 948.8347 891.0954  996.9744 3.636078e-05 3.639015e-05  25434.91
-#> 2  48265718 948.8347 910.1926 1014.5787 1.818773e-05 0.000000e+00  50849.30
-#> 3  72388834 948.8347 881.5282  987.0303 1.212678e-05 0.000000e+00  76263.68
-#> 4  96511949 948.8347 899.7091 1007.0329 9.095701e-06 0.000000e+00 101678.07
-#> 5 120635065 948.8347 899.2205 1007.0706 7.276854e-06 0.000000e+00 127092.45
-#> 6 144758180 948.8347 889.1932  996.8995 6.064209e-06 0.000000e+00 152506.83
-#> 7 168881296 948.8347 890.5446  998.3932 5.197993e-06 0.000000e+00 177921.22
-#> 8 193004412 948.8347 896.6933 1004.6227 4.548310e-06 0.000000e+00 203335.60
+#>       spend  center    lower     upper           ar           mr        cp
+#> 1  24142603 948.656 893.9560  996.3702 3.619491e-05 3.622415e-05  25439.19
+#> 2  48265718 948.656 912.4340 1012.3497 1.810476e-05 0.000000e+00  50857.84
+#> 3  72388834 948.656 884.8306  983.9595 1.207147e-05 0.000000e+00  76276.50
+#> 4  96511949 948.656 904.4259 1003.9766 9.054208e-06 0.000000e+00 101695.15
+#> 5 120635065 948.656 904.5862 1005.0662 7.243659e-06 0.000000e+00 127113.81
+#> 6 144758180 948.656 893.7162  995.4342 6.036545e-06 0.000000e+00 152532.46
+#> 7 168881296 948.656 892.6892  995.8166 5.174281e-06 0.000000e+00 177951.12
+#> 8 193004412 948.656 897.2143 1001.5299 4.527561e-06 0.000000e+00 203369.77
 ```
 
 The columns returned are:
@@ -460,7 +429,7 @@ f <- mrm_response_function(fit)
 
 # Predicted conversions at three hypothetical spend levels
 sapply(c(30000, 50000, 80000), f)
-#> [1]  71.0040 792.6543 948.4322
+#> [1]  74.82742 792.76002 948.26261
 ```
 
 ------------------------------------------------------------------------
@@ -507,7 +476,7 @@ cost per 1,000 impressions — and all inference output includes an
 
 ``` r
 
-plot(fit_units, x_var = "units")
+mrm_plot(fit_units, x_var = "units")
 ```
 
 ![Dashboard with impressions as the x-axis. The x-axis now shows media
@@ -534,23 +503,23 @@ unit-denominated metrics.
 fit_units
 #> -- Response Curve Summary: gompertz ------------------------------------------ 
 #> Channel: spend
-#> Weeks: 104 | Anchor: yes
+#> Weeks: 104
 #> -- Current Performance ------------------------------------------------------- 
-#> Weekly Spend: $44,963  |  Weekly Units: 3,746,940
-#> KPI: 582  |  CP: $78  |  AR: 0.0114  |  MR: 0.0561
+#> Weekly Spend: $45,395  |  Weekly Units: 3,782,968
+#> KPI: 605  |  CP: $77  |  AR: 0.0117  |  MR: 0.0539
 #> -- Parameters ---------------------------------------------------------------- 
-#>   b (growth rate):     -2.02e-04
-#>   c (floor):           70
-#>   d (ceiling):         949
-#>   e (midpoint):        $41,918
+#>   b (growth rate):     -2.03e-04
+#>   c (floor):           75
+#>   d (ceiling):         948
+#>   e (midpoint):        $41,974
 #> -- Response Curve Summary ---------------------------------------------------- 
-#>   Min (peak MR):     $41,967  ->  KPI: 397  |  CP: $106
-#>   Peak (peak AR):    $53,760  ->  KPI: 872  |  CP: $62
-#>   Max (70% MR):      $46,939  ->  KPI: 681  |  CP: $69
+#>   Min (peak MR):     $41,976  ->  KPI: 396  |  CP: $106
+#>   Peak (peak AR):    $53,797  ->  KPI: 872  |  CP: $62
+#>   Max (70% MR):      $46,877  ->  KPI: 678  |  CP: $69
 #> 
-#> 33.7% of weeks below range | 23.1% in range | 43.3% above range
+#> 33.7% of weeks below range | 22.1% in range | 44.2% above range
 #> -- Bayes R2 ------------------------------------------------------------------ 
-#>   R2: 0.9926 (95% CI: [0.9919, 0.9928])
+#>   R2: 0.9930 (95% CI: [0.9924, 0.9932])
 #> 
 #> Use summary(x) for brms model diagnostics.
 ```
@@ -575,9 +544,9 @@ fit_auto <- fit_response(
 )
 ```
 
-### Approach 2: Simplified via `mrm_prior()`
+### Approach 2: Simplified via `mrmopt_prior()`
 
-[`mrm_prior()`](https://bdshaff.github.io/mrmopt/reference/mrm_prior.md)
+[`mrmopt_prior()`](https://bdshaff.github.io/mrmopt/reference/mrmopt_prior.md)
 provides scale-invariant controls on three intuitive quantities:
 
 - `midpoint_range`: where the curve’s inflection point can fall,
@@ -592,7 +561,7 @@ provides scale-invariant controls on three intuitive quantities:
 
 ``` r
 
-my_prior <- mrm_prior(
+my_prior <- mrmopt_prior(
   midpoint_range = c(0.2, 0.7),
   ceiling_max    = 2,
   floor_min      = 0
@@ -634,7 +603,7 @@ fit_manual <- fit_response(
 When `auto = FALSE` and `scale_data = FALSE`, the prior must be
 specified in the original data units. This is rarely necessary — scaled
 fitting with
-[`mrm_prior()`](https://bdshaff.github.io/mrmopt/reference/mrm_prior.md)
+[`mrmopt_prior()`](https://bdshaff.github.io/mrmopt/reference/mrmopt_prior.md)
 covers the vast majority of use cases.
 
 ------------------------------------------------------------------------
@@ -644,7 +613,7 @@ covers the vast majority of use cases.
 In practice you will fit models for each channel in your media portfolio
 and collect them in a named list. This is the natural input format for
 model comparison
-([`mrm_plot_compare()`](https://bdshaff.github.io/mrmopt/reference/mrm_plot_compare.md))
+([`mrms_plot_compare()`](https://bdshaff.github.io/mrmopt/reference/mrms_plot_compare.md))
 and optimization
 ([`opt_mix()`](https://bdshaff.github.io/mrmopt/reference/opt_mix.md)),
 both covered in later vignettes.
@@ -685,7 +654,7 @@ Once fitted, you can inspect any model by name:
 ``` r
 
 fits[["Paid Social"]]
-plot(fits[["TV"]])
+mrm_plot(fits[["TV"]])
 ```
 
 Or map across the list to extract a summary metric from each:
@@ -697,6 +666,6 @@ map_dfr(fits, ~ as.data.frame(.x$R2), .id = "channel") |>
 ```
 
 The `fits` list is the input to
-[`mrm_plot_compare()`](https://bdshaff.github.io/mrmopt/reference/mrm_plot_compare.md)
+[`mrms_plot_compare()`](https://bdshaff.github.io/mrmopt/reference/mrms_plot_compare.md)
 in the next vignette, where we evaluate which curve type fits each
 channel best and check whether the models are well-calibrated.

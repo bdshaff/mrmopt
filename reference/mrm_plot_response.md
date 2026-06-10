@@ -1,6 +1,11 @@
 # Plot the response curve of a fitted model
 
-Plot the response curve of a fitted model
+Draws the response curve with a credible-interval ribbon and optional
+data points, range annotations, and marginal-return overlay. This is the
+first panel of the dashboard produced by \[plot.mrmfit()\]; call it
+directly when you need a standalone response-curve plot or want to
+control parameters (e.g., \`xrange\`, \`length.out\`) not exposed by
+\`plot()\`.
 
 ## Usage
 
@@ -13,7 +18,8 @@ mrm_plot_response(
   points = TRUE,
   markup = TRUE,
   show_mr = FALSE,
-  x_var = c("spend", "units")
+  x_var = c("spend", "units"),
+  interval = c("prediction", "confidence")
 )
 ```
 
@@ -55,6 +61,17 @@ mrm_plot_response(
 
   Character; `"spend"` (default) or `"units"` for the x-axis variable.
 
+- interval:
+
+  Type of credible interval. `"prediction"` (default) includes
+  observation noise. `"confidence"` shows uncertainty about the mean
+  curve only (tighter bands).
+
 ## Value
 
 A ggplot object.
+
+## See also
+
+\[plot.mrmfit()\] for the combined dashboard, \[mrm_plot_return()\],
+\[mrm_plot_costper()\] for the other panels.

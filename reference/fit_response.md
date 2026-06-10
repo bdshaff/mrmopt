@@ -25,7 +25,8 @@ fit_response(
   control = list(adapt_delta = 0.95),
   infer_xrange = NULL,
   infer_length = 1000,
-  anchor_zero = TRUE,
+  anchor_strength = NULL,
+  anchor_zero = NULL,
   refresh = 500,
   ...
 )
@@ -81,21 +82,21 @@ fit_response(
 
   A two-element numeric vector specifying the midpoint bounds as
   fractions of the x-axis range (e.g., `c(0.1, 0.9)`). See
-  [`mrm_prior`](https://bdshaff.github.io/mrmopt/reference/mrm_prior.md)
+  [`mrmopt_prior`](https://bdshaff.github.io/mrmopt/reference/mrmopt_prior.md)
   for details.
 
 - ceiling_max:
 
   A multiplier on the observed max of y for the ceiling upper bound
   (e.g., `3` means ceiling can be up to 3x observed max). See
-  [`mrm_prior`](https://bdshaff.github.io/mrmopt/reference/mrm_prior.md)
+  [`mrmopt_prior`](https://bdshaff.github.io/mrmopt/reference/mrmopt_prior.md)
   for details.
 
 - floor_min:
 
   A scalar lower bound for the floor in original data units. Default
   is 0. See
-  [`mrm_prior`](https://bdshaff.github.io/mrmopt/reference/mrm_prior.md)
+  [`mrmopt_prior`](https://bdshaff.github.io/mrmopt/reference/mrmopt_prior.md)
   for details.
 
 - prior:
@@ -131,14 +132,21 @@ fit_response(
 
   The number of points to generate for inference. Default is 1000.
 
+- anchor_strength:
+
+  A single positive numeric value controlling how tightly the floor
+  parameter (\`c\`) is constrained around \`floor_min\`. See
+  [`mrmopt_prior`](https://bdshaff.github.io/mrmopt/reference/mrmopt_prior.md)
+  for details. If supplied, overrides the \`anchor_strength\` in
+  \`mrmopt_prior()\`. Default is \`NULL\` (use \`mrmopt_prior\` default
+  of \`0.05\`).
+
 - anchor_zero:
 
-  Logical indicating whether to inject a synthetic (0, 0) data point to
-  anchor the response curve at the origin. This encodes the domain
-  assumption that zero spend produces zero response. Scale values are
-  always computed from the real data only; the anchor is scaled using
-  those values and appended afterward, so it does not contaminate the
-  scaling. Automatically disabled for log-based forms. Default is TRUE.
+  \\Deprecated\\ Previously controlled injection of a synthetic (0, 0)
+  data point. Floor anchoring is now handled via \`anchor_strength\` in
+  [`mrmopt_prior`](https://bdshaff.github.io/mrmopt/reference/mrmopt_prior.md).
+  If set, a deprecation warning is emitted and the argument is ignored.
 
 - refresh:
 

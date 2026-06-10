@@ -542,7 +542,7 @@ If breaks are suspected, fit separate models to each sub-period. The
 `date_range` metadata stored on each fitted model (accessible as
 `fit$date_range`) makes it straightforward to compare models across
 periods using
-[`mrm_plot_compare()`](https://bdshaff.github.io/mrmopt/reference/mrm_plot_compare.md).
+[`mrms_plot_compare()`](https://bdshaff.github.io/mrmopt/reference/mrms_plot_compare.md).
 
 ## A note on collinearity
 

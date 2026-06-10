@@ -84,12 +84,12 @@ posteriors. Running diagnostics after every fit is a good habit.
 
 ### The Diagnostics Plot
 
-`plot(fit, type = "diagnostics")` shows two panels: trace plots for the
-four parameters and a posterior predictive check.
+`mrm_plot_diagnostics(fit)` shows two panels: trace plots for the four
+parameters and a posterior predictive check.
 
 ``` r
 
-plot(fit_gompertz, type = "diagnostics")
+mrm_plot_diagnostics(fit_gompertz)
 ```
 
 ![Diagnostics for the Gompertz fit. Trace plots (top) show chain mixing
@@ -149,11 +149,11 @@ posterior_summary <- summary(fit_gompertz)$fixed
 posterior_summary[grepl("b_Intercept|c_Intercept|d_Intercept|e_Intercept",
                          rownames(posterior_summary)),
                   c("Estimate", "l-95% CI", "u-95% CI", "Rhat", "Bulk_ESS", "Tail_ESS")]
-#>                Estimate    l-95% CI    u-95% CI     Rhat Bulk_ESS Tail_ESS
-#> b_Intercept -9.69243679 -9.99126775 -9.21222978 1.005185 299.8854 264.9427
-#> c_Intercept  0.02840534  0.01303191  0.04265655 1.004151 561.4451 579.9756
-#> d_Intercept  0.98779748  0.97233865  1.00486932 1.002200 391.3786 513.4138
-#> e_Intercept  0.46743855  0.46273298  0.47185878 1.005833 500.4945 663.9928
+#>                Estimate    l-95% CI    u-95% CI      Rhat Bulk_ESS Tail_ESS
+#> b_Intercept -9.72677503 -9.98469592 -9.26670047 1.0013748 445.6743 414.6111
+#> c_Intercept  0.03258653  0.01745291  0.04691426 1.0011534 408.1136 418.1169
+#> d_Intercept  0.98760217  0.97435875  1.00395149 0.9997084 525.0035 518.4115
+#> e_Intercept  0.46834456  0.46362654  0.47274918 1.0027166 427.9659 548.6615
 ```
 
 Healthy values have Rhat ≤ 1.01 and ESS well above 400 for both bulk and
@@ -165,7 +165,7 @@ To inspect the full brms convergence output:
 
 ``` r
 
-summary(fit_gompertz)
+brms::summary(fit_gompertz)
 ```
 
 ### Posterior Predictive Check
@@ -213,7 +213,7 @@ fit_gompertz$R2
 #> # A tibble: 1 × 4
 #>   Estimate Est.Error  Q2.5 Q97.5
 #>      <dbl>     <dbl> <dbl> <dbl>
-#> 1    0.993  0.000222 0.992 0.993
+#> 1    0.993  0.000216 0.992 0.993
 ```
 
 Interpretation guidelines:
@@ -251,14 +251,14 @@ defensible predictions. The most common comparisons are:
 
 ### Overlaying Response Curves
 
-[`mrm_plot_compare()`](https://bdshaff.github.io/mrmopt/reference/mrm_plot_compare.md)
+[`mrms_plot_compare()`](https://bdshaff.github.io/mrmopt/reference/mrms_plot_compare.md)
 takes a named list of fitted models and overlays their response curves,
 return curves, or cost-per curves on a single axis. Names are used as
 legend labels.
 
 ``` r
 
-mrm_plot_compare(
+mrms_plot_compare(
   models    = list(Gompertz = fit_gompertz, Logistic = fit_logistic),
   plot_type = "response"
 )
@@ -286,7 +286,7 @@ efficiency of incremental spend.
 
 ``` r
 
-mrm_plot_compare(
+mrms_plot_compare(
   models    = list(Gompertz = fit_gompertz, Logistic = fit_logistic),
   plot_type = "return"
 )
@@ -317,7 +317,7 @@ spend level.
 
 ``` r
 
-mrm_plot_compare(
+mrms_plot_compare(
   models    = list(Gompertz = fit_gompertz, Logistic = fit_logistic),
   plot_type = "costper"
 )
@@ -338,7 +338,7 @@ distinguish on a single axis, use `layout = "facet"`:
 
 ``` r
 
-mrm_plot_compare(
+mrms_plot_compare(
   models    = list(Gompertz = fit_gompertz, Logistic = fit_logistic),
   plot_type = "response",
   layout    = "facet"
@@ -364,8 +364,8 @@ list(Gompertz = fit_gompertz, Logistic = fit_logistic) |>
   select(model, Estimate, Est.Error, Q2.5, Q97.5) |>
   arrange(desc(Estimate))
 #>      model  Estimate    Est.Error      Q2.5     Q97.5
-#> 1 Gompertz 0.9925837 0.0002215419 0.9920229 0.9928184
-#> 2 Logistic 0.9794725 0.0009301783 0.9772629 0.9808544
+#> 1 Gompertz 0.9929706 0.0002164212 0.9923802 0.9932071
+#> 2 Logistic 0.9806867 0.0008769886 0.9785144 0.9817294
 ```
 
 A model with meaningfully higher R² and a credible interval that does
@@ -392,8 +392,8 @@ bind_rows(
 #> # A tibble: 2 × 7
 #>   model    range_min_spend range_peak_spend range_max_spend range_min_mr
 #>   <chr>              <dbl>            <dbl>           <dbl>        <dbl>
-#> 1 Gompertz          41967.           53760.          46939.       0.0652
-#> 2 Logistic          43933.           55147.          49945.       0.0510
+#> 1 Gompertz          41976.           53797.          46877.       0.0651
+#> 2 Logistic          43417.           54758.          49472.       0.0524
 #> # ℹ 2 more variables: range_peak_mr <dbl>, range_max_mr <dbl>
 ```
 
@@ -401,7 +401,7 @@ bind_rows(
 
 ## Part 4: Comparing Across Channels
 
-[`mrm_plot_compare()`](https://bdshaff.github.io/mrmopt/reference/mrm_plot_compare.md)
+[`mrms_plot_compare()`](https://bdshaff.github.io/mrmopt/reference/mrms_plot_compare.md)
 is not limited to same-channel comparisons. Passing models from
 different channels produces a side-by-side view of how the portfolio’s
 response profiles compare — useful for identifying which channels are
@@ -414,7 +414,7 @@ for the fitting loop.
 ``` r
 
 # fits is the named list from the fitting vignette
-mrm_plot_compare(fits, plot_type = "return", layout = "facet")
+mrms_plot_compare(fits, plot_type = "return", layout = "facet")
 ```
 
 When channels operate at very different spend scales, `layout = "facet"`
@@ -436,7 +436,7 @@ checks:
 | Sufficient sampling | ESS | Bulk and Tail ESS \> 400 for all parameters |
 | Predictive calibration | PPC | Replicated distributions span observed data |
 | Model fit | Bayes R² | R² meaningfully above baseline; CI not spanning 0 |
-| Curve selection | [`mrm_plot_compare()`](https://bdshaff.github.io/mrmopt/reference/mrm_plot_compare.md) | Chosen type fits as well as alternatives in observed range; sensible extrapolation |
+| Curve selection | [`mrms_plot_compare()`](https://bdshaff.github.io/mrmopt/reference/mrms_plot_compare.md) | Chosen type fits as well as alternatives in observed range; sensible extrapolation |
 
 A model that passes all six checks can be used with confidence in
 downstream analysis. A model that fails the first four (MCMC-related)

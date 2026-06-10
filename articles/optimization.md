@@ -66,68 +66,68 @@ across all channels) and point-estimate parameters:
 ``` r
 
 opt_point <- opt_mix(models, method = "point")
-#> No budget supplied; using total current weekly spend: 203,497 
+#> No budget supplied; using total current weekly spend: 204,641 
 #> 
 #> Optimization setup:
 #>   Channels:       5 
 #>   Method:         point 
-#>   Weekly budget:  203,497 
+#>   Weekly budget:  204,641 
 #> 
 #> Optimization converged (status: 4 )
-#> Total weekly KPI: 2,907
+#> Total weekly KPI: 3,013
 ```
 
 ### Inspecting the Result
 
-[`print()`](https://rdrr.io/r/base/print.html) gives a formatted
-summary:
+[`print()`](https://rdrr.io/r/base/print.html) and
+[`opt_summary()`](https://bdshaff.github.io/mrmopt/reference/opt_summary.md)
+both display a formatted console summary — they produce the same output:
 
 ``` r
 
 print(opt_point)
 #> -- Optimization Result (point) ----------------------------------------------- 
-#> Budget: $203,497/week  |  Channels: 5
+#> Budget: $204,641/week  |  Channels: 5
 #> -- Optimal Allocation -------------------------------------------------------- 
 #>   Channel           Weekly Spend    Weekly KPI          CP    Share 
-#>   Paid Social            $31,279           531         $59   15.4%
-#>   Paid Search            $51,017           819         $62   25.1%
-#>   Online Video           $38,937           614         $63   19.1%
-#>   Display                $19,547           289         $68    9.6%
-#>   TV                     $62,718           654         $96   30.8%
+#>   Paid Search            $52,132           844         $62   25.5%
+#>   Online Video           $40,980           660         $62   20.0%
+#>   Display                $20,022           299         $67    9.8%
+#>   TV                     $83,186         1,127         $74   40.6%
+#>   Paid Social             $8,321            83        $101    4.1%
 #> -- Totals -------------------------------------------------------------------- 
-#>   Optimal:  Spend $203,497  |  KPI 2,907  |  Avg CP $70
-#>   Current:  Spend $203,461  |  KPI 2,704  |  Avg CP $75
-#>   Change:   KPI +7.5%  |  CP $5
+#>   Optimal:  Spend $204,641  |  KPI 3,013  |  Avg CP $68
+#>   Current:  Spend $204,641  |  KPI 2,757  |  Avg CP $74
+#>   Change:   KPI +9.3%  |  CP $6
 ```
 
-[`summary()`](https://rdrr.io/r/base/summary.html) returns a tidy tibble
-comparing current vs. optimal allocation with absolute and percentage
-deltas:
+To retrieve a **tidy tibble** of current vs. optimal deltas for further
+analysis or export, use
+[`opt_table()`](https://bdshaff.github.io/mrmopt/reference/opt_table.md):
 
 ``` r
 
-summary(opt_point) |>
+opt_table(opt_point) |>
   select(channel, spend_delta_pct, kpi_delta_pct, cp_delta)
 #> # A tibble: 6 × 4
 #>   channel      spend_delta_pct kpi_delta_pct cp_delta
 #>   <chr>                  <dbl>         <dbl>    <dbl>
-#> 1 Paid Social         0.166           0.401    -15.4 
-#> 2 Paid Search         0.135           0.408    -15.5 
-#> 3 Online Video        0.162           0.357    -13.7 
-#> 4 Display             0.122           0.362    -14.5 
-#> 5 TV                 -0.223          -0.393     14.5 
-#> 6 TOTAL               0.000179        0.0752    -5.25
+#> 1 Paid Search         1.48e- 1        0.395    -14.9 
+#> 2 Online Video        2.11e- 1        0.423    -14.2 
+#> 3 Display             1.39e- 1        0.360    -14.1 
+#> 4 TV                  3.01e- 2        0.0459    -7.06
+#> 5 Paid Social        -6.93e- 1       -0.788     26.7 
+#> 6 TOTAL              -1.11e-16        0.0930    -6.32
 ```
 
 ### Visualising the Allocation
 
-[`plot()`](https://rdrr.io/r/graphics/plot.default.html) supports
-several plot types. The default is `"allocation"`, which shows current
-vs. optimal spend as grouped bars:
+[`opt_plot_allocation()`](https://bdshaff.github.io/mrmopt/reference/opt_plot_allocation.md)
+shows current vs. optimal spend as grouped bars:
 
 ``` r
 
-plot(opt_point, type = "allocation")
+opt_plot_allocation(opt_point)
 ```
 
 ![Current vs. optimal spend
@@ -135,12 +135,13 @@ allocation.](optimization_files/figure-html/plot-allocation-1.png)
 
 Current vs. optimal spend allocation.
 
-The `"comparison"` type produces a dumbbell chart showing the direction
-and magnitude of spend reallocation:
+[`opt_plot_comparison()`](https://bdshaff.github.io/mrmopt/reference/opt_plot_comparison.md)
+produces a dumbbell chart showing the direction and magnitude of spend
+reallocation:
 
 ``` r
 
-plot(opt_point, type = "comparison")
+opt_plot_comparison(opt_point)
 ```
 
 ![Spend reallocation from current to
@@ -157,7 +158,7 @@ and optimal positions on each channel’s response curve:
 
 ``` r
 
-plot(opt_point, type = "curves")
+opt_plot_curves(opt_point)
 ```
 
 ![Response curves with current (red) and optimal (blue) spend
@@ -165,14 +166,14 @@ positions.](optimization_files/figure-html/plot-curves-1.png)
 
 Response curves with current (red) and optimal (blue) spend positions.
 
-The `"returns"` plot shows where the current and optimal points sit on
-each channel’s average return (AR) and marginal return (MR) curves —
-this is where you can see the efficiency trade-offs driving the
-allocation:
+[`opt_plot_returns()`](https://bdshaff.github.io/mrmopt/reference/opt_plot_returns.md)
+shows where the current and optimal points sit on each channel’s average
+return (AR) and marginal return (MR) curves — this is where you can see
+the efficiency trade-offs driving the allocation:
 
 ``` r
 
-plot(opt_point, type = "returns")
+opt_plot_returns(opt_point)
 ```
 
 ![AR and MR curves at current and optimal
@@ -196,44 +197,44 @@ opt_post <- opt_mix(
   n_draws = 200,
   seed    = 5291
 )
-#> No budget supplied; using total current weekly spend: 203,497 
+#> No budget supplied; using total current weekly spend: 204,641 
 #> 
 #> Optimization setup:
 #>   Channels:       5 
 #>   Method:         posterior 
-#>   Weekly budget:  203,497 
+#>   Weekly budget:  204,641 
 #> 
 #> Optimizing across 200 posterior draws...
 #>   |                                                                              |                                                                      |   0%  |                                                                              |=                                                                     |   1%  |                                                                              |=                                                                     |   2%  |                                                                              |==                                                                    |   2%  |                                                                              |==                                                                    |   3%  |                                                                              |==                                                                    |   4%  |                                                                              |===                                                                   |   4%  |                                                                              |====                                                                  |   5%  |                                                                              |====                                                                  |   6%  |                                                                              |=====                                                                 |   6%  |                                                                              |=====                                                                 |   7%  |                                                                              |=====                                                                 |   8%  |                                                                              |======                                                                |   8%  |                                                                              |======                                                                |   9%  |                                                                              |=======                                                               |  10%  |                                                                              |========                                                              |  11%  |                                                                              |========                                                              |  12%  |                                                                              |=========                                                             |  12%  |                                                                              |=========                                                             |  13%  |                                                                              |=========                                                             |  14%  |                                                                              |==========                                                            |  14%  |                                                                              |==========                                                            |  15%  |                                                                              |===========                                                           |  16%  |                                                                              |============                                                          |  16%  |                                                                              |============                                                          |  17%  |                                                                              |============                                                          |  18%  |                                                                              |=============                                                         |  18%  |                                                                              |=============                                                         |  19%  |                                                                              |==============                                                        |  20%  |                                                                              |===============                                                       |  21%  |                                                                              |===============                                                       |  22%  |                                                                              |================                                                      |  22%  |                                                                              |================                                                      |  23%  |                                                                              |================                                                      |  24%  |                                                                              |=================                                                     |  24%  |                                                                              |==================                                                    |  25%  |                                                                              |==================                                                    |  26%  |                                                                              |===================                                                   |  26%  |                                                                              |===================                                                   |  27%  |                                                                              |===================                                                   |  28%  |                                                                              |====================                                                  |  28%  |                                                                              |====================                                                  |  29%  |                                                                              |=====================                                                 |  30%  |                                                                              |======================                                                |  31%  |                                                                              |======================                                                |  32%  |                                                                              |=======================                                               |  32%  |                                                                              |=======================                                               |  33%  |                                                                              |=======================                                               |  34%  |                                                                              |========================                                              |  34%  |                                                                              |========================                                              |  35%  |                                                                              |=========================                                             |  36%  |                                                                              |==========================                                            |  36%  |                                                                              |==========================                                            |  37%  |                                                                              |==========================                                            |  38%  |                                                                              |===========================                                           |  38%  |                                                                              |===========================                                           |  39%  |                                                                              |============================                                          |  40%  |                                                                              |=============================                                         |  41%  |                                                                              |=============================                                         |  42%  |                                                                              |==============================                                        |  42%  |                                                                              |==============================                                        |  43%  |                                                                              |==============================                                        |  44%  |                                                                              |===============================                                       |  44%  |                                                                              |================================                                      |  45%  |                                                                              |================================                                      |  46%  |                                                                              |=================================                                     |  46%  |                                                                              |=================================                                     |  47%  |                                                                              |=================================                                     |  48%  |                                                                              |==================================                                    |  48%  |                                                                              |==================================                                    |  49%  |                                                                              |===================================                                   |  50%  |                                                                              |====================================                                  |  51%  |                                                                              |====================================                                  |  52%  |                                                                              |=====================================                                 |  52%  |                                                                              |=====================================                                 |  53%  |                                                                              |=====================================                                 |  54%  |                                                                              |======================================                                |  54%  |                                                                              |======================================                                |  55%  |                                                                              |=======================================                               |  56%  |                                                                              |========================================                              |  56%  |                                                                              |========================================                              |  57%  |                                                                              |========================================                              |  58%  |                                                                              |=========================================                             |  58%  |                                                                              |=========================================                             |  59%  |                                                                              |==========================================                            |  60%  |                                                                              |===========================================                           |  61%  |                                                                              |===========================================                           |  62%  |                                                                              |============================================                          |  62%  |                                                                              |============================================                          |  63%  |                                                                              |============================================                          |  64%  |                                                                              |=============================================                         |  64%  |                                                                              |==============================================                        |  65%  |                                                                              |==============================================                        |  66%  |                                                                              |===============================================                       |  66%  |                                                                              |===============================================                       |  67%  |                                                                              |===============================================                       |  68%  |                                                                              |================================================                      |  68%  |                                                                              |================================================                      |  69%  |                                                                              |=================================================                     |  70%  |                                                                              |==================================================                    |  71%  |                                                                              |==================================================                    |  72%  |                                                                              |===================================================                   |  72%  |                                                                              |===================================================                   |  73%  |                                                                              |===================================================                   |  74%  |                                                                              |====================================================                  |  74%  |                                                                              |====================================================                  |  75%  |                                                                              |=====================================================                 |  76%  |                                                                              |======================================================                |  76%  |                                                                              |======================================================                |  77%  |                                                                              |======================================================                |  78%  |                                                                              |=======================================================               |  78%  |                                                                              |=======================================================               |  79%  |                                                                              |========================================================              |  80%  |                                                                              |=========================================================             |  81%  |                                                                              |=========================================================             |  82%  |                                                                              |==========================================================            |  82%  |                                                                              |==========================================================            |  83%  |                                                                              |==========================================================            |  84%  |                                                                              |===========================================================           |  84%  |                                                                              |============================================================          |  85%  |                                                                              |============================================================          |  86%  |                                                                              |=============================================================         |  86%  |                                                                              |=============================================================         |  87%  |                                                                              |=============================================================         |  88%  |                                                                              |==============================================================        |  88%  |                                                                              |==============================================================        |  89%  |                                                                              |===============================================================       |  90%  |                                                                              |================================================================      |  91%  |                                                                              |================================================================      |  92%  |                                                                              |=================================================================     |  92%  |                                                                              |=================================================================     |  93%  |                                                                              |=================================================================     |  94%  |                                                                              |==================================================================    |  94%  |                                                                              |==================================================================    |  95%  |                                                                              |===================================================================   |  96%  |                                                                              |====================================================================  |  96%  |                                                                              |====================================================================  |  97%  |                                                                              |====================================================================  |  98%  |                                                                              |===================================================================== |  98%  |                                                                              |===================================================================== |  99%  |                                                                              |======================================================================| 100%
 #> 
 #> Posterior optimization complete.
-#> Median total weekly KPI: 2,934
+#> Median total weekly KPI: 2,993
 ```
 
 ``` r
 
 print(opt_post)
 #> -- Optimization Result (posterior, 200 draws) -------------------------------- 
-#> Budget: $203,497/week  |  Channels: 5
+#> Budget: $204,641/week  |  Channels: 5
 #> -- Optimal Allocation -------------------------------------------------------- 
 #>   Channel           Weekly Spend                  [95% CI]          CP    Share 
-#>   Paid Social            $31,534      [$8,310 – $43,484]         $59  +15.4%
-#>   Paid Search            $51,334     [$50,659 – $63,719]         $62  +25.1%
-#>   Online Video           $39,389     [$10,262 – $59,822]         $63  +19.3%
-#>   Display                $19,643      [$5,361 – $24,940]         $67   +9.6%
-#>   TV                     $62,549     [$14,425 – $87,211]         $96  +30.6%
+#>   Paid Social            $31,212      [$8,321 – $33,266]         $59  +15.1%
+#>   Paid Search            $51,329     [$50,644 – $52,842]         $62  +24.8%
+#>   Online Video           $39,528     [$10,272 – $41,489]         $63  +19.1%
+#>   Display                $19,571      [$5,363 – $20,524]         $68   +9.5%
+#>   TV                     $65,282     [$62,073 – $87,706]         $91  +31.5%
 #> -- Totals -------------------------------------------------------------------- 
-#>   Optimal:  Spend $204,449  |  KPI 2,934  |  Avg CP $70
-#>   Current:  Spend $203,461  |  KPI 2,704  |  Avg CP $75
-#>   Change:   KPI +8.5%  |  CP $6
+#>   Optimal:  Spend $206,922  |  KPI 2,993  |  Avg CP $69
+#>   Current:  Spend $204,641  |  KPI 2,757  |  Avg CP $74
+#>   Change:   KPI +8.6%  |  CP $5
 ```
 
-The `"posterior"` plot type shows the distribution of optimal spend per
-channel as violin plots:
+[`opt_plot_posterior()`](https://bdshaff.github.io/mrmopt/reference/opt_plot_posterior.md)
+shows the distribution of optimal spend per channel as violin plots:
 
 ``` r
 
-plot(opt_post, type = "posterior")
+opt_plot_posterior(opt_post)
 ```
 
 ![Posterior distribution of optimal allocations across 200
@@ -241,12 +242,12 @@ draws.](optimization_files/figure-html/plot-posterior-1.png)
 
 Posterior distribution of optimal allocations across 200 draws.
 
-The `"allocation"` plot adds 95% credible interval error bars when used
-with a posterior result:
+[`opt_plot_allocation()`](https://bdshaff.github.io/mrmopt/reference/opt_plot_allocation.md)
+adds 95% credible interval error bars when used with a posterior result:
 
 ``` r
 
-plot(opt_post, type = "allocation")
+opt_plot_allocation(opt_post)
 ```
 
 ![Optimal allocation with 95% CIs from posterior
@@ -258,30 +259,53 @@ Optimal allocation with 95% CIs from posterior optimization.
 
 ## 5. Comparing Methods
 
-[`compare()`](https://bdshaff.github.io/mrmopt/reference/compare.md)
-produces a side-by-side diff of two optimization results:
+[`opt_table()`](https://bdshaff.github.io/mrmopt/reference/opt_table.md)
+returns a plain tibble, so comparing two results is a standard join:
 
 ``` r
 
-comp <- compare(opt_point, opt_post)
-comp |> select(channel, spend_point, spend_posterior, spend_diff_pct, kpi_diff_pct)
-#> # A tibble: 6 × 5
-#>   channel      spend_point spend_posterior spend_diff_pct kpi_diff_pct
-#>   <chr>              <dbl>           <dbl>          <dbl>        <dbl>
-#> 1 Paid Social       31279.          31534.        0.00814     0.0111  
-#> 2 Paid Search       51017.          51334.        0.00622     0.00953 
-#> 3 Online Video      38937.          39389.        0.0116      0.0175  
-#> 4 Display           19547.          19643.        0.00495     0.00917 
-#> 5 TV                62718.          62549.       -0.00269    -0.000118
-#> 6 TOTAL            203497.         204449.        0.00468     0.00928
+comp <- inner_join(
+  opt_table(opt_point) |>
+    select(channel, spend_point = optimal_spend, kpi_point = optimal_kpi),
+  opt_table(opt_post) |>
+    select(channel, spend_posterior = optimal_spend, kpi_posterior = optimal_kpi),
+  by = "channel"
+) |>
+  mutate(
+    spend_diff_pct = (spend_posterior / spend_point) - 1,
+    kpi_diff_pct   = (kpi_posterior   / kpi_point)   - 1
+  )
+
+comp
+#> # A tibble: 6 × 7
+#>   channel     spend_point kpi_point spend_posterior kpi_posterior spend_diff_pct
+#>   <chr>             <dbl>     <dbl>           <dbl>         <dbl>          <dbl>
+#> 1 Paid Search      52132.     844.           51329.          827.        -0.0154
+#> 2 Online Vid…      40980.     660.           39528.          629.        -0.0354
+#> 3 Display          20022.     299.           19571.          290.        -0.0225
+#> 4 TV               83186.    1127.           65282.          720.        -0.215 
+#> 5 Paid Social       8321.      82.7          31212.          528.         2.75  
+#> 6 TOTAL           204641.    3013.          206922.         2993.         0.0111
+#> # ℹ 1 more variable: kpi_diff_pct <dbl>
 ```
 
-[`plot()`](https://rdrr.io/r/graphics/plot.default.html) on a compare
-result produces a dumbbell chart:
+A dumbbell chart requires only a few lines of ggplot2:
 
 ``` r
 
-plot(comp, type = "spend")
+comp |>
+  filter(channel != "TOTAL") |>
+  mutate(channel = forcats::fct_reorder(channel, spend_point)) |>
+  ggplot(aes(y = channel)) +
+  geom_segment(aes(x = spend_point, xend = spend_posterior, yend = channel),
+               linewidth = 0.8, color = "grey50") +
+  geom_point(aes(x = spend_point),     color = "firebrick", size = 3) +
+  geom_point(aes(x = spend_posterior), color = "steelblue", size = 3) +
+  scale_x_continuous(labels = scales::dollar_format()) +
+  labs(x = "Weekly Spend ($)", y = NULL,
+       title = "Spend: Point vs. Posterior",
+       subtitle = "Red = point  |  Blue = posterior") +
+  theme_minimal()
 ```
 
 ![Point vs. posterior optimal spend per
@@ -313,25 +337,25 @@ opt_annual <- opt_mix(
 #>   Weekly budget:  192,308 
 #>   Period budget:  1e+07  ( 52  weeks)
 #> 
-#> Optimization converged (status: 5 )
-#> Total weekly KPI: 2,799 
-#> Total period KPI: 145,562
+#> Optimization converged (status: 4 )
+#> Total weekly KPI: 2,722 
+#> Total period KPI: 141,539
 print(opt_annual)
 #> -- Optimization Result (point) ----------------------------------------------- 
 #> Budget: $192,308/week  |  $10,000,000 over 52 weeks  |  Channels: 5
 #> -- Optimal Allocation -------------------------------------------------------- 
 #>   Channel           Weekly Spend    Weekly KPI          CP    Share 
-#>   Paid Social            $39,897           632         $63   20.7%
-#>   Paid Search            $60,312           927         $65   31.4%
-#>   Online Video           $54,225           797         $68   28.2%
-#>   Display                $23,449           334         $70   12.2%
-#>   TV                     $14,425           108        $133    7.5%
+#>   Paid Social            $39,879           631         $63   20.7%
+#>   Paid Search            $60,369           928         $65   31.4%
+#>   Online Video           $54,151           796         $68   28.2%
+#>   Display                $23,485           335         $70   12.2%
+#>   TV                     $14,425            32        $448    7.5%
 #> -- Totals -------------------------------------------------------------------- 
-#>   Optimal:  Spend $192,308  |  KPI 2,799  |  Avg CP $69
-#>   Current:  Spend $203,461  |  KPI 2,704  |  Avg CP $75
-#>   Change:   KPI +3.5%  |  CP $7
+#>   Optimal:  Spend $192,308  |  KPI 2,722  |  Avg CP $71
+#>   Current:  Spend $204,641  |  KPI 2,757  |  Avg CP $74
+#>   Change:   KPI -1.3%  |  CP $4
 #> 
-#>   Period (52 weeks): $10,000,000 spend  |  145,562 KPI
+#>   Period (52 weeks): $10,000,000 spend  |  141,539 KPI
 ```
 
 The solution reports both weekly and period-level totals. The underlying
@@ -376,21 +400,21 @@ opt_constrained <- opt_mix(
 #>   Weekly budget:  250,000 
 #> 
 #> Optimization converged (status: 4 )
-#> Total weekly KPI: 3,849
+#> Total weekly KPI: 3,847
 print(opt_constrained)
 #> -- Optimization Result (point) ----------------------------------------------- 
 #> Budget: $250,000/week  |  Channels: 5
 #> -- Optimal Allocation -------------------------------------------------------- 
 #>   Channel           Weekly Spend    Weekly KPI          CP    Share 
-#>   Paid Social            $34,137           584         $58   13.7%
-#>   Paid Search            $54,012           875         $62   21.6%
-#>   Online Video           $44,211           714         $62   17.7%
-#>   Display                $20,815           313         $67    8.3%
-#>   TV                     $96,825         1,363         $71   38.7%
+#>   Paid Social            $34,062           583         $58   13.6%
+#>   Paid Search            $53,962           875         $62   21.6%
+#>   Online Video           $44,079           712         $62   17.6%
+#>   Display                $20,797           312         $67    8.3%
+#>   TV                     $97,099         1,364         $71   38.8%
 #> -- Totals -------------------------------------------------------------------- 
-#>   Optimal:  Spend $250,000  |  KPI 3,849  |  Avg CP $65
-#>   Current:  Spend $203,461  |  KPI 2,704  |  Avg CP $75
-#>   Change:   KPI +42.3%  |  CP $10
+#>   Optimal:  Spend $250,000  |  KPI 3,847  |  Avg CP $65
+#>   Current:  Spend $204,641  |  KPI 2,757  |  Avg CP $74
+#>   Change:   KPI +39.6%  |  CP $9
 ```
 
 ### Share-Based Constraints
@@ -420,22 +444,22 @@ opt_share <- opt_mix(
 #>   Method:         point 
 #>   Weekly budget:  250,000 
 #> 
-#> Optimization converged (status: 5 )
-#> Total weekly KPI: 3,760
+#> Optimization converged (status: 4 )
+#> Total weekly KPI: 3,419
 print(opt_share)
 #> -- Optimization Result (point) ----------------------------------------------- 
 #> Budget: $250,000/week  |  Channels: 5
 #> -- Optimal Allocation -------------------------------------------------------- 
 #>   Channel           Weekly Spend    Weekly KPI          CP    Share 
-#>   Display                     $0            18          $0    0.0%
-#>   Paid Social            $38,737           626         $62   15.5%
-#>   Paid Search            $59,031           921         $64   23.6%
-#>   Online Video           $52,233           788         $66   20.9%
-#>   TV                    $100,000         1,406         $71   40.0%
+#>   Online Video                $0            78          $0    0.0%
+#>   TV                    $100,000         1,404         $71   40.0%
+#>   Paid Search            $71,744           946         $76   28.7%
+#>   Paid Social            $50,026           648         $77   20.0%
+#>   Display                $28,230           342         $82   11.3%
 #> -- Totals -------------------------------------------------------------------- 
-#>   Optimal:  Spend $250,000  |  KPI 3,760  |  Avg CP $66
-#>   Current:  Spend $203,461  |  KPI 2,704  |  Avg CP $75
-#>   Change:   KPI +39%  |  CP $9
+#>   Optimal:  Spend $250,000  |  KPI 3,419  |  Avg CP $73
+#>   Current:  Spend $204,641  |  KPI 2,757  |  Avg CP $74
+#>   Change:   KPI +24%  |  CP $1
 ```
 
 When both absolute and share-based bounds are present, the **tighter
@@ -468,7 +492,7 @@ opt_fixed <- opt_mix(
 #>   Weekly budget:  250,000 
 #> 
 #> Optimization converged (status: 4 )
-#> Total weekly KPI: 3,124
+#> Total weekly KPI: 3,111
 ```
 
 TV is locked at \$50,000/week; the remaining \$200,000 is optimized
@@ -476,8 +500,23 @@ across the other four channels.
 
 ``` r
 
-comp_fixed <- compare(opt_point, opt_fixed, labels = c("unconstrained", "fixed_TV"))
-plot(comp_fixed, type = "spend")
+inner_join(
+  opt_table(opt_point) |> select(channel, spend_unconstrained = optimal_spend),
+  opt_table(opt_fixed) |> select(channel, spend_fixed = optimal_spend),
+  by = "channel"
+) |>
+  filter(channel != "TOTAL") |>
+  mutate(channel = forcats::fct_reorder(channel, spend_unconstrained)) |>
+  ggplot(aes(y = channel)) +
+  geom_segment(aes(x = spend_unconstrained, xend = spend_fixed, yend = channel),
+               linewidth = 0.8, color = "grey50") +
+  geom_point(aes(x = spend_unconstrained), color = "firebrick", size = 3) +
+  geom_point(aes(x = spend_fixed),         color = "steelblue", size = 3) +
+  scale_x_continuous(labels = scales::dollar_format()) +
+  labs(x = "Weekly Spend ($)", y = NULL,
+       title = "Spend: Unconstrained vs. Fixed TV",
+       subtitle = "Red = unconstrained  |  Blue = fixed TV") +
+  theme_minimal()
 ```
 
 ![Unconstrained vs. fixed-TV
@@ -493,12 +532,11 @@ Unconstrained vs. fixed-TV optimization.
 |----|----|
 | `opt_mix(method = "point")` | Fast single-solution optimization |
 | `opt_mix(method = "posterior")` | Bayesian optimization with uncertainty |
-| [`print()`](https://rdrr.io/r/base/print.html) | Formatted console summary |
-| [`summary()`](https://rdrr.io/r/base/summary.html) | Tidy comparison tibble with deltas |
-| `plot(type = "allocation")` | Grouped bar: current vs. optimal |
-| `plot(type = "comparison")` | Dumbbell: current → optimal |
-| `plot(type = "curves")` | Response curves with current + optimal points |
-| `plot(type = "returns")` | AR/MR curves at current + optimal |
-| `plot(type = "posterior")` | Violin of posterior allocations |
-| [`compare()`](https://bdshaff.github.io/mrmopt/reference/compare.md) | Side-by-side diff of two results |
-| `plot(compare_result)` | Dumbbell chart of two results |
+| [`print()`](https://rdrr.io/r/base/print.html) / [`opt_summary()`](https://bdshaff.github.io/mrmopt/reference/opt_summary.md) | Formatted console summary (identical output) |
+| [`opt_table()`](https://bdshaff.github.io/mrmopt/reference/opt_table.md) | Tidy comparison tibble with per-channel deltas |
+| [`opt_plot_allocation()`](https://bdshaff.github.io/mrmopt/reference/opt_plot_allocation.md) | Grouped bar: current vs. optimal spend or KPI |
+| [`opt_plot_comparison()`](https://bdshaff.github.io/mrmopt/reference/opt_plot_comparison.md) | Dumbbell: current → optimal spend |
+| [`opt_plot_curves()`](https://bdshaff.github.io/mrmopt/reference/opt_plot_curves.md) | Response curves with current + optimal points |
+| [`opt_plot_returns()`](https://bdshaff.github.io/mrmopt/reference/opt_plot_returns.md) | AR/MR curves at current + optimal |
+| [`opt_plot_posterior()`](https://bdshaff.github.io/mrmopt/reference/opt_plot_posterior.md) | Violin of posterior allocations (posterior only) |
+| `inner_join(opt_table(a), opt_table(b))` | Side-by-side diff of two results |
