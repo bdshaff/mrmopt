@@ -14,6 +14,7 @@ navbar:
 articles:
   - title: "Getting Started"
     contents:
+      - getting_started
       - response_curve_theory
       - fitting_and_analysis
       - diagnostics_and_comparison

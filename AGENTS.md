@@ -10,6 +10,17 @@
 
 ---
 
+## Recent Build Fixes (June 2026)
+
+- **Rd cross-references**: `\link{mrm_prior}` → `\link{mrmopt_prior}` in `R/fit_response.R` and `R/hlpr_resolve_prior.R` (the function is named `mrmopt_prior`, not `mrm_prior`)
+- **`.Rbuildignore`**: Added `^ROADMAP\.md$` and `^conversation-export\.html$` to suppress non-standard top-level file NOTE
+- **Undefined globals**: Added `@importFrom stats fitted` to `R/mrm_infer.R`; added `@importFrom dplyr bind_rows mutate select` and `@importFrom tibble tibble` to `R/opt_generate_constraints.R`; replaced `%>%` with `|>` in `opt_generate_constraints.R`
+- **Vignette error (`getting_started.Rmd`)**: `mrm_plot_diagnostics()` used `trace_plot / pp_plot` where `trace_plot` is a `bayesplot_grid` S7 object — S7 intercepts the `/` operator before patchwork can. Fixed by wrapping: `patchwork::wrap_elements(trace_plot) / pp_plot`
+- **`forcats` undeclared**: Added `forcats` to `Suggests` in DESCRIPTION (used via `forcats::fct_reorder()` in `vignettes/optimization.Rmd`)
+- **pkgdown build**: `getting_started` vignette was missing from `_pkgdown.yml` articles index — added as first entry under "Getting Started"
+
+---
+
 ## Package Structure
 
 ```
@@ -66,8 +77,8 @@ Returned by `fit_response()`. Key fields:
 - `$cost_per_unit` — cost-per-unit if `units` supplied
 - `$date_range` — `c(min_date, max_date)` from input data
 
-### `mrm_prior`
-List-based prior specification. Created with `mrm_prior()`.
+### `mrmopt_prior`
+List-based prior specification. Created with `mrmopt_prior()`.
 
 ### `mrm_summary`
 Tibble with attributes for formatted printing.
@@ -227,7 +238,7 @@ When both absolute and share bounds are present, the tighter constraint wins.
 ## Prior Specification (3-tier system)
 
 1. **Automatic** (`auto = TRUE` in `fit_response`) — smart defaults
-2. **Simplified** via `mrm_prior()` — scale-invariant bounds:
+2. **Simplified** via `mrmopt_prior()` — scale-invariant bounds:
    - `midpoint_range`: inflection point as fraction of x-axis
    - `ceiling_max`: multiplier on observed max response
    - `floor_min`: lower asymptote in original units
@@ -264,7 +275,7 @@ When both absolute and share bounds are present, the tighter constraint wins.
 - **Constraint system**: User-supplied constraints data frame with absolute bounds (`min_spend`/`max_spend`), share-based bounds (`min_share`/`max_share`), and fixed channels (`fixed = TRUE`).
 - **`hlpr_build_solution()`**: Shared builder for unified solution tibble with current-state metrics, optimal units (static CPU), response rates, CIs, and shares.
 - **`hlpr_extract_draws()`**: Pre-extracts and unscales all posterior draws from fitted models for fast optimization loop evaluation.
-- **`anchor_strength` prior**: Replaced the synthetic (0,0) anchor point injection with `anchor_strength` in `mrm_prior()` — a prior-based floor constraint that works uniformly across all 6 curve types. `anchor_zero` is deprecated.
+- **`anchor_strength` prior**: Replaced the synthetic (0,0) anchor point injection with `anchor_strength` in `mrmopt_prior()` — a prior-based floor constraint that works uniformly across all 6 curve types. `anchor_zero` is deprecated.
 - **Trace plot labels**: Fixed strip label truncation — renamed mcmc.list columns to short labels (`b`, `c`, `d`, `e`) before passing to `bayesplot::mcmc_trace()` in `R/plot.mrmfit.R`
 - **`date_range` metadata**: Stored `c(min(date), max(date))` on all fitted models during `fit_response()`
 - **`mrm_plot_compare()` label collision fix**: When comparing same-channel/same-type models across time periods, appends short date range `"Mon 'YY–Mon 'YY"`; respects user-supplied `names(models)`
