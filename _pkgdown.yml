@@ -17,10 +17,14 @@ articles:
     contents:
       - getting_started
       - response_curve_theory
+  - title: "Modeling"
+    contents:
       - fitting_and_analysis
       - diagnostics_and_comparison
-      - optimization
       - hierarchical_curves
+  - title: "Optimization"
+    contents:
+      - optimization
   - title: "Project"
     contents:
       - roadmap

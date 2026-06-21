@@ -12,6 +12,8 @@
 
 ## Recent Build Fixes (June 2026)
 
+- **Missing plot.opt_mix_result S3 method**: Created `R/plot.opt_mix_result.R` — dispatches `plot(x, type = ...)` to appropriate `opt_plot_*` functions (allocation, kpi, comparison, posterior, curves, returns). Added `S3method(plot,opt_mix_result)` to NAMESPACE. Fixed vignette error in `hierarchical_curves.Rmd:218` where `plot(opt_post, type = "posterior")` was falling through to `plot.default()`.
+- **Vignette build performance**: Moved 4 slow vignettes (fitting_and_analysis, diagnostics_and_comparison, hierarchical_curves, optimization) to separate build process via `.Rbuildignore`. These require full MCMC sampling and slow down `R CMD build` / `devtools::check()`. Created `data-raw/build_slow_vignettes.R` script to build them separately for pkgdown site. See `VIGNETTE_BUILD.md` for workflow.
 - **Rd cross-references**: `\link{mrm_prior}` → `\link{mrmopt_prior}` in `R/fit_response.R` and `R/hlpr_resolve_prior.R` (the function is named `mrmopt_prior`, not `mrm_prior`)
 - **`.Rbuildignore`**: Added `^ROADMAP\.md$` and `^conversation-export\.html$` to suppress non-standard top-level file NOTE
 - **Undefined globals**: Added `@importFrom stats fitted` to `R/mrm_infer.R`; added `@importFrom dplyr bind_rows mutate select` and `@importFrom tibble tibble` to `R/opt_generate_constraints.R`; replaced `%>%` with `|>` in `opt_generate_constraints.R`

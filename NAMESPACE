@@ -2,6 +2,7 @@
 
 S3method(plot,mrmfit_hier)
 S3method(plot,mrmfit_hier_unit)
+S3method(plot,opt_mix_result)
 S3method(posterior::as_draws_df,mrmfit_hier_unit)
 S3method(print,mrm_prior)
 S3method(print,mrm_summary)

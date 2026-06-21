@@ -85,3 +85,54 @@ test_that("opt_plot_curves works with posterior method", {
   res <- make_mock_opt_result(method = "posterior")
   expect_s3_class(opt_plot_curves(res), "ggplot")
 })
+
+# =========================================================================
+# plot.opt_mix_result S3 method — dispatches to opt_plot_* functions
+# =========================================================================
+
+test_that("plot.opt_mix_result dispatches to opt_plot_allocation (default)", {
+  res <- make_mock_opt_result()
+  p <- plot(res)
+  expect_s3_class(p, "ggplot")
+})
+
+test_that("plot.opt_mix_result dispatches to opt_plot_allocation (spend)", {
+  res <- make_mock_opt_result()
+  p <- plot(res, type = "allocation")
+  expect_s3_class(p, "ggplot")
+})
+
+test_that("plot.opt_mix_result dispatches to opt_plot_allocation (kpi)", {
+  res <- make_mock_opt_result()
+  p <- plot(res, type = "kpi")
+  expect_s3_class(p, "ggplot")
+})
+
+test_that("plot.opt_mix_result dispatches to opt_plot_comparison", {
+  res <- make_mock_opt_result()
+  p <- plot(res, type = "comparison")
+  expect_s3_class(p, "ggplot")
+})
+
+test_that("plot.opt_mix_result dispatches to opt_plot_posterior", {
+  res <- make_mock_opt_result(method = "posterior")
+  p <- plot(res, type = "posterior")
+  expect_s3_class(p, "ggplot")
+})
+
+test_that("plot.opt_mix_result errors on posterior type for point method", {
+  res <- make_mock_opt_result(method = "point")
+  expect_error(plot(res, type = "posterior"), "posterior method")
+})
+
+test_that("plot.opt_mix_result dispatches to opt_plot_curves", {
+  res <- make_mock_opt_result()
+  p <- plot(res, type = "curves")
+  expect_s3_class(p, "ggplot")
+})
+
+test_that("plot.opt_mix_result dispatches to opt_plot_returns", {
+  res <- make_mock_opt_result()
+  p <- plot(res, type = "returns")
+  expect_s3_class(p, "ggplot")
+})
