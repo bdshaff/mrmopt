@@ -6,10 +6,18 @@
   Started](https://bdshaff.github.io/mrmopt/articles/getting_started.md):
 - [Response Curve Theory and Data
   Requirements](https://bdshaff.github.io/mrmopt/articles/response_curve_theory.md):
+
+### Modeling
+
 - [Fitting and Analyzing Response Curve
   Models](https://bdshaff.github.io/mrmopt/articles/fitting_and_analysis.md):
 - [Model Diagnostics and Curve
   Comparison](https://bdshaff.github.io/mrmopt/articles/diagnostics_and_comparison.md):
+- [Hierarchical Response
+  Curves](https://bdshaff.github.io/mrmopt/articles/hierarchical_curves.md):
+
+### Optimization
+
 - [Media Mix
   Optimization](https://bdshaff.github.io/mrmopt/articles/optimization.md):
 

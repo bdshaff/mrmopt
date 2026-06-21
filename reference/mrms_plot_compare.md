@@ -12,7 +12,7 @@ mrms_plot_compare(
   plot_type = c("response", "return", "costper"),
   x_var = c("spend", "units"),
   layout = c("overlay", "facet"),
-  interval = c("prediction", "confidence")
+  interval = c("prediction", "confidence", "none")
 )
 ```
 
@@ -39,7 +39,8 @@ mrms_plot_compare(
 
   Type of credible interval. `"prediction"` (default) includes
   observation noise. `"confidence"` shows uncertainty about the mean
-  curve only (tighter bands).
+  curve only (tighter bands). `"none"` draws the center curves only,
+  with no interval ribbons.
 
 ## Value
 

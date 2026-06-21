@@ -10,11 +10,16 @@ these.
 
 ------------------------------------------------------------------------
 
-## Near-Term
+## Recently Shipped
 
 ### Within-Channel Hierarchical Response Curves
 
-**New function:** `fit_response_hier()`
+**New function:**
+[`fit_response_hier()`](https://bdshaff.github.io/mrmopt/reference/fit_response_hier.md)
+— **shipped.** See the [Hierarchical Response
+Curves](https://bdshaff.github.io/mrmopt/articles/hierarchical_curves.html)
+article for a worked example, and `design/fit_response_hier.md` for the
+design.
 
 Media channels are rarely homogeneous. TV spend spans broadcast, cable,
 and streaming — each with different audience reach and response
@@ -23,9 +28,9 @@ Standard response curve modeling treats the channel as a single unit,
 which either overfits sparse sub-channel data or discards granularity
 altogether.
 
-`fit_response_hier()` will fit a single hierarchical model for one
-channel where curve parameters are partially pooled across sub-channel
-groupings:
+[`fit_response_hier()`](https://bdshaff.github.io/mrmopt/reference/fit_response_hier.md)
+fits a single hierarchical model for one channel where curve parameters
+are partially pooled across sub-channel groupings:
 
 ``` r
 
@@ -34,26 +39,33 @@ fit_tv <- fit_response_hier(
   spend     = "spend",
   kpi       = "conversions",
   date      = "week",
-  group     = c("subtype", "station"),   # nested hierarchy
+  group     = c("subtype", "station"),   # nested hierarchy (any depth)
   type      = "gompertz"
 )
 ```
 
 The fixed effects represent the channel-level mean curve. Random effects
 at each level (subtype → station) are drawn from the level above, so
-sparse units (e.g., a small cable station with 8 weeks of data) borrow
-strength from better-identified peers. The degree of shrinkage is
+sparse units (e.g., a small cable station with a handful of weeks)
+borrow strength from better-identified peers. The degree of shrinkage is
 automatic and data-driven — units with more observations get pulled less
 toward the group mean.
 
-**Key properties:**
+**Delivered:**
 
 - Channel-level, sub-type-level, and unit-level curves from a single
   model
+  ([`mrm_summary_hier()`](https://bdshaff.github.io/mrmopt/reference/mrm_summary_hier.md),
+  [`mrm_infer_hier()`](https://bdshaff.github.io/mrmopt/reference/mrm_infer_hier.md))
+- All six curve forms, including the log-based forms (midpoint
+  reparameterized internally on the log scale for sampling stability)
+- Arbitrary-depth nested hierarchies
 - Posterior uncertainty correctly reflects data sparsity at each level
-- Compatible with
+- Optimization at any level of the hierarchy via
+  [`as_mrmfit_list()`](https://bdshaff.github.io/mrmopt/reference/as_mrmfit_list.md) +
   [`opt_mix()`](https://bdshaff.github.io/mrmopt/reference/opt_mix.md)
-  for optimization at any level of the hierarchy
+- Per-unit and shrinkage visualizations via
+  [`mrm_plot_hier()`](https://bdshaff.github.io/mrmopt/reference/mrm_plot_hier.md)
 - Pooling operates on curve shape parameters (`b`, `e`); scale (`d`) is
   allowed to vary more freely to reflect size differences across units
 
