@@ -59,6 +59,10 @@ mrm_plot <- function(mrm,
     return(mrm_plot_diagnostics(mrm))
   }
 
+  # Warn once here for a unit view; the panel calls below are silenced by the
+  # depth guard so the user sees a single warning for mrm_plot().
+  if (inherits(mrm, "mrmfit_hier_unit")) hlpr_unit_view_warn("mrm_plot")
+
   # --- Dashboard: response + return + costper ---
   p1 <- mrm_plot_response(mrm, x_var = x_var, show_mr = show_mr,
                            markup = markup, interval = interval)

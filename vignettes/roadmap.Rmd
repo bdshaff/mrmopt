@@ -16,11 +16,13 @@ Feedback and contributions are welcome — open an issue on
 
 ---
 
-## Near-Term
+## Recently Shipped
 
 ### Within-Channel Hierarchical Response Curves
 
-**New function:** `fit_response_hier()`
+**New function:** `fit_response_hier()` — **available now.** See the
+[Hierarchical Response Curves](hierarchical_curves.html) article for a worked
+example.
 
 Media channels are rarely homogeneous. TV spend spans broadcast, cable, and
 streaming — each with different audience reach and response dynamics. Social
@@ -28,8 +30,8 @@ covers multiple partners, tactics, and creatives. Standard response curve
 modeling treats the channel as a single unit, which either overfits sparse
 sub-channel data or discards granularity altogether.
 
-`fit_response_hier()` will fit a single hierarchical model for one channel
-where curve parameters are partially pooled across sub-channel groupings:
+`fit_response_hier()` fits a single hierarchical model for one channel where
+curve parameters are partially pooled across sub-channel groupings:
 
 ```r
 fit_tv <- fit_response_hier(
@@ -37,22 +39,27 @@ fit_tv <- fit_response_hier(
   spend     = "spend",
   kpi       = "conversions",
   date      = "week",
-  group     = c("subtype", "station"),   # nested hierarchy
+  group     = c("subtype", "station"),   # nested hierarchy (any depth)
   type      = "gompertz"
 )
 ```
 
 The fixed effects represent the channel-level mean curve. Random effects at
 each level (subtype → station) are drawn from the level above, so sparse units
-(e.g., a small cable station with 8 weeks of data) borrow strength from
+(e.g., a small cable station with a handful of weeks) borrow strength from
 better-identified peers. The degree of shrinkage is automatic and
 data-driven — units with more observations get pulled less toward the group mean.
 
-**Key properties:**
+**Delivered:**
 
 - Channel-level, sub-type-level, and unit-level curves from a single model
+  (`mrm_summary_hier()`, `mrm_infer_hier()`)
+- All six curve forms, including the log-based forms (the midpoint is
+  reparameterized internally on the log scale for sampling stability)
+- Arbitrary-depth nested hierarchies
 - Posterior uncertainty correctly reflects data sparsity at each level
-- Compatible with `opt_mix()` for optimization at any level of the hierarchy
+- Optimization at any level of the hierarchy via `as_mrmfit_list()` + `opt_mix()`
+- Per-unit and shrinkage visualizations via `mrm_plot_hier()`
 - Pooling operates on curve shape parameters (`b`, `e`); scale (`d`) is
   allowed to vary more freely to reflect size differences across units
 

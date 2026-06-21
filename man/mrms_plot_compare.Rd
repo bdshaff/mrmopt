@@ -9,7 +9,7 @@ mrms_plot_compare(
   plot_type = c("response", "return", "costper"),
   x_var = c("spend", "units"),
   layout = c("overlay", "facet"),
-  interval = c("prediction", "confidence")
+  interval = c("prediction", "confidence", "none")
 )
 }
 \arguments{
@@ -25,7 +25,8 @@ axis using color, or \code{"facet"} uses \code{facet_wrap}.}
 
 \item{interval}{Type of credible interval. \code{"prediction"} (default)
 includes observation noise. \code{"confidence"} shows uncertainty about
-the mean curve only (tighter bands).}
+the mean curve only (tighter bands). \code{"none"} draws the center curves
+only, with no interval ribbons.}
 }
 \value{
 A ggplot object.

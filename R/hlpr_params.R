@@ -4,6 +4,12 @@
 
 hlpr_params <- function(rc_fit, scaled = TRUE) {
 
+  # Per-unit views from a hierarchical fit (as_mrmfit_list) carry precomputed,
+  # already-unscaled parameters — there is no brms $fixed table to read.
+  if (!is.null(rc_fit$params_hier_unit)) {
+    return(rc_fit$params_hier_unit)
+  }
+
   # Extract posterior summaries for parameters b, c, d, e
   posterior_summary <- summary(rc_fit)$fixed
   params <- posterior_summary[grepl("b|c|d|e", rownames(posterior_summary)), , drop = FALSE]
@@ -18,60 +24,13 @@ hlpr_params <- function(rc_fit, scaled = TRUE) {
   upper = params$`u-95% CI`
   names(upper) = c("b","c","d","e")
 
-  # Rescale parameters if the model was fitted on scaled data
+  # Rescale parameters if the model was fitted on scaled data. The affine
+  # unscaling is shared with the hierarchical path via hlpr_unscale_params().
   if (scaled && !is.null(rc_fit$scale_values)) {
     sv <- rc_fit$scale_values
-    x_offset <- if (!is.null(sv$x_offset)) sv$x_offset else 0
-    log_forms <- c("log_logistic", "weibull", "reflected_weibull")
-    is_log_form <- !is.null(rc_fit$rc_type) && rc_fit$rc_type %in% log_forms
-
-    # --- Unscale x-related params (b, e) ---
-    if (is_log_form) {
-      x_max <- sv$x_max
-      for (est in c("center", "lower", "upper")) {
-        env <- environment()
-        v <- get(est, envir = env)
-        v["e"] <- v["e"] * x_max - x_offset
-        assign(est, v, envir = env)
-      }
-    } else if (!is.null(sv$x_min) && !is.null(sv$x_max)) {
-      x_range <- sv$x_max - sv$x_min
-      for (est in c("center", "lower", "upper")) {
-        env <- environment()
-        v <- get(est, envir = env)
-        v["b"] <- v["b"] / x_range
-        v["e"] <- v["e"] * x_range + sv$x_min - x_offset
-        assign(est, v, envir = env)
-      }
-    } else if (!is.null(sv$x_mean) && !is.null(sv$x_sd)) {
-      for (est in c("center", "lower", "upper")) {
-        env <- environment()
-        v <- get(est, envir = env)
-        v["b"] <- v["b"] / sv$x_sd
-        v["e"] <- v["e"] * sv$x_sd + sv$x_mean - x_offset
-        assign(est, v, envir = env)
-      }
-    }
-
-    # --- Unscale y-related params (c, d) ---
-    if (!is.null(sv$y_min) && !is.null(sv$y_max)) {
-      y_range <- sv$y_max - sv$y_min
-      for (est in c("center", "lower", "upper")) {
-        env <- environment()
-        v <- get(est, envir = env)
-        v["c"] <- v["c"] * y_range + sv$y_min
-        v["d"] <- v["d"] * y_range + sv$y_min
-        assign(est, v, envir = env)
-      }
-    } else if (!is.null(sv$y_mean) && !is.null(sv$y_sd)) {
-      for (est in c("center", "lower", "upper")) {
-        env <- environment()
-        v <- get(est, envir = env)
-        v["c"] <- v["c"] * sv$y_sd + sv$y_mean
-        v["d"] <- v["d"] * sv$y_sd + sv$y_mean
-        assign(est, v, envir = env)
-      }
-    }
+    center <- hlpr_unscale_params(center, sv, rc_fit$rc_type)
+    lower  <- hlpr_unscale_params(lower,  sv, rc_fit$rc_type)
+    upper  <- hlpr_unscale_params(upper,  sv, rc_fit$rc_type)
   }
 
   # Create a list to hold the parameters

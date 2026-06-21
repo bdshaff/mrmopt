@@ -48,3 +48,8 @@ rsconnect/
 
 # macOS
 .DS_Store
+
+# Local dev scratch (not part of the package)
+dev_*.R
+dev_*.rds
+Rplots.pdf

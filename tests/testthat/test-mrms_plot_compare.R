@@ -39,6 +39,19 @@ test_that("returns a ggplot for default (response, overlay)", {
   expect_s3_class(p, "ggplot")
 })
 
+test_that("interval = 'none' draws response curves with no ribbon", {
+  pair <- make_pair()
+  p    <- mrms_plot_compare(pair, interval = "none")
+  expect_s3_class(p, "ggplot")
+  # no GeomRibbon layer when intervals are suppressed
+  geoms <- vapply(p$layers, function(l) class(l$geom)[1], character(1))
+  expect_false("GeomRibbon" %in% geoms)
+  # the default (prediction) does add a ribbon
+  p_pred <- mrms_plot_compare(pair, interval = "prediction")
+  geoms_pred <- vapply(p_pred$layers, function(l) class(l$geom)[1], character(1))
+  expect_true("GeomRibbon" %in% geoms_pred)
+})
+
 test_that("returns a ggplot for plot_type = 'return'", {
   pair <- make_pair()
   p    <- mrms_plot_compare(pair, plot_type = "return")

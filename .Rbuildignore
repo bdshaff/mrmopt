@@ -14,3 +14,5 @@
 ^LICENSE\.md$
 ^ROADMAP\.md$
 ^conversation-export\.html$
+^design$
+^dev_.*

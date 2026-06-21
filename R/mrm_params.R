@@ -17,6 +17,7 @@ mrm_params <- function(mrm) {
   if (!inherits(mrm, "mrmfit")) {
     stop("mrm must be a fitted model object created by fit_response()", call. = FALSE)
   }
+  if (inherits(mrm, "mrmfit_hier_unit")) hlpr_unit_view_warn("mrm_params")
 
   p <- hlpr_params(mrm, scaled = TRUE)
 

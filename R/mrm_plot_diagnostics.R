@@ -20,6 +20,16 @@ mrm_plot_diagnostics <- function(mrm) {
     stop("mrm must be a fitted model object created by fit_response()", call. = FALSE)
   }
 
+  if (inherits(mrm, "mrmfit_hier_unit")) {
+    stop(
+      "MCMC diagnostics are not available for a per-unit view from ",
+      "`as_mrmfit_list()` (it carries no posterior sampler state). Run ",
+      "diagnostics on the parent hierarchical fit:\n",
+      "  mrm_plot_hier(<fit>, type = \"diagnostics\")",
+      call. = FALSE
+    )
+  }
+
   channel <- hlpr_channel_name(mrm)
   rc_type <- mrm$rc_type
 

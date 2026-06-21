@@ -73,6 +73,12 @@ opt_mix <- function(
 
   method <- match.arg(method)
 
+  # opt_mix is an intended consumer of as_mrmfit_list() output, so suppress the
+  # per-unit "view" warnings emitted by the functions it calls internally.
+  .uv <- options(mrmopt.unit_view_depth =
+                   getOption("mrmopt.unit_view_depth", 0L) + 1L)
+  on.exit(options(.uv), add = TRUE)
+
   # --- Validation ---
   if (!is.list(mrms) || !all(sapply(mrms, inherits, "mrmfit"))) {
     stop("`mrms` must be a named list of mrmfit objects.")

@@ -22,6 +22,23 @@ mrm_infer <- function(mrm, xrange = NULL, length.out = 1000, scaled = TRUE) {
     stop("mrm must be a fitted model object created by fit_response()", call. = FALSE)
   }
 
+  # Per-unit views from as_mrmfit_list() carry no posterior sampler, so they
+  # cannot run predict()/fitted() on a fresh grid. Serve the cached inference
+  # for default arguments; a custom grid requires the parent mrmfit_hier.
+  if (inherits(mrm, "mrmfit_hier_unit")) {
+    if (is.null(xrange) && length.out == 1000 && !is.null(mrm$response_df)) {
+      hlpr_unit_view_warn("mrm_infer")
+      return(mrm$response_df)
+    }
+    stop(
+      "Custom `mrm_infer()` (xrange/length.out) is not available for a per-unit ",
+      "view from `as_mrmfit_list()`; its cached `response_df` uses the parent ",
+      "fit's inference grid. Call `mrm_infer()` on the parent `mrmfit_hier` for ",
+      "a new grid.",
+      call. = FALSE
+    )
+  }
+
   rc_type <- mrm$rc_type
   rc_data <- mrm$data
   y <- mrm$formula$resp

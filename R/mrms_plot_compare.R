@@ -12,7 +12,8 @@
 #'   axis using color, or \code{"facet"} uses \code{facet_wrap}.
 #' @param interval Type of credible interval. \code{"prediction"} (default)
 #'   includes observation noise. \code{"confidence"} shows uncertainty about
-#'   the mean curve only (tighter bands).
+#'   the mean curve only (tighter bands). \code{"none"} draws the center curves
+#'   only, with no interval ribbons.
 #' @return A ggplot object.
 #' @export
 
@@ -20,7 +21,7 @@ mrms_plot_compare <- function(models,
                              plot_type = c("response", "return", "costper"),
                              x_var = c("spend", "units"),
                              layout = c("overlay", "facet"),
-                             interval = c("prediction", "confidence")) {
+                             interval = c("prediction", "confidence", "none")) {
 
   plot_type <- match.arg(plot_type)
   x_var <- match.arg(x_var)
@@ -127,11 +128,14 @@ mrms_plot_compare <- function(models,
   if (plot_type == "response") {
     p <- ggplot2::ggplot(combined, ggplot2::aes(
       x = .data$x, y = .data$center, color = .data$model_id, fill = .data$model_id
-    )) +
-      ggplot2::geom_ribbon(
+    ))
+    if (interval != "none") {
+      p <- p + ggplot2::geom_ribbon(
         ggplot2::aes(ymin = .data$lower, ymax = .data$upper),
         alpha = 0.15, color = NA
-      ) +
+      )
+    }
+    p <- p +
       ggplot2::geom_line(linewidth = 0.7) +
       ggplot2::scale_y_continuous(labels = scales::comma) +
       ggplot2::labs(y = "KPI", title = "Response Curve Comparison")

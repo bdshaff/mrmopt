@@ -41,6 +41,7 @@ mrm_plot_response <- function(mrm,
   if (!inherits(mrm, "mrmfit")) {
     stop("mrm must be a fitted model object created by fit_response()", call. = FALSE)
   }
+  if (inherits(mrm, "mrmfit_hier_unit")) hlpr_unit_view_warn("mrm_plot_response")
 
   x_var <- match.arg(x_var)
   interval <- match.arg(interval)
