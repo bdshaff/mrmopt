@@ -20,9 +20,9 @@
 #'     \code{mr_decay × peak MR}. Beyond this, diminishing returns accelerate.
 #' }
 #'
-#' For log-form curves (log_logistic, weibull, reflected_weibull) with
-#' monotonically decreasing MR (i.e. no interior efficiency peak), the three
-#' summary points are anchored to MR fractions around current spend:
+#' For curves where MR is monotonically decreasing (no interior efficiency
+#' peak — possible for log-form curves when |b| ≤ 1), the three summary
+#' points are anchored to MR fractions around current spend:
 #' \itemize{
 #'   \item \strong{range_min}: Last spend level where MR >= 2x MR at current spend.
 #'   \item \strong{range_peak}: Current spend (operational anchor).
@@ -54,9 +54,13 @@ mrm_summary <- function(mrm, mr_decay = 0.7) {
   # --- RC parameters ---
   params_full <- hlpr_params(mrm, scaled = TRUE)
 
-  # --- Detect if curve is a log-form type (monotonically decreasing MR) ---
-  log_forms <- c("log_logistic", "weibull", "reflected_weibull")
-  log_curve_no_peak <- !is.null(rc_type) && rc_type %in% log_forms
+  # --- Detect if MR is monotonically decreasing (no interior peak) ---
+  # Log-scale curves *can* have an interior MR peak when |b| > 1, so we
+
+  # check the data rather than assuming based on curve type alone.
+  mr_vals <- rdf$mr[!is.na(rdf$mr)]
+  peak_at_start <- which.max(mr_vals) <= 2L
+  log_curve_no_peak <- peak_at_start
 
   # --- Observed spend for week distribution ---
   rc_data <- mrm$data

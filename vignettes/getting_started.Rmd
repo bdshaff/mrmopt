@@ -106,7 +106,7 @@ filter to a single channel before calling `fit_response()`.
 Start with one channel and one curve type. Gompertz is a reasonable default
 for channels with concave diminishing returns from the start.
 
-```{r fit-ps, results = "hide"}
+```{r fit-ps, results = "hide", message = FALSE, warning = FALSE}
 ps_data <- mrmopt_data |> filter(channel == "Paid Search")
 
 fit_ps <- fit_response(
@@ -178,7 +178,7 @@ The numerical indicators to target are **Rhat ≤ 1.01** and **Bulk ESS > 400**
 for all parameters. These are printed in `mrm_summary()`:
 
 ```{r mrm-summary}
-mrm_summary(fit_ps)
+summary(fit_ps)
 ```
 
 If convergence is poor, try increasing `iter` and `warmup`, or adjust the
@@ -215,7 +215,7 @@ diminishing returns from the first dollar.
 
 Fit a second type and compare them visually:
 
-```{r fit-compare, results = "hide"}
+```{r fit-compare, results = "hide", message = FALSE, warning = FALSE}
 fit_ps_ll <- fit_response(
   data           = ps_data,
   spend          = "spend",
@@ -230,7 +230,7 @@ fit_ps_ll <- fit_response(
 ```{r compare-plot}
 mrms_plot_compare(
   list(gompertz = fit_ps, log_logistic = fit_ps_ll),
-  interval = "confidence"
+  interval = "predictio"
 )
 ```
 
@@ -251,7 +251,7 @@ For a full comparison across all six types, see the
 Once you have a curve type for each channel, fit the full portfolio. Here we
 use the best-fit type for each of the five channels in `mrmopt_data`:
 
-```{r fit-all, results = "hide"}
+```{r fit-all, results = "hide", message = FALSE, warning = FALSE}
 channel_types <- list(
   "Paid Search"  = "log_logistic",
   "Paid Social"  = "gompertz",
@@ -289,8 +289,8 @@ mrms_plot_compare(fits, interval = "confidence")
 total budget constraint. The default `method = "point"` uses the posterior
 median parameters and runs in under a second:
 
-```{r opt, results = "hide"}
-opt <- opt_mix(fits, budget = 500000)
+```{r opt, results = "hide", message = FALSE, warning = FALSE}
+opt <- opt_mix(fits, budget = 204641)
 ```
 
 `opt_summary()` prints a formatted allocation table:
@@ -351,8 +351,8 @@ The point estimate result is fast but treats the posterior median parameters as
 if they were known exactly. `method = "posterior"` runs the optimizer over a
 sample of posterior draws, producing a distribution of optimal allocations:
 
-```{r opt-post, results = "hide"}
-opt_post <- opt_mix(fits, budget = 500000, method = "posterior", n_draws = 200)
+```{r opt-post, results = "hide", message = FALSE, warning = FALSE}
+opt_post <- opt_mix(fits, budget = 204641, method = "posterior", n_draws = 200)
 ```
 
 ```{r opt-post-summary}
@@ -386,20 +386,20 @@ where the allocation decision is robust.
 **Period budgets** — optimize a quarterly or annual budget broken into weekly
 allocations:
 
-```{r opt-annual, results = "hide"}
+```{r opt-annual, results = "hide", message = FALSE, warning = FALSE}
 opt_annual <- opt_mix(fits, budget = 26000000, n_weeks = 52)
 ```
 
 **Custom constraints** — set channel-level floors, ceilings, and share bounds:
 
-```{r opt-constrained, results = "hide"}
+```{r opt-constrained, results = "hide", message = FALSE, warning = FALSE}
 constraints <- data.frame(
   channel   = names(fits),
   min_spend = c(10000, 5000, 2000, 5000, 50000),
   max_spend = c(200000, 150000, 50000, 100000, 300000)
 )
 
-opt_constrained <- opt_mix(fits, budget = 500000, constraints = constraints)
+opt_constrained <- opt_mix(fits, budget = 204641, constraints = constraints)
 ```
 
 See the [Optimization](optimization.html) vignette for the full constraint
@@ -411,7 +411,4 @@ specification including share bounds and fixed channels.
 
 | Topic | Vignette |
 |-------|----------|
-| Prior specification, `mrm_prior()`, and curve types in depth | [Fitting & Analysis](fitting_and_analysis.html) |
-| Convergence diagnostics, PPC, and comparing models across time periods | [Diagnostics & Comparison](diagnostics_and_comparison.html) |
-| Constraints, posterior optimization, and scenario planning | [Optimization](optimization.html) |
 | Mathematical derivations of all six curve forms | [Response Curve Theory](response_curve_theory.html) |

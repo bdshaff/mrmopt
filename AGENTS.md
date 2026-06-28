@@ -20,6 +20,7 @@
 - **Vignette error (`getting_started.Rmd`)**: `mrm_plot_diagnostics()` used `trace_plot / pp_plot` where `trace_plot` is a `bayesplot_grid` S7 object — S7 intercepts the `/` operator before patchwork can. Fixed by wrapping: `patchwork::wrap_elements(trace_plot) / pp_plot`
 - **`forcats` undeclared**: Added `forcats` to `Suggests` in DESCRIPTION (used via `forcats::fct_reorder()` in `vignettes/optimization.Rmd`)
 - **pkgdown build**: `getting_started` vignette was missing from `_pkgdown.yml` articles index — added as first entry under "Getting Started"
+- **Log-scale MR peak fix**: The vignette and code incorrectly claimed log-scale curves (log_logistic, weibull, reflected_weibull) always have monotonically decreasing marginal return. In fact, dy/dx = dy/d(log x) × 1/x, so an interior MR peak exists when |b| > 1 (common in practice). Fixed: (1) rewrote Marginal Return section in `response_curve_theory.Rmd` with correct characterization and new figure showing MR vs |b|; (2) `mrm_summary.R` and `mrm_summary_hier.R` now detect interior MR peaks from data (`which.max(mr)`) rather than assuming all log-form curves lack one; (3) added tests in `test-hlpr_summary_core.R` for both |b| > 1 (has peak) and |b| ≤ 1 (no peak) cases
 
 ---
 

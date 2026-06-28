@@ -28,8 +28,6 @@ mrm_summary_hier <- function(mrm, mr_decay = 0.7) {
   x_col   <- names(rdf_all)[1]
 
   rc_type <- mrm$rc_type
-  log_forms <- c("log_logistic", "weibull", "reflected_weibull")
-  log_curve_no_peak <- !is.null(rc_type) && rc_type %in% log_forms
 
   has_units <- !is.null(mrm$units_col) && !is.null(mrm$cost_per_unit)
   cpu <- if (has_units) mrm$cost_per_unit else NA_real_
@@ -62,12 +60,15 @@ mrm_summary_hier <- function(mrm, mr_decay = 0.7) {
   }
 
   build_row <- function(id, level, rdf, obs_spend, params, r2) {
+    # Detect from data whether MR has an interior peak
+    mr_vals <- rdf$mr[!is.na(rdf$mr)]
+    no_peak <- which.max(mr_vals) <= 2L
     s <- hlpr_summary_core(
       rdf = rdf, x_col = x_col, rc_type = rc_type,
       weekly_spend = mean(obs_spend), obs_spend = obs_spend,
       has_units = has_units, cpu = cpu,
       params = as.list(params), r2 = r2,
-      log_curve_no_peak = log_curve_no_peak, mr_decay = mr_decay,
+      log_curve_no_peak = no_peak, mr_decay = mr_decay,
       channel = id
     )
     s <- tibble::as_tibble(s)

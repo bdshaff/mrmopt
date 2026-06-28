@@ -16,6 +16,7 @@
 ^conversation-export\.html$
 ^design$
 ^dev_.*
+^vignettes/getting_started\.Rmd$
 ^vignettes/fitting_and_analysis\.Rmd$
 ^vignettes/diagnostics_and_comparison\.Rmd$
 ^vignettes/hierarchical_curves\.Rmd$

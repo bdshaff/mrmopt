@@ -31,9 +31,9 @@ For standard (non-log) curves, the three summary points are:
     \code{mr_decay × peak MR}. Beyond this, diminishing returns accelerate.
 }
 
-For log-form curves (log_logistic, weibull, reflected_weibull) with
-monotonically decreasing MR (i.e. no interior efficiency peak), the three
-summary points are anchored to MR fractions around current spend:
+For curves where MR is monotonically decreasing (no interior efficiency
+peak — possible for log-form curves when |b| ≤ 1), the three summary
+points are anchored to MR fractions around current spend:
 \itemize{
   \item \strong{range_min}: Last spend level where MR >= 2x MR at current spend.
   \item \strong{range_peak}: Current spend (operational anchor).

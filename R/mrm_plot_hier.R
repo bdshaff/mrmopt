@@ -90,8 +90,8 @@ mrm_plot_hier <- function(mrm,
 
   patchwork::wrap_plots(top, bot, ncol = 1) +
     patchwork::plot_annotation(
-      title    = paste0(mrm$spend_col, " — ", mrm$rc_type),
-      subtitle = "Response curves by level (channel mean dashed)  ·  parameter shrinkage (point size = observed weeks)",
+      title    = paste0(mrm$spend_col, " - ", mrm$rc_type),
+      subtitle = "Response curves by level (channel mean dashed) - parameter shrinkage (point size = observed weeks)",
       theme = ggplot2::theme(
         plot.title = ggplot2::element_text(face = "bold", size = 14))
     )
@@ -122,7 +122,7 @@ mrm_plot_hier_response <- function(mrm, level = NULL, x_var = c("spend", "units"
   x_var <- match.arg(x_var)
   if (is.null(level)) level <- paste(mrm$group, collapse = ":")
   pal    <- mrmopt_palette()
-  ptitle <- paste0(mrm$spend_col, " — ", mrm$rc_type)
+  ptitle <- paste0(mrm$spend_col, " - ", mrm$rc_type)
 
   rdf <- if (!is.null(mrm$response_df)) mrm$response_df else mrm_infer_hier(mrm)
 
@@ -198,7 +198,7 @@ mrm_plot_hier_shrinkage <- function(mrm, param = c("e", "b", "d", "c"),
   param <- match.arg(param)
   if (is.null(level)) level <- paste(mrm$group, collapse = ":")
   pal    <- mrmopt_palette()
-  ptitle <- paste0(mrm$spend_col, " — ", mrm$rc_type)
+  ptitle <- paste0(mrm$spend_col, " - ", mrm$rc_type)
 
   ph  <- if (!is.null(mrm$params_hier)) mrm$params_hier else hlpr_params_hier(mrm)
   lvl <- ph$levels[[level]]
@@ -322,7 +322,7 @@ mrm_plot_hier_diagnostics <- function(mrm) {
     ncol = 1, heights = c(2, 1)
   ) +
     patchwork::plot_annotation(
-      title = paste0(mrm$spend_col, " — ", mrm$rc_type, " Diagnostics"),
+      title = paste0(mrm$spend_col, " - ", mrm$rc_type, " Diagnostics"),
       theme = ggplot2::theme(
         plot.title = ggplot2::element_text(face = "bold", size = 14))
     )
