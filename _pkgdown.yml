@@ -13,7 +13,10 @@ navbar:
       href: articles/roadmap.html
 
 articles:
-  - title: "Learning"
+  - title: "Getting Started"
+    contents:
+      - getting_started
+  - title: "Guides"
     contents:
       - response_curve_theory
   - title: "Project"

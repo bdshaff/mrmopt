@@ -106,7 +106,7 @@ filter to a single channel before calling `fit_response()`.
 Start with one channel and one curve type. Gompertz is a reasonable default
 for channels with concave diminishing returns from the start.
 
-```{r fit-ps, results = "hide", message = FALSE, warning = FALSE}
+```{r fit-ps, message = FALSE, warning = FALSE}
 ps_data <- mrmopt_data |> filter(channel == "Paid Search")
 
 fit_ps <- fit_response(
@@ -116,7 +116,8 @@ fit_ps <- fit_response(
   date           = "week",
   type           = "gompertz",
   midpoint_range = c(0.1, 0.5),
-  ceiling_max    = 3
+  ceiling_max    = 3,
+  refresh        = 0
 )
 ```
 
@@ -215,7 +216,7 @@ diminishing returns from the first dollar.
 
 Fit a second type and compare them visually:
 
-```{r fit-compare, results = "hide", message = FALSE, warning = FALSE}
+```{r fit-compare, message = FALSE, warning = FALSE}
 fit_ps_ll <- fit_response(
   data           = ps_data,
   spend          = "spend",
@@ -223,7 +224,8 @@ fit_ps_ll <- fit_response(
   date           = "week",
   type           = "log_logistic",
   midpoint_range = c(0.1, 0.5),
-  ceiling_max    = 3
+  ceiling_max    = 3,
+  refresh        = 0
 )
 ```
 
@@ -251,7 +253,7 @@ For a full comparison across all six types, see the
 Once you have a curve type for each channel, fit the full portfolio. Here we
 use the best-fit type for each of the five channels in `mrmopt_data`:
 
-```{r fit-all, results = "hide", message = FALSE, warning = FALSE}
+```{r fit-all, message = FALSE, warning = FALSE}
 channel_types <- list(
   "Paid Search"  = "log_logistic",
   "Paid Social"  = "gompertz",
@@ -268,7 +270,8 @@ fits <- lapply(names(channel_types), function(ch) {
     date  = "week",
     type  = channel_types[[ch]],
     midpoint_range = c(0.1, 0.5),
-    ceiling_max    = 3
+    ceiling_max    = 3,
+    refresh        = 0
   )
 })
 names(fits) <- names(channel_types)
@@ -289,7 +292,7 @@ mrms_plot_compare(fits, interval = "confidence")
 total budget constraint. The default `method = "point"` uses the posterior
 median parameters and runs in under a second:
 
-```{r opt, results = "hide", message = FALSE, warning = FALSE}
+```{r opt, message = FALSE, warning = FALSE}
 opt <- opt_mix(fits, budget = 204641)
 ```
 
@@ -351,7 +354,7 @@ The point estimate result is fast but treats the posterior median parameters as
 if they were known exactly. `method = "posterior"` runs the optimizer over a
 sample of posterior draws, producing a distribution of optimal allocations:
 
-```{r opt-post, results = "hide", message = FALSE, warning = FALSE}
+```{r opt-post, message = FALSE, warning = FALSE}
 opt_post <- opt_mix(fits, budget = 204641, method = "posterior", n_draws = 200)
 ```
 
@@ -386,13 +389,13 @@ where the allocation decision is robust.
 **Period budgets** — optimize a quarterly or annual budget broken into weekly
 allocations:
 
-```{r opt-annual, results = "hide", message = FALSE, warning = FALSE}
+```{r opt-annual, message = FALSE, warning = FALSE}
 opt_annual <- opt_mix(fits, budget = 26000000, n_weeks = 52)
 ```
 
 **Custom constraints** — set channel-level floors, ceilings, and share bounds:
 
-```{r opt-constrained, results = "hide", message = FALSE, warning = FALSE}
+```{r opt-constrained, message = FALSE, warning = FALSE}
 constraints <- data.frame(
   channel   = names(fits),
   min_spend = c(10000, 5000, 2000, 5000, 50000),
