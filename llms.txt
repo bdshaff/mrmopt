@@ -19,44 +19,9 @@ devtools::install_github("bdshaff/mrmopt")
 
 ## Workflow
 
-``` mermaid
-flowchart TD
-    A([Raw Data\nweekly spend · KPI · units]) --> B
-
-    B[fit_response\none channel · one curve type]
-
-    B --> C{Diagnostics\nmrm_plot_diagnostics}
-    C -->|chains mixed\nRhat ≤ 1.01 · ESS > 400| D
-    C -->|convergence issues| B2[adjust priors\nor iter/warmup]
-    B2 --> B
-
-    D[mrm_summary\nmrm_params\nmrm_plot]
-
-    D --> E{Compare curve types\nmrms_plot_compare\nBayes R²}
-    E -->|try all 6 types\nper channel| B
-    E -->|best type selected\nper channel| F
-
-    F[fit_response\nbest type · full iterations\nall channels in loop]
-
-    F --> G[mrm_infer\nspend grid → posterior predictive\ncenter · lower · upper · AR · MR · CP]
-
-    G --> H[opt_mix\nmethod = point or posterior\nbudget · constraints]
-
-    H --> I[opt_summary\nopt_table\nopt_plot_allocation\nopt_plot_comparison]
-
-    I --> J{Scenario Analysis}
-    J --> K[period budgets\nn_weeks]
-    J --> L[custom constraints\nmin/max spend · fixed channels]
-    J --> M[posterior uncertainty\nopt_plot_posterior]
-
-    K & L & M --> N([Allocation Decision])
-
-    style A fill:#f0f4ff,stroke:#4a6fa5
-    style N fill:#f0fff4,stroke:#4a6fa5
-    style C fill:#fff8e1,stroke:#f0a500
-    style E fill:#fff8e1,stroke:#f0a500
-    style J fill:#fff8e1,stroke:#f0a500
-```
+The workflow spans data input through allocation decision. See the
+[Workflow Overview](https://bdshaff.github.io/mrmopt/workflow.html)
+vignette for the full diagram and walkthrough.
 
 ## Quick Start
 
@@ -267,22 +232,11 @@ cross-channel synergy modeling, and adstock support.
 
 - [Getting
   Started](https://bdshaff.github.io/mrmopt/articles/getting_started.md):
+
+### Guides
+
 - [Response Curve Theory and Data
   Requirements](https://bdshaff.github.io/mrmopt/articles/response_curve_theory.md):
-
-### Modeling
-
-- [Fitting and Analyzing Response Curve
-  Models](https://bdshaff.github.io/mrmopt/articles/fitting_and_analysis.md):
-- [Model Diagnostics and Curve
-  Comparison](https://bdshaff.github.io/mrmopt/articles/diagnostics_and_comparison.md):
-- [Hierarchical Response
-  Curves](https://bdshaff.github.io/mrmopt/articles/hierarchical_curves.md):
-
-### Optimization
-
-- [Media Mix
-  Optimization](https://bdshaff.github.io/mrmopt/articles/optimization.md):
 
 ### Project
 

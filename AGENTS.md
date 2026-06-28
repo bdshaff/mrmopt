@@ -52,6 +52,29 @@ distributions, and supports media mix optimization via `nloptr`.
 - **pkgdown build**: `getting_started` vignette was missing from
   `_pkgdown.yml` articles index — added as first entry under “Getting
   Started”
+- **Log-scale MR peak fix**: The vignette and code incorrectly claimed
+  log-scale curves (log_logistic, weibull, reflected_weibull) always
+  have monotonically decreasing marginal return. In fact, dy/dx =
+  dy/d(log x) × 1/x, so an interior MR peak exists when \|b\| \> 1
+  (common in practice). Fixed: (1) rewrote Marginal Return section in
+  `response_curve_theory.Rmd` with correct characterization and new
+  figure showing MR vs \|b\|; (2) `mrm_summary.R` and
+  `mrm_summary_hier.R` now detect interior MR peaks from data
+  (`which.max(mr)`) rather than assuming all log-form curves lack
+  one; (3) added tests in `test-hlpr_summary_core.R` for both \|b\| \> 1
+  (has peak) and \|b\| ≤ 1 (no peak) cases
+- **Vignette build strategy**: Stan compilation during vignette
+  rendering causes rstan/rmarkdown
+  [`sink()`](https://rdrr.io/r/base/sink.html) incompatibility, making
+  it impossible to build vignettes with full code execution in standard
+  `R CMD build`. Solution: (1) slow vignettes (getting_started,
+  fitting_and_analysis, diagnostics_and_comparison, hierarchical_curves,
+  optimization) are in `.Rbuildignore` so `R CMD build` and
+  `devtools::check()` skip them; (2) `data-raw/build_slow_vignettes.R`
+  manually renders them to `docs/articles/` before site deployment; (3)
+  pkgdown uses the pre-built HTML instead of rebuilding. Result: package
+  builds fast (~30s), vignettes render fully when needed (~5-10 min),
+  and docs site always has current content. See `VIGNETTE_BUILD.md`.
 
 ------------------------------------------------------------------------
 

@@ -76,9 +76,9 @@ response curve summary range (standard curves only). Default is 0.7.</p></dd>
     the most efficient operating point.</p></li>
 <li><p><strong>range_max</strong>: Spend where MR has declined to
     <code>mr_decay × peak MR</code>. Beyond this, diminishing returns accelerate.</p></li>
-</ul><p>For log-form curves (log_logistic, weibull, reflected_weibull) with
-monotonically decreasing MR (i.e. no interior efficiency peak), the three
-summary points are anchored to MR fractions around current spend:</p><ul><li><p><strong>range_min</strong>: Last spend level where MR &gt;= 2x MR at current spend.</p></li>
+</ul><p>For curves where MR is monotonically decreasing (no interior efficiency
+peak — possible for log-form curves when |b| ≤ 1), the three summary
+points are anchored to MR fractions around current spend:</p><ul><li><p><strong>range_min</strong>: Last spend level where MR &gt;= 2x MR at current spend.</p></li>
 <li><p><strong>range_peak</strong>: Current spend (operational anchor).</p></li>
 <li><p><strong>range_max</strong>: First spend level above current where MR &lt;= 0.5x MR at current spend.</p></li>
 </ul></div>

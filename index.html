@@ -74,47 +74,12 @@
 <div class="section level2">
 <h2 id="workflow">Workflow<a class="anchor" aria-label="anchor" href="#workflow"></a>
 </h2>
-<pre class="mermaid"><code>flowchart TD
-    A([Raw Data\nweekly spend · KPI · units]) --&gt; B
-
-    B[fit_response\none channel · one curve type]
-
-    B --&gt; C{Diagnostics\nmrm_plot_diagnostics}
-    C --&gt;|chains mixed\nRhat ≤ 1.01 · ESS &gt; 400| D
-    C --&gt;|convergence issues| B2[adjust priors\nor iter/warmup]
-    B2 --&gt; B
-
-    D[mrm_summary\nmrm_params\nmrm_plot]
-
-    D --&gt; E{Compare curve types\nmrms_plot_compare\nBayes R²}
-    E --&gt;|try all 6 types\nper channel| B
-    E --&gt;|best type selected\nper channel| F
-
-    F[fit_response\nbest type · full iterations\nall channels in loop]
-
-    F --&gt; G[mrm_infer\nspend grid → posterior predictive\ncenter · lower · upper · AR · MR · CP]
-
-    G --&gt; H[opt_mix\nmethod = point or posterior\nbudget · constraints]
-
-    H --&gt; I[opt_summary\nopt_table\nopt_plot_allocation\nopt_plot_comparison]
-
-    I --&gt; J{Scenario Analysis}
-    J --&gt; K[period budgets\nn_weeks]
-    J --&gt; L[custom constraints\nmin/max spend · fixed channels]
-    J --&gt; M[posterior uncertainty\nopt_plot_posterior]
-
-    K &amp; L &amp; M --&gt; N([Allocation Decision])
-
-    style A fill:#f0f4ff,stroke:#4a6fa5
-    style N fill:#f0fff4,stroke:#4a6fa5
-    style C fill:#fff8e1,stroke:#f0a500
-    style E fill:#fff8e1,stroke:#f0a500
-    style J fill:#fff8e1,stroke:#f0a500</code></pre>
+<p>The workflow spans data input through allocation decision. See the <a href="https://bdshaff.github.io/mrmopt/workflow.html">Workflow Overview</a> vignette for the full diagram and walkthrough.</p>
 </div>
 <div class="section level2">
 <h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bdshaff.github.io/mrmopt/">mrmopt</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Built-in example data: 5 channels, 104 weeks each</span></span>
