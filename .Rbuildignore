@@ -13,11 +13,5 @@
 ^LICENSE\.md$
 ^ROADMAP\.md$
 ^conversation-export\.html$
-^VIGNETTE_BUILD\.md$
-^vignettes/getting_started\.Rmd$
-^vignettes/fitting_and_analysis\.Rmd$
-^vignettes/diagnostics_and_comparison\.Rmd$
-^vignettes/hierarchical_curves\.Rmd$
-^vignettes/optimization\.Rmd$
 ^dev_.*
 

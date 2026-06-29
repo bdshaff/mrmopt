@@ -117,7 +117,9 @@ fit_ps <- fit_response(
   type           = "gompertz",
   midpoint_range = c(0.1, 0.5),
   ceiling_max    = 3,
-  refresh        = 0
+  refresh        = 0,
+  iter = 1000,
+  chains = 2
 )
 ```
 
@@ -225,7 +227,9 @@ fit_ps_ll <- fit_response(
   type           = "log_logistic",
   midpoint_range = c(0.1, 0.5),
   ceiling_max    = 3,
-  refresh        = 0
+  refresh        = 0,
+  iter = 1000,
+  chains = 2
 )
 ```
 
@@ -271,7 +275,9 @@ fits <- lapply(names(channel_types), function(ch) {
     type  = channel_types[[ch]],
     midpoint_range = c(0.1, 0.5),
     ceiling_max    = 3,
-    refresh        = 0
+    refresh        = 0,
+    iter = 1000,
+    chains = 2
   )
 })
 names(fits) <- names(channel_types)

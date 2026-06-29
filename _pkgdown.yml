@@ -1,6 +1,8 @@
 url: https://bdshaff.github.io/mrmopt/
 template:
-  bootstrap: 5
+  bslib:
+    version: 5
+    brand: _brand.yml
   light-switch: true
 
 navbar:
