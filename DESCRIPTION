@@ -29,6 +29,7 @@ Suggests:
     gt,
     patchwork,
     forcats
+Config/Needs/website: brand.yml
 VignetteBuilder: knitr
 URL: https://bdshaff.github.io/mrmopt/
 Depends: 
